@@ -249,11 +249,11 @@ Prioritize:
    - Only recommend a course for a Gen Ed slot if its Attr field contains the required attribute code
    - Never use GEN_ED placeholder courses — always pick a real course from available_sections
 
-PREREQUISITE CHECKING (very important):
-- Use your knowledge of UVM course prerequisites to verify the student has completed all prereqs
-- The student's completed courses are included in the request as "completed_courses"
-- If a student has not completed the prereqs for a course, add it to "unscheduled_courses" with a note explaining which prereq is missing
-- Example: if MATH 2522 requires MATH 1248, and MATH 1248 is not in completed_courses, exclude it
+PREREQUISITE CHECKING:
+- Use completed_courses to verify prereqs
+- If completed_courses is empty or incomplete, be LENIENT — only block a course if you are very confident the prereq is missing
+- When in doubt, INCLUDE the course and add a note rather than excluding it
+- Never block a course just because you're unsure about transfer credits
 
 Return ONLY valid JSON, no markdown, no explanation:
 {
