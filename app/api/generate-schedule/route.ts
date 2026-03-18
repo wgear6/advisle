@@ -75,21 +75,11 @@ export interface RemainingCourse {
 // Position 0 = M, 1 = (space), 2 = T, 3 = (space), 4 = W, 5 = (space), 6 = R, ...
 
 function parseDays(daysStr: string): string[] {
-  const days: string[] = [];
-  const s = daysStr.padEnd(10, " ");
-  if (s[0] === "M") days.push("M");
-  if (s[1] === "T") days.push("T");  // actually position varies — use char presence
-  if (s[2] === "W" || s[1] === "W") days.push("W");
-  // Safer: just check if each letter appears
-  const clean = daysStr.replace(/\s/g, "");
-  const result: string[] = [];
-  if (clean.includes("M")) result.push("M");
-  if (clean.includes("T") && !clean.includes("Th")) result.push("T");
-  if (clean.includes("W")) result.push("W");
-  if (clean.includes("R")) result.push("R");
-  if (clean.includes("F")) result.push("F");
-  if (clean.includes("S")) result.push("S");
-  return result;
+  if (!daysStr || daysStr.trim() === "") return [];
+  // New CSV format: "M W F" or "T R" or "M T W F"
+  const parts = daysStr.trim().split(/\s+/);
+  const validDays = ["M", "T", "W", "R", "F", "S"];
+  return parts.filter(d => validDays.includes(d));
 }
 
 function parseCredits(creditStr: string): number {
@@ -138,7 +128,7 @@ function loadCourses(): CourseSection[] {
       instructor: r.Instructor?.trim() ?? "",
       maxEnrollment: parseInt(r["Max Enrollment"] ?? "0", 10),
       currentEnrollment: parseInt(r["Current Enrollment"] ?? "0", 10),
-      isFull: parseInt(r["Current Enrollment"] ?? "0", 10) >= parseInt(r["Max Enrollment"] ?? "0", 10),
+      isFull: false,
     }));
 
   return courseCache;
@@ -249,11 +239,11 @@ Prioritize:
    - Only recommend a course for a Gen Ed slot if its Attr field contains the required attribute code
    - Never use GEN_ED placeholder courses — always pick a real course from available_sections
 
-PREREQUISITE CHECKING:
-- Use completed_courses to verify prereqs
-- If completed_courses is empty or incomplete, be LENIENT — only block a course if you are very confident the prereq is missing
-- When in doubt, INCLUDE the course and add a note rather than excluding it
-- Never block a course just because you're unsure about transfer credits
+PREREQUISITE CHECKING (very important):
+- Use your knowledge of UVM course prerequisites to verify the student has completed all prereqs
+- The student's completed courses are included in the request as "completed_courses"
+- If a student has not completed the prereqs for a course, add it to "unscheduled_courses" with a note explaining which prereq is missing
+- Example: if MATH 2522 requires MATH 1248, and MATH 1248 is not in completed_courses, exclude it
 
 Return ONLY valid JSON, no markdown, no explanation:
 {
