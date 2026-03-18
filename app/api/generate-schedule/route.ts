@@ -109,7 +109,7 @@ let courseCache: CourseSection[] | null = null;
 function loadCourses(): CourseSection[] {
   if (courseCache) return courseCache;
 
-  const csvPath = path.join(process.cwd(), "data", "curr_enroll_202509.csv");
+  const csvPath = path.join(process.cwd(), "data", "curr_enroll_202609.csv");
   const raw = fs.readFileSync(csvPath, "utf-8");
 
   // csv-parse handles quoted fields correctly
@@ -244,6 +244,10 @@ Prioritize:
 2. Spreading classes across the week (avoid 4+ classes on one day)
 3. Reasonable start times (avoid very early morning if possible)
 4. Manageable credit load
+5. For General Education requirements (AH1, AH2, N1, N2, D1, D2, QD, MA, SU, GC):
+   - Match courses using the Attr field in available_sections
+   - Only recommend a course for a Gen Ed slot if its Attr field contains the required attribute code
+   - Never use GEN_ED placeholder courses — always pick a real course from available_sections
 
 PREREQUISITE CHECKING (very important):
 - Use your knowledge of UVM course prerequisites to verify the student has completed all prereqs
@@ -294,7 +298,7 @@ export async function POST(req: NextRequest) {
   remaining_courses,
   completed_courses = [],
   blocked_times = [],
-  max_credits = 18,
+  max_credits = 16,
 }: {
   remaining_courses: RemainingCourse[];
   completed_courses: { subject: string; number: string; title: string }[];
