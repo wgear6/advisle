@@ -291,11 +291,11 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const {
-      remaining_courses,
-      completed_courses = [],
-      blocked_times = [],
-      max_credits = 19,
-    }: {
+  remaining_courses,
+  completed_courses = [],
+  blocked_times = [],
+  max_credits = 18,
+}: {
   remaining_courses: RemainingCourse[];
   completed_courses: { subject: string; number: string; title: string }[];
   blocked_times: BlockedTime[];
