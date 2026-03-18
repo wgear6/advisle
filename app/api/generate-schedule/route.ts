@@ -294,12 +294,13 @@ export async function POST(req: NextRequest) {
       remaining_courses,
       completed_courses = [],
       blocked_times = [],
-      max_credits = 16,
+      max_credits = 19,
     }: {
-      remaining_courses: RemainingCourse[];
-      blocked_times: BlockedTime[];
-      max_credits?: number;
-    } = body;
+  remaining_courses: RemainingCourse[];
+  completed_courses: { subject: string; number: string; title: string }[];
+  blocked_times: BlockedTime[];
+  max_credits?: number | undefined;
+} = body;
 
     if (!remaining_courses || remaining_courses.length === 0) {
       return NextResponse.json(
