@@ -209,7 +209,7 @@ export default function Home() {
           U
         </div>
         <div>
-          <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, letterSpacing: "-0.3px" }}>UVM Schedule Planner</h1>
+          <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, letterSpacing: "-0.3px" }}>Advisle</h1>
           <p style={{ margin: 0, fontSize: 12, opacity: 0.7 }}>AI-powered course scheduling for University of Vermont students</p>
         </div>
       </header>
@@ -306,11 +306,11 @@ export default function Home() {
                 {audit.remaining_courses.map((c, i) => (
                   <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: "#f8fafc", borderRadius: 8, border: "1px solid #f1f5f9" }}>
                     <span style={{ fontWeight: 700, color: "#1e3a5f", minWidth: 100, fontSize: 14 }}>{c.subject} {c.number}</span>
-                    <span style={{ flex: 1, fontSize: 14 }}>{c.title}</span>
+                    <span style={{ flex: 1, fontSize: 14, color: "#374151" }}>{c.title}</span>
                     <span style={{ fontSize: 12, padding: "2px 8px", borderRadius: 99, background: CATEGORY_COLORS[c.requirement_category] + "20", color: CATEGORY_COLORS[c.requirement_category], fontWeight: 600, whiteSpace: "nowrap" }}>
                       {c.requirement_category}
                     </span>
-                    <span style={{ fontSize: 13, color: "#6b7280", minWidth: 50, textAlign: "right" }}>{c.credits} cr</span>
+                    <span style={{ fontSize: 13, color: "#09090a", minWidth: 50, textAlign: "right" }}>{c.credits} cr</span>
                   </div>
                 ))}
               </div>
@@ -347,7 +347,7 @@ export default function Home() {
                 <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 8 }}>
                   {blockedTimes.map((b, i) => (
                     <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", background: "#fef3c7", borderRadius: 8, border: "1px solid #fde68a" }}>
-                      <span style={{ fontSize: 14, flex: 1 }}>
+                      <span style={{ fontSize: 14, flex: 1, color: "#374151"}}>
                         🚫 <strong>{DAY_LABELS[b.day]}</strong> · {formatTime(b.startTime)} – {formatTime(b.endTime)}
                       </span>
                       <button onClick={() => removeBlock(i)}
