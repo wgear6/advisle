@@ -528,7 +528,12 @@ export default function Home() {
             </div>
           </div>
         )}
-      </main>
+        </main>
+        {/* Footer */}
+        <footer style={{ textAlign: "center", padding: "24px 16px", color: "#9ca3af", fontSize: 12 }}>
+        Advisle is a student-built tool and is not affiliated with the University of Vermont. 
+        Always verify your schedule with your academic advisor before registering.
+      </footer>
     </div>
   );
 }
