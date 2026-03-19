@@ -169,7 +169,7 @@ async function scrapeSubject(subject) {
           csv(startTime),
           csv(endTime),
           csv(days),
-          csv(sec.total || "3"),
+          csv(detail?.hours_html || sec.total || "3"),
           csv(""), // building (not in API)
           csv(""), // room
           csv(sec.instr || ""),

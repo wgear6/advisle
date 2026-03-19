@@ -14,6 +14,8 @@ interface RemainingCourse {
 
 interface ParsedAudit {
   remaining_courses: RemainingCourse[];
+  in_progress_courses: { subject: string; number: string; title: string; credits: number }[];
+  completed_courses: { subject: string; number: string; title: string; credits?: number }[];
   student_name: string | null;
   major: string | null;
   credits_completed: number | null;
@@ -184,6 +186,7 @@ export default function Home() {
         body: JSON.stringify({
           remaining_courses: audit.remaining_courses,
           completed_courses: audit.completed_courses ?? [],
+          in_progress_courses: audit.in_progress_courses ?? [],
           blocked_times: blockedTimes,
         }),
       });
@@ -306,11 +309,11 @@ export default function Home() {
                 {audit.remaining_courses.map((c, i) => (
                   <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: "#f8fafc", borderRadius: 8, border: "1px solid #f1f5f9" }}>
                     <span style={{ fontWeight: 700, color: "#1e3a5f", minWidth: 100, fontSize: 14 }}>{c.subject} {c.number}</span>
-                    <span style={{ flex: 1, fontSize: 14, color: "#374151" }}>{c.title}</span>
+                    <span style={{ flex: 1, fontSize: 14, color: "#1f2937" }}>{c.title}</span>
                     <span style={{ fontSize: 12, padding: "2px 8px", borderRadius: 99, background: CATEGORY_COLORS[c.requirement_category] + "20", color: CATEGORY_COLORS[c.requirement_category], fontWeight: 600, whiteSpace: "nowrap" }}>
                       {c.requirement_category}
                     </span>
-                    <span style={{ fontSize: 13, color: "#09090a", minWidth: 50, textAlign: "right" }}>{c.credits} cr</span>
+                    <span style={{ fontSize: 13, color: "#6b7280", minWidth: 50, textAlign: "right" }}>{c.credits} cr</span>
                   </div>
                 ))}
               </div>
@@ -347,7 +350,7 @@ export default function Home() {
                 <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 8 }}>
                   {blockedTimes.map((b, i) => (
                     <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", background: "#fef3c7", borderRadius: 8, border: "1px solid #fde68a" }}>
-                      <span style={{ fontSize: 14, flex: 1, color: "#374151"}}>
+                      <span style={{ fontSize: 14, flex: 1, color: "#1f2937" }}>
                         🚫 <strong>{DAY_LABELS[b.day]}</strong> · {formatTime(b.startTime)} – {formatTime(b.endTime)}
                       </span>
                       <button onClick={() => removeBlock(i)}
@@ -384,7 +387,7 @@ export default function Home() {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
                 <div>
                   <h2 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 700 }}>Your Recommended Schedule</h2>
-                  <p style={{ margin: 0, fontSize: 14, color: "#6b7280" }}>{schedule.total_credits} credits · Fall 2025</p>
+                  <p style={{ margin: 0, fontSize: 14, color: "#6b7280" }}>{schedule.total_credits} credits · Fall 2026</p>
                 </div>
                 <button
                   onClick={() => { setStep(2); setSchedule(null); }}
@@ -402,7 +405,7 @@ export default function Home() {
                         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 6 }}>
                           <div>
                             <span style={{ fontWeight: 700, color: "#1e3a5f", fontSize: 15 }}>{c.subject} {c.number}</span>
-                            <span style={{ fontSize: 15, marginLeft: 8 }}>{c.title}</span>
+                            <span style={{ fontSize: 15, marginLeft: 8, color: "#1f2937" }}>{c.title}</span>
                           </div>
                           <span style={{ fontSize: 13, color: "#6b7280", flexShrink: 0, marginLeft: 12 }}>{c.credits} credits</span>
                         </div>
