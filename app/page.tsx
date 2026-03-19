@@ -402,6 +402,22 @@ export default function Home() {
               )}
             </div>
 
+            <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+            <h2 style={{ margin: "0 0 4px", fontSize: 18, fontWeight: 700 }}>Target Credit Load</h2>
+            <p style={{ margin: "0 0 16px", fontSize: 14, color: "#6b7280" }}>
+              How many credits do you want to take this semester?
+            </p>
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+              {[12, 13, 14, 15, 16, 17, 18].map((c) => (
+                <button key={c} onClick={() => setTargetCredits(c)}
+                  style={{ padding: "8px 16px", borderRadius: 8, border: `2px solid ${targetCredits === c ? "#2563eb" : "#e5e7eb"}`, background: targetCredits === c ? "#eff6ff" : "#fff", color: targetCredits === c ? "#2563eb" : "#374151", fontWeight: targetCredits === c ? 700 : 400, fontSize: 14, cursor: "pointer" }}>
+                  {c}
+                </button>
+              ))}
+            </div>
+          </div>
+            
+
             <button
               onClick={generateSchedule}
               disabled={loading}

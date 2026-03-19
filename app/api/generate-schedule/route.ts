@@ -231,7 +231,8 @@ async function generateScheduleWithAI(
   availableSectionsMap: Record<string, CourseSection[]>,
   blockedTimes: BlockedTime[],
   completedCourses: SimpleCourse[],
-  inProgressCourses: SimpleCourse[]
+  inProgressCourses: SimpleCourse[],
+  targetCredits: number = 15
 ): Promise<string> {
   const context = {
     remaining_courses: remainingCourses,
@@ -259,7 +260,7 @@ CRITICAL RULES:
    - If a course requires a prereq that is still in remaining_courses (not yet taken), DO NOT schedule it
    - Example: MATH 2522 requires MATH 1248. If MATH 1248 is in remaining_courses, skip MATH 2522
    - Be lenient with transfer credits — if unsure, include the course
-5. CREDITS: Always use the credits value from available_sections, not from remaining_courses
+5. AIM for approximately ${targetCredits} credits total (within 1-2 credits either way is fine)
 6. Only include courses that appear in available_sections with a real CRN
 7. Prioritize: Major Core > Major Elective > General Education > Free Elective
 8. Spread classes across the week — avoid 4+ classes on same day
@@ -309,12 +310,14 @@ export async function POST(req: NextRequest) {
       completed_courses = [],
       in_progress_courses = [],
       blocked_times = [],
-    }: {
+      target_credits = 15,
+}: {
       remaining_courses: RemainingCourse[];
       completed_courses: SimpleCourse[];
       in_progress_courses: SimpleCourse[];
       blocked_times: BlockedTime[];
-    } = body;
+      target_credits?: number;
+} = body;
 
     if (!remaining_courses || remaining_courses.length === 0) {
       return NextResponse.json({ error: "No remaining courses provided" }, { status: 400 });
@@ -344,7 +347,8 @@ export async function POST(req: NextRequest) {
       availableSectionsMap,
       blocked_times,
       completed_courses,
-      in_progress_courses
+      in_progress_courses,
+      target_credits
     );
 
     const cleaned = rawResponse.replace(/```json|```/g, "").trim();
