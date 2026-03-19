@@ -244,7 +244,7 @@ async function generateScheduleWithAI(
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o",
-    max_tokens: 2000,
+    max_tokens: 3000,
     messages: [
       {
         role: "system",
@@ -255,17 +255,21 @@ Given a list of courses a student still needs and the available sections, recomm
 CRITICAL RULES:
 1. NEVER schedule a course that appears in in_progress_courses — these are already being taken this semester
 2. NEVER schedule a course that appears in completed_courses — already done
-3. NEVER schedule two courses that overlap in time. Before finalizing the schedule, check every pair of courses — if they share any day AND their times overlap at all, remove one of them. This is an absolute hard rule with zero exceptions.
-3. For OR alternatives (e.g. "MATH 2522 or 2544" listed as one entry): pick ONE section only, never both
-4. PREREQUISITE CHECK: Use your knowledge of UVM prereqs AND the completed_courses list:
+3. NEVER schedule two courses that overlap in time. Before outputting your answer, go through every pair of courses and check:
+  - Do they share any day (M, T, W, R, F)?
+  - Do their times overlap?
+If yes to both, REMOVE one and replace it with a different course that doesn't conflict. 
+Always aim for ${targetCredits} credits. If a conflict forces you to drop a course, find a replacement.
+4. For OR alternatives (e.g. "MATH 2522 or 2544" listed as one entry): pick ONE section only, never both
+5. PREREQUISITE CHECK: Use your knowledge of UVM prereqs AND the completed_courses list:
    - If a course requires a prereq that is still in remaining_courses (not yet taken), DO NOT schedule it
    - Example: MATH 2522 requires MATH 1248. If MATH 1248 is in remaining_courses, skip MATH 2522
    - Be lenient with transfer credits — if unsure, include the course
-5. AIM for approximately ${targetCredits} credits total (within 1-2 credits either way is fine)
-6. Only include courses that appear in available_sections with a real CRN
-7. Prioritize: Major Core > Major Elective > General Education > Free Elective
-8. Spread classes across the week — avoid 4+ classes on same day
-9. For "3000+" or level requirements: pick ONE good course from available sections, not multiple
+6. AIM for approximately ${targetCredits} credits total (within 1-2 credits either way is fine)
+7. Only include courses that appear in available_sections with a real CRN
+8. Prioritize: Major Core > Major Elective > General Education > Free Elective
+9. Spread classes across the week — avoid 4+ classes on same day
+10. For "3000+" or level requirements: pick ONE good course from available sections, not multiple
 
 IMPORTANT: When you select a real course from available_sections to satisfy a GEN_ED requirement, use that course's actual subject and number in the output — NOT "GEN_ED" or "AH1" etc. For example if ARTH 1010 satisfies an AH1 requirement, output subject: "ARTH", number: "1010", not subject: "GEN_ED", number: "AH1".
 
