@@ -125,6 +125,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [targetCredits, setTargetCredits] = useState(15);
 
   // Blocked time form state
   const [blockDay, setBlockDay] = useState("M");
@@ -198,6 +199,7 @@ export default function Home() {
           completed_courses: audit.completed_courses ?? [],
           in_progress_courses: audit.in_progress_courses ?? [],
           blocked_times: blockedTimes,
+          target_credits: targetCredits,
         }),
       });
       if (!res.ok) throw new Error("Failed to generate schedule");
@@ -417,7 +419,6 @@ export default function Home() {
             </div>
           </div>
             
-
             <button
               onClick={generateSchedule}
               disabled={loading}
