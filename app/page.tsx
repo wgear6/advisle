@@ -44,6 +44,14 @@ interface ScheduledCourse {
   requirement_category: string;
 }
 
+interface RMPRating {
+  firstName: string;
+  lastName: string;
+  avgRating: number;
+  avgDifficulty: number;
+  numRatings: number;
+}
+
 interface GeneratedSchedule {
   recommended_schedule: ScheduledCourse[];
   total_credits: number;
@@ -112,6 +120,7 @@ export default function Home() {
   const [audit, setAudit] = useState<ParsedAudit | null>(null);
   const [blockedTimes, setBlockedTimes] = useState<BlockedTime[]>([]);
   const [schedule, setSchedule] = useState<GeneratedSchedule | null>(null);
+  const [rmpRatings, setRmpRatings] = useState<Record<string, RMPRating | null>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
@@ -194,6 +203,23 @@ export default function Home() {
       const data: GeneratedSchedule = await res.json();
       setSchedule(data);
       setStep(3);
+
+      // Fetch RMP ratings for all instructors in background
+      const instructors = [...new Set(
+        data.recommended_schedule
+          .map((c) => c.instructor)
+          .filter((i) => i && i !== "TBA" && i !== ".. Staff")
+      )];
+      if (instructors.length > 0) {
+        fetch("/api/rmp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ instructors }),
+        })
+          .then((r) => r.json())
+          .then((d) => setRmpRatings(d.ratings ?? {}))
+          .catch(() => {});
+      }
     } catch (e) {
       setError("Could not generate schedule. Please try again.");
     } finally {
@@ -412,7 +438,18 @@ export default function Home() {
                         <div style={{ display: "flex", gap: 16, flexWrap: "wrap", fontSize: 13, color: "#4b5563" }}>
                           <span>📅 {c.days.map((d) => DAY_LABELS[d]?.slice(0, 3)).join(", ")} · {formatTime(c.startTime)} – {formatTime(c.endTime)}</span>
                           <span>📍 {c.building} {c.room}</span>
-                          <span>👤 {c.instructor || "TBA"}</span>
+                          <span>👤 {c.instructor || "TBA"}
+                            {rmpRatings[c.instructor] && (
+                              <span style={{ marginLeft: 8, display: "inline-flex", gap: 6, alignItems: "center" }}>
+                                <span style={{ background: rmpRatings[c.instructor]!.avgRating >= 4 ? "#dcfce7" : rmpRatings[c.instructor]!.avgRating >= 3 ? "#fef9c3" : "#fee2e2", color: rmpRatings[c.instructor]!.avgRating >= 4 ? "#166534" : rmpRatings[c.instructor]!.avgRating >= 3 ? "#854d0e" : "#991b1b", padding: "1px 6px", borderRadius: 99, fontSize: 12, fontWeight: 700 }}>
+                                  ⭐ {rmpRatings[c.instructor]!.avgRating.toFixed(1)}
+                                </span>
+                                <span style={{ color: "#9ca3af", fontSize: 12 }}>
+                                  😅 {rmpRatings[c.instructor]!.avgDifficulty.toFixed(1)} · {rmpRatings[c.instructor]!.numRatings} ratings
+                                </span>
+                              </span>
+                            )}
+                          </span>
                           <span style={{ color: "#6b7280" }}>CRN: {c.crn}</span>
                         </div>
                         <div style={{ marginTop: 6 }}>
