@@ -120,6 +120,7 @@ export default function Home() {
   const [audit, setAudit] = useState<ParsedAudit | null>(null);
   const [blockedTimes, setBlockedTimes] = useState<BlockedTime[]>([]);
   const [schedule, setSchedule] = useState<GeneratedSchedule | null>(null);
+  const [scheduleId, setScheduleId] = useState<string | null>(null);
   const [rmpRatings, setRmpRatings] = useState<Record<string, RMPRating | null>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -204,6 +205,16 @@ export default function Home() {
       setSchedule(data);
       setStep(3);
 
+      // Save schedule to get shareable link
+      fetch("/api/save-schedule", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ schedule: data, audit }),
+      })
+        .then((r) => r.json())
+        .then((d) => { if (d.id) setScheduleId(d.id); })
+        .catch(() => {});
+
       // Fetch RMP ratings for all instructors in background
       const instructors = [...new Set(
         data.recommended_schedule
@@ -235,7 +246,7 @@ export default function Home() {
       {/* Header */}
       <header style={{ background: "#1e3a5f", color: "#fff", padding: "20px 32px", display: "flex", alignItems: "center", gap: 16 }}>
         <div style={{ width: 36, height: 36, background: "#f8b400", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 18, color: "#1e3a5f" }}>
-          A
+          U
         </div>
         <div>
           <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, letterSpacing: "-0.3px" }}>Advisle</h1>
@@ -416,11 +427,26 @@ export default function Home() {
                   <p style={{ margin: 0, fontSize: 14, color: "#6b7280" }}>{schedule.total_credits} credits · Fall 2026</p>
                 </div>
                 <button
-                  onClick={() => { setStep(2); setSchedule(null); }}
+                  onClick={() => { setStep(2); setSchedule(null); setScheduleId(null); }}
                   style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #d1d5db", background: "#fff", fontSize: 13, cursor: "pointer" }}>
                   ← Adjust
                 </button>
               </div>
+              {scheduleId && (
+                <div style={{ marginBottom: 16, padding: "10px 14px", background: "#f0fdf4", borderRadius: 8, border: "1px solid #bbf7d0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                  <span style={{ fontSize: 13, color: "#166534" }}>🔗 Share this schedule:</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, flex: 1, minWidth: 0 }}>
+                    <code style={{ fontSize: 12, color: "#166534", background: "#dcfce7", padding: "2px 8px", borderRadius: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      advisle.com/schedule/{scheduleId}
+                    </code>
+                    <button
+                      onClick={() => navigator.clipboard.writeText(`https://advisle.com/schedule/${scheduleId}`)}
+                      style={{ padding: "4px 10px", borderRadius: 6, border: "none", background: "#16a34a", color: "#fff", fontSize: 12, cursor: "pointer", flexShrink: 0 }}>
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              )}
 
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {schedule.recommended_schedule.map((c, i) => (
