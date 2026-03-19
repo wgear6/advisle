@@ -255,11 +255,7 @@ Given a list of courses a student still needs and the available sections, recomm
 CRITICAL RULES:
 1. NEVER schedule a course that appears in in_progress_courses — these are already being taken this semester
 2. NEVER schedule a course that appears in completed_courses — already done
-3. NEVER schedule two courses that overlap in time. Before outputting your answer, go through every pair of courses and check:
-  - Do they share any day (M, T, W, R, F)?
-  - Do their times overlap?
-If yes to both, REMOVE one and replace it with a different course that doesn't conflict. 
-Always aim for ${targetCredits} credits. If a conflict forces you to drop a course, find a replacement.
+3. NEVER schedule two courses that share any day AND have overlapping times. Before returning your answer, go through every pair of courses and verify they don't conflict. Here is how to check: if Course A is on days ["T","R"] from 8:30-9:45, then NO other course can be on T or R between 8:30-9:45. Check every single pair. If you find a conflict, remove the lower priority course and replace it with a different section or different course that fits.
 4. For OR alternatives (e.g. "MATH 2522 or 2544" listed as one entry): pick ONE section only, never both
 5. PREREQUISITE CHECK: Use your knowledge of UVM prereqs AND the completed_courses list:
    - If a course requires a prereq that is still in remaining_courses (not yet taken), DO NOT schedule it
