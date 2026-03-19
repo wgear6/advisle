@@ -542,7 +542,7 @@ export default function Home() {
         target="_blank"
         rel="noopener noreferrer"
         style={{ display: "inline-block", marginBottom: 12, padding: "8px 20px", background: "#2563eb", color: "#fff", borderRadius: 8, fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
-        💬 Give Feedback
+        Give Feedback
       </a>
   <p style={{ margin: 0 }}>
     Advisle is a student-built tool and is not affiliated with the University of Vermont. 
