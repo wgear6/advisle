@@ -240,6 +240,7 @@ async function generateScheduleWithAI(
     blocked_times: blockedTimes,
     completed_courses: completedCourses,
     in_progress_courses: inProgressCourses,
+    target_credits: targetCredits,
   };
 
   const response = await openai.chat.completions.create({
@@ -261,7 +262,7 @@ CRITICAL RULES:
    - If a course requires a prereq that is still in remaining_courses (not yet taken), DO NOT schedule it
    - Example: MATH 2522 requires MATH 1248. If MATH 1248 is in remaining_courses, skip MATH 2522
    - Be lenient with transfer credits — if unsure, include the course
-6. AIM for approximately ${targetCredits} credits total (within 1-2 credits either way is fine)
+6. You MUST aim for exactly ${targetCredits} credits. If your first selection has conflicts or gets removed, find replacement courses to fill the gap. Keep adding courses until you reach ${targetCredits} credits (within 1 credit). Do not return a schedule under ${targetCredits - 2} credits.
 7. Only include courses that appear in available_sections with a real CRN
 8. Prioritize: Major Core > Major Elective > General Education > Free Elective
 9. Spread classes across the week — avoid 4+ classes on same day
