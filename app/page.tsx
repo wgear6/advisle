@@ -243,7 +243,7 @@ export default function Home() {
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f8fafc", fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#f8fafc", fontFamily: "'Segoe UI', system-ui, sans-serif", color: "#111827" }}>
 
       {/* Header */}
       <header style={{ background: "#1e3a5f", color: "#fff", padding: "20px 32px", display: "flex", alignItems: "center", gap: 16 }}>
@@ -276,7 +276,7 @@ export default function Home() {
         {/* ── STEP 1: Upload ── */}
         {step === 1 && (
           <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 32 }}>
-            <h2 style={{ margin: "0 0 8px", fontSize: 18, fontWeight: 700 }}>Upload Your Degree Audit</h2>
+            <h2 style={{ margin: "0 0 8px", fontSize: 18, fontWeight: 700, color: "#111827" }}>Upload Your Degree Audit</h2>
             <p style={{ margin: "0 0 24px", color: "#6b7280", fontSize: 14 }}>
               Log into myUVM → Student Records → Degree Audit → Print/Export as PDF. Then upload it here.
             </p>
@@ -312,7 +312,7 @@ export default function Home() {
                 </>
               ) : (
                 <>
-                  <p style={{ margin: "0 0 4px", fontWeight: 600 }}>Drop your degree audit PDF here</p>
+                  <p style={{ margin: "0 0 4px", fontWeight: 600, color: "#111827" }}>Drop your degree audit PDF here</p>
                   <p style={{ margin: 0, fontSize: 13, color: "#6b7280" }}>or click to browse</p>
                 </>
               )}
