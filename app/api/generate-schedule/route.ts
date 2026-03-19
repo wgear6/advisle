@@ -357,13 +357,38 @@ export async function POST(req: NextRequest) {
     const cleaned = rawResponse.replace(/```json|```/g, "").trim();
     const schedule = JSON.parse(cleaned);
 
+    // Post-process: remove any conflicting courses GPT snuck in
+const validSchedule: typeof schedule.recommended_schedule = [];
+for (const course of schedule.recommended_schedule) {
+  const days: string[] = Array.isArray(course.days)
+    ? course.days
+    : (course.days ?? "").split("").filter((d: string) => ["M","T","W","R","F"].includes(d));
+  const startMin = timeToMin(course.startTime);
+  const endMin = timeToMin(course.endTime);
+
+  const hasConflict = validSchedule.some(existing => {
+    const existingDays: string[] = Array.isArray(existing.days)
+      ? existing.days
+      : (existing.days ?? "").split("").filter((d: string) => ["M","T","W","R","F"].includes(d));
+    const sharedDay = existingDays.some((d: string) => days.includes(d));
+    if (!sharedDay) return false;
+    const eStart = timeToMin(existing.startTime);
+    const eEnd = timeToMin(existing.endTime);
+    return !(endMin <= eStart || startMin >= eEnd);
+  });
+
+  if (!hasConflict) validSchedule.push(course);
+}
+schedule.recommended_schedule = validSchedule;
+schedule.total_credits = validSchedule.reduce((sum: number, c: {credits: number}) => sum + (c.credits || 0), 0);
+
     return NextResponse.json({
       ...schedule,
       available_sections_found: Object.keys(availableSectionsMap).length,
       total_courses_needed: remaining_courses.length,
-    });
-  } catch (err) {
-    console.error("generate-schedule error:", err);
-    return NextResponse.json({ error: "Failed to generate schedule" }, { status: 500 });
+      });
+      } catch (err) {
+      console.error("generate-schedule error:", err);
+      return NextResponse.json({ error: "Failed to generate schedule" }, { status: 500 });
   }
 }
