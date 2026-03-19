@@ -188,7 +188,13 @@ function findAvailableSections(
   return allSections.filter((s) => {
     // Match subject + number
     if (s.subject !== course.subject.toUpperCase()) return false;
-    if (s.number !== course.number) return false;
+    // Handle wildcard requirements like "3000+"
+    if (course.number.endsWith("+")) {
+      const minLevel = parseInt(course.number.replace("+", ""));
+      if (parseInt(s.number) < minLevel) return false;
+}     else {
+      if (s.number !== course.number) return false;
+}
     // Only lectures for main scheduling
     if (s.type !== "LEC") return false;
     // Skip TBA
