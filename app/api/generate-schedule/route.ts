@@ -245,6 +245,14 @@ PREREQUISITE CHECKING (very important):
 - If a student has not completed the prereqs for a course, add it to "unscheduled_courses" with a note explaining which prereq is missing
 - Example: if MATH 2522 requires MATH 1248, and MATH 1248 is not in completed_courses, exclude it
 
+IMPORTANT RULES:
+- When a student needs "MATH 2522 OR MATH 2544" (alternative courses), schedule ONLY ONE of them, not both
+- Similarly for any "or" choices — pick the best single option, never schedule both
+- For prereqs: MATH 2522 and MATH 2544 both require MATH 1248 (Calculus II). If MATH 1248 is in remaining_courses (meaning not yet completed), do NOT schedule MATH 2522 or MATH 2544 this semester
+- General rule: if Course A is in remaining_courses AND Course B requires Course A as a prereq, don't schedule Course B in the same semester
+- Never recommend a course unless it appears in available_sections with a real CRN
+- If no real course satisfies a Gen Ed requirement, add it to unscheduled_courses instead of making one up
+
 Return ONLY valid JSON, no markdown, no explanation:
 {
   "recommended_schedule": [
