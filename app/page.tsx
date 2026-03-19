@@ -257,6 +257,12 @@ export default function Home() {
       </header>
 
       <main style={{ maxWidth: 800, margin: "0 auto", padding: "32px 16px" }}>
+      {/* Beta banner */}
+      <div style={{ background: "#fef9c3", border: "1px solid #fde68a", borderRadius: 8, padding: "10px 16px", marginBottom: 16, fontSize: 13, color: "#854d0e", textAlign: "center" }}>
+        🚧 Advisle is in beta — we're improving it daily. If something looks off, try again or check back soon!
+      </div>
+
+        
 
         {/* Steps */}
         <div style={{ display: "flex", gap: 24, marginBottom: 32, padding: "16px 24px", background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb" }}>
