@@ -541,7 +541,8 @@ export default function Home() {
          href="https://docs.google.com/forms/d/e/1FAIpQLSeXvQyk9CIsPIAnUdSFGsLS0701bAVXFaaS-Z1wtivma_Um0g/viewform?usp=publish-editor"
         target="_blank"
         rel="noopener noreferrer"
-        style={{ display: "inline-block", marginBottom: 12, padding: "8px 20px", background: "#2563eb", color: "#fff", borderRadius: 8, fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
+        style={{ display: "inline-block", marginBottom: 12, padding: "8px 20px", background: "#2563eb", color: "#fff", borderRadius: 8, fontSize: 13, fontWeight: 600, textDecoration: "none" }}
+        >
         Give Feedback
       </a>
   <p style={{ margin: 0 }}>
