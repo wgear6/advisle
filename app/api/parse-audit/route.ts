@@ -48,6 +48,11 @@ Rules:
 - For "Still needed: 1 Class in MATH 2522 or 2544" — add both as separate entries
 - For vague requirements like "N2 lab course" — use subject "GEN_ED", number "N2_LAB", title from the requirement text
 - For "Statistics for Engineering" with no specific course — use subject "STAT", number "TBD", title "Statistics for Engineering"
+- For level requirements like "3 Credits in STAT 3@ or 4@ or 5@", use number "3000+" not "3@"
+- For OR choices like "MATH 2522 or MATH 2544", create ONE entry only: use the first course number, and put both options in the title like "Linear Algebra (MATH 2522 or 2544)"
+- For requirements like "3 Credits in STAT 3@ or 4@ or 5@" (any course at that level), create an entry like:
+  { "subject": "STAT", "number": "3000+", "title": "Statistics Elective (3000-level or above)", "credits": 3, "requirement_category": "Major Core" }
+
 
 Return ONLY valid JSON — no markdown fences, no explanation, nothing else:
 {
@@ -63,8 +68,11 @@ Return ONLY valid JSON — no markdown fences, no explanation, nothing else:
   "student_name": "string or null",
   "major": "string or null",
   "credits_completed": number or null,
-  "credits_remaining": number or null
+  "credits_remaining": number or null,
+  "completed_courses": [{ "subject": "MATH", "number": "1234", "title": "Calculus I" }]
+
 }
+  
 
 requirement_category must be one of: "Major Core", "Major Elective", "General Education", "Free Elective", "Other"`,
         },

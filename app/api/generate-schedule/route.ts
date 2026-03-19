@@ -189,11 +189,12 @@ function findAvailableSections(
     // Match subject + number
     if (s.subject !== course.subject.toUpperCase()) return false;
     // Handle wildcard requirements like "3000+"
-    if (course.number.endsWith("+")) {
-      const minLevel = parseInt(course.number.replace("+", ""));
-      if (parseInt(s.number) < minLevel) return false;
-}     else {
-      if (s.number !== course.number) return false;
+    if (course.number.endsWith("+") || course.number.includes("@")) {
+  const minLevel = parseInt(course.number.replace("+", "").replace("@", "")) * 
+    (course.number.includes("@") ? 1000 : 1);
+  if (parseInt(s.number) < minLevel) return false;
+} else {
+  if (s.number !== course.number) return false;
 }
     // Only lectures for main scheduling
     if (s.type !== "LEC") return false;
@@ -309,6 +310,7 @@ export async function POST(req: NextRequest) {
   blocked_times: BlockedTime[];
   max_credits?: number | undefined;
 } = body;
+console.log("Remaining courses received:", JSON.stringify(remaining_courses, null, 2));
 
     if (!remaining_courses || remaining_courses.length === 0) {
       return NextResponse.json(
