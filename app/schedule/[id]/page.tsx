@@ -51,8 +51,11 @@ interface SavedSchedule {
   created_at: string;
 }
 
-export default async function SchedulePage({ params }: { params: { id: string } }) {
-  const data = await redis.get<SavedSchedule>(`schedule:${params.id}`);
+export default async function SchedulePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  console.log("Looking for schedule:", id);
+  const data = await redis.get<SavedSchedule>(`schedule:${id}`);
+  console.log("Redis result:", data);
 
   if (!data) notFound();
 
