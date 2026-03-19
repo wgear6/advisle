@@ -537,9 +537,19 @@ export default function Home() {
         </main>
         {/* Footer */}
         <footer style={{ textAlign: "center", padding: "24px 16px", color: "#9ca3af", fontSize: 12 }}>
-        Advisle is a student-built tool and is not affiliated with the University of Vermont. 
-        Always verify your schedule with your academic advisor before registering.
-      </footer>
+  
+         href="https://docs.google.com/forms/d/e/1FAIpQLSeXvQyk9CIsPIAnUdSFGsLS0701bAVXFaaS-Z1wtivma_Um0g/viewform?usp=publish-editor"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ display: "inline-block", marginBottom: 12, padding: "8px 20px", background: "#2563eb", color: "#fff", borderRadius: 8, fontSize: 13, fontWeight: 600, textDecoration: "none" }}
+  >
+    💬 Give Feedback
+  </a>
+  <p style={{ margin: 0 }}>
+    Advisle is a student-built tool and is not affiliated with the University of Vermont. 
+    Always verify your schedule with your academic advisor before registering.
+  </p>
+</footer>
     </div>
   );
 }
