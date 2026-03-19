@@ -266,6 +266,8 @@ CRITICAL RULES:
 8. Spread classes across the week — avoid 4+ classes on same day
 9. For "3000+" or level requirements: pick ONE good course from available sections, not multiple
 
+IMPORTANT: When you select a real course from available_sections to satisfy a GEN_ED requirement, use that course's actual subject and number in the output — NOT "GEN_ED" or "AH1" etc. For example if ARTH 1010 satisfies an AH1 requirement, output subject: "ARTH", number: "1010", not subject: "GEN_ED", number: "AH1".
+
 Return ONLY valid JSON, no markdown:
 {
   "recommended_schedule": [
