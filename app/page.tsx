@@ -272,7 +272,15 @@ export default function Home() {
           <div style={{ width: 40, height: 1, background: "#e5e7eb", alignSelf: "center" }} />
           <Step n={3} label="View Schedule" active={step === 3} done={false} />
         </div>
-
+        {loading && (
+          <div style={{ textAlign: "center", padding: "40px 16px" }}>
+          <div style={{ width: 40, height: 40, border: "4px solid #e5e7eb", borderTop: "4px solid #2563eb", borderRadius: "50%", margin: "0 auto 16px", animation: "spin 1s linear infinite" }} />
+          <p style={{ color: "#6b7280", fontSize: 14, margin: 0 }}>
+             {step === 1 ? "Analyzing your degree audit… this takes about 30 seconds" : "Building your schedule… hang tight"}
+         </p>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+      )}
         {error && (
           <div style={{ background: "#fee2e2", border: "1px solid #fca5a5", borderRadius: 8, padding: "12px 16px", marginBottom: 16, color: "#dc2626", fontSize: 14 }}>
             {error}
