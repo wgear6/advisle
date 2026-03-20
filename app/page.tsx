@@ -91,6 +91,76 @@ function formatTime(t: string): string {
   return `${hour}:${String(m).padStart(2, "0")} ${ampm}`;
 }
 
+// ─── ICS Export ───────────────────────────────────────────────────────────────
+
+const DAY_TO_RRULE: Record<string, string> = { M: "MO", T: "TU", W: "WE", R: "TH", F: "FR" };
+const DAY_OFFSET: Record<string, number> = { M: 0, T: 1, W: 2, R: 3, F: 4 };
+
+function icsDateLocal(date: Date, timeStr: string): string {
+  const y = date.getFullYear();
+  const mo = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  const [h, m] = timeStr.split(":");
+  return `${y}${mo}${d}T${h}${m}00`;
+}
+
+function generateICS(schedule: GeneratedSchedule): string {
+  // UVM Fall 2026: Aug 31 (Mon) – Dec 11
+  const semesterStart = new Date(2026, 7, 31);
+  const untilStr = "20261212T000000Z";
+
+  const lines: string[] = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Advisle//Degree Scheduler//EN",
+    "CALSCALE:GREGORIAN",
+    "X-WR-CALNAME:Advisle Fall 2026",
+    "X-WR-TIMEZONE:America/New_York",
+  ];
+
+  for (const course of schedule.recommended_schedule) {
+    if (!course.days?.length || !course.startTime || course.startTime === "TBA") continue;
+
+    const sortedDays = [...course.days].sort((a, b) => (DAY_OFFSET[a] ?? 0) - (DAY_OFFSET[b] ?? 0));
+    const firstDate = new Date(semesterStart);
+    firstDate.setDate(semesterStart.getDate() + (DAY_OFFSET[sortedDays[0]] ?? 0));
+
+    const byday = sortedDays.map((d) => DAY_TO_RRULE[d] ?? d).join(",");
+    const location = [course.building, course.room].filter(Boolean).join(" ");
+    const description = [
+      `Instructor: ${course.instructor || "TBA"}`,
+      `CRN: ${course.crn}`,
+      `Section: ${course.section}`,
+      `Category: ${course.requirement_category}`,
+      `Credits: ${course.credits}`,
+    ].join("\\n");
+
+    lines.push("BEGIN:VEVENT");
+    lines.push(`DTSTART;TZID=America/New_York:${icsDateLocal(firstDate, course.startTime)}`);
+    lines.push(`DTEND;TZID=America/New_York:${icsDateLocal(firstDate, course.endTime)}`);
+    lines.push(`RRULE:FREQ=WEEKLY;BYDAY=${byday};UNTIL=${untilStr}`);
+    lines.push(`SUMMARY:${course.subject} ${course.number} - ${course.title}`);
+    lines.push(`DESCRIPTION:${description}`);
+    if (location) lines.push(`LOCATION:${location}`);
+    lines.push(`UID:advisle-${course.crn}-fall2026@advisle.com`);
+    lines.push("END:VEVENT");
+  }
+
+  lines.push("END:VCALENDAR");
+  return lines.join("\r\n");
+}
+
+function downloadICS(schedule: GeneratedSchedule) {
+  const content = generateICS(schedule);
+  const blob = new Blob([content], { type: "text/calendar;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "advisle-fall2026.ics";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 // ─── Components ───────────────────────────────────────────────────────────────
 
 function Step({ n, label, active, done }: { n: number; label: string; active: boolean; done: boolean }) {
@@ -457,11 +527,18 @@ export default function Home() {
                   <h2 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 700 }}>Your Recommended Schedule</h2>
                   <p style={{ margin: 0, fontSize: 14, color: "#6b7280" }}>{schedule.total_credits} credits · Fall 2026</p>
                 </div>
-                <button
-                  onClick={() => { setStep(2); setSchedule(null); setScheduleId(null); }}
-                  style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #d1d5db", background: "#fff", fontSize: 13, cursor: "pointer" }}>
-                  ← Adjust
-                </button>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button
+                    onClick={() => downloadICS(schedule)}
+                    style={{ padding: "8px 14px", borderRadius: 8, border: "none", background: "#059669", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                    Export to Calendar
+                  </button>
+                  <button
+                    onClick={() => { setStep(2); setSchedule(null); setScheduleId(null); }}
+                    style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #d1d5db", background: "#fff", fontSize: 13, cursor: "pointer" }}>
+                    ← Adjust
+                  </button>
+                </div>
               </div>
               {scheduleId && (
                 <div style={{ marginBottom: 16, padding: "10px 14px", background: "#f0fdf4", borderRadius: 8, border: "1px solid #bbf7d0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
