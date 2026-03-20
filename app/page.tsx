@@ -389,6 +389,16 @@ export default function Home() {
           <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, letterSpacing: "-0.3px" }}>Advisle</h1>
           <p style={{ margin: 0, fontSize: 12, opacity: 0.7 }}>AI-powered course scheduling for University of Vermont students</p>
         </div>
+        <a href="https://www.instagram.com/advisle?igsh=MWZoc3Z1bTU0d2kydw==" target="_blank" rel="noopener noreferrer" style={{ marginLeft: "auto", color: "#fff", opacity: 0.85, display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 500, textDecoration: "none" }}
+          onMouseEnter={e => (e.currentTarget.style.opacity = "1")}
+          onMouseLeave={e => (e.currentTarget.style.opacity = "0.85")}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+          </svg>
+          <span style={{ display: "none" }} className="sm-show">Instagram</span>
+        </a>
       </header>
 
       <main style={{ maxWidth: 800, margin: "0 auto", padding: "32px 16px" }}>
@@ -733,7 +743,17 @@ export default function Home() {
         </main>
         {/* Footer */}
         <footer style={{ textAlign: "center", padding: "24px 16px", color: "#9ca3af", fontSize: 12 }}>
-  <a href="https://docs.google.com/forms/d/e/1FAIpQLSeXvQyk9CIsPIAnUdSFGsLS0701bAVXFaaS-Z1wtivma_Um0g/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", marginBottom: 12, padding: "8px 20px", background: "#2563eb", color: "#fff", borderRadius: 8, fontSize: 13, fontWeight: 600, textDecoration: "none" }}>Give Feedback</a>
+  <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 12, marginBottom: 12 }}>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSeXvQyk9CIsPIAnUdSFGsLS0701bAVXFaaS-Z1wtivma_Um0g/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", padding: "8px 20px", background: "#2563eb", color: "#fff", borderRadius: 8, fontSize: 13, fontWeight: 600, textDecoration: "none" }}>Give Feedback</a>
+    <a href="https://www.instagram.com/advisle?igsh=MWZoc3Z1bTU0d2kydw==" target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 16px", background: "linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)", color: "#fff", borderRadius: 8, fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+      </svg>
+      Follow us
+    </a>
+  </div>
   <p style={{ margin: 0 }}>Advisle is a student-built tool and is not affiliated with the University of Vermont. Always verify your schedule with your academic advisor before registering.</p>
 </footer>
     </div>
