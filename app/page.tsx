@@ -284,7 +284,7 @@ export default function Home() {
           <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 32 }}>
             <h2 style={{ margin: "0 0 8px", fontSize: 18, fontWeight: 700, color: "#111827" }}>Upload Your Degree Audit</h2>
             <p style={{ margin: "0 0 24px", color: "#6b7280", fontSize: 14 }}>
-              Log into myUVM → Student Records → Degree Audit → Print/Export as PDF. Then upload it here.
+              Log into myUVM → Student Records → Degree Audit. On the audit page, click the <strong>🖨️ print icon</strong> in the top right corner → Save as PDF. Then upload that file here.
             </p>
 
             <div
