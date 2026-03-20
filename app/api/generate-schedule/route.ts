@@ -92,7 +92,7 @@ function parseCredits(s: string): number {
 
 let courseCache: CourseSection[] | null = null;
 
-function loadCourses(): CourseSection[] {
+export function loadCourses(): CourseSection[] {
   if (courseCache) return courseCache;
 
   const csvPath = path.join(process.cwd(), "data", "curr_enroll_202609.csv");
@@ -137,13 +137,13 @@ function loadCourses(): CourseSection[] {
 
 // ─── Time Helpers ─────────────────────────────────────────────────────────────
 
-function timeToMin(t: string): number {
+export function timeToMin(t: string): number {
   if (!t || t === "TBA") return -1;
   const [h, m] = t.split(":").map(Number);
   return h * 60 + m;
 }
 
-function hasTimeConflict(s: CourseSection, blocked: BlockedTime[]): boolean {
+export function hasTimeConflict(s: CourseSection, blocked: BlockedTime[]): boolean {
   if (!s.startTime || s.startTime === "TBA") return false;
   const sStart = timeToMin(s.startTime);
   const sEnd = timeToMin(s.endTime);
@@ -156,7 +156,7 @@ function hasTimeConflict(s: CourseSection, blocked: BlockedTime[]): boolean {
   return false;
 }
 
-function hasScheduleConflict(s: CourseSection, scheduled: CourseSection[]): boolean {
+export function hasScheduleConflict(s: CourseSection, scheduled: CourseSection[]): boolean {
   for (const ex of scheduled) {
     for (const day of s.days) {
       if (!ex.days.includes(day)) continue;

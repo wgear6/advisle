@@ -52,6 +52,21 @@ interface RMPRating {
   numRatings: number;
 }
 
+interface SectionOption {
+  subject: string;
+  number: string;
+  title: string;
+  crn: string;
+  section: string;
+  days: string[];
+  startTime: string;
+  endTime: string;
+  instructor: string;
+  credits: number;
+  building: string;
+  room: string;
+}
+
 interface GeneratedSchedule {
   recommended_schedule: ScheduledCourse[];
   total_credits: number;
@@ -197,6 +212,11 @@ export default function Home() {
   const [dragOver, setDragOver] = useState(false);
   const [targetCredits, setTargetCredits] = useState(15);
 
+  // Section switcher state
+  const [switchingCrn, setSwitchingCrn] = useState<string | null>(null);
+  const [altSections, setAltSections] = useState<Record<string, SectionOption[]>>({});
+  const [loadingAlt, setLoadingAlt] = useState<string | null>(null);
+
   // Blocked time form state
   const [blockDay, setBlockDay] = useState("M");
   const [blockStart, setBlockStart] = useState("09:00");
@@ -308,6 +328,51 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // ── Section Switcher ──
+
+  const openSectionSwitcher = async (course: ScheduledCourse, index: number) => {
+    if (switchingCrn === course.crn) {
+      setSwitchingCrn(null);
+      return;
+    }
+    setSwitchingCrn(course.crn);
+    if (altSections[course.crn]) return;
+
+    setLoadingAlt(course.crn);
+    try {
+      const otherScheduled = schedule!.recommended_schedule.filter((_, i) => i !== index);
+      const res = await fetch("/api/sections", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          subject: course.subject,
+          number: course.number,
+          blocked_times: blockedTimes,
+          other_scheduled: otherScheduled,
+        }),
+      });
+      const data = await res.json();
+      setAltSections((prev) => ({ ...prev, [course.crn]: data.sections ?? [] }));
+    } catch {
+      setAltSections((prev) => ({ ...prev, [course.crn]: [] }));
+    } finally {
+      setLoadingAlt(null);
+    }
+  };
+
+  const swapSection = (courseIndex: number, newSection: SectionOption) => {
+    if (!schedule) return;
+    const currentCourse = schedule.recommended_schedule[courseIndex];
+    const updated = [...schedule.recommended_schedule];
+    updated[courseIndex] = {
+      ...newSection,
+      requirement_category: currentCourse.requirement_category,
+    };
+    setSchedule({ ...schedule, recommended_schedule: updated });
+    setSwitchingCrn(null);
+    setAltSections({});
   };
 
   // ─── Render ───────────────────────────────────────────────────────────────
@@ -586,13 +651,59 @@ export default function Home() {
                           </span>
                           <span style={{ color: "#6b7280" }}>CRN: {c.crn}</span>
                         </div>
-                        <div style={{ marginTop: 6 }}>
+                        <div style={{ marginTop: 8, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                           <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 99, background: (CATEGORY_COLORS[c.requirement_category] ?? "#6b7280") + "15", color: CATEGORY_COLORS[c.requirement_category] ?? "#6b7280", fontWeight: 600 }}>
                             {c.requirement_category}
                           </span>
+                          <button
+                            onClick={() => openSectionSwitcher(c, i)}
+                            style={{ fontSize: 12, padding: "3px 10px", borderRadius: 6, border: "1px solid #d1d5db", background: switchingCrn === c.crn ? "#eff6ff" : "#fff", color: switchingCrn === c.crn ? "#2563eb" : "#6b7280", cursor: "pointer", fontWeight: 500 }}>
+                            {switchingCrn === c.crn ? "▲ Close" : "⇄ Switch section"}
+                          </button>
                         </div>
                       </div>
                     </div>
+
+                    {/* Section picker */}
+                    {switchingCrn === c.crn && (
+                      <div style={{ borderTop: "1px solid #f1f5f9", background: "#f8fafc", padding: "12px 16px" }}>
+                        {loadingAlt === c.crn ? (
+                          <p style={{ margin: 0, fontSize: 13, color: "#6b7280" }}>Loading sections…</p>
+                        ) : !altSections[c.crn] || altSections[c.crn].length === 0 ? (
+                          <p style={{ margin: 0, fontSize: 13, color: "#6b7280" }}>No other sections available without conflicts.</p>
+                        ) : (
+                          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                            <p style={{ margin: "0 0 8px", fontSize: 12, fontWeight: 600, color: "#374151", textTransform: "uppercase", letterSpacing: "0.05em" }}>Available sections</p>
+                            {altSections[c.crn].map((sec) => (
+                              <div
+                                key={sec.crn}
+                                onClick={() => swapSection(i, sec)}
+                                style={{
+                                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                                  padding: "8px 12px", borderRadius: 8, border: `1px solid ${sec.crn === c.crn ? "#2563eb" : "#e5e7eb"}`,
+                                  background: sec.crn === c.crn ? "#eff6ff" : "#fff",
+                                  cursor: sec.crn === c.crn ? "default" : "pointer",
+                                  gap: 12,
+                                }}>
+                                <div style={{ display: "flex", gap: 12, flexWrap: "wrap", flex: 1 }}>
+                                  <span style={{ fontWeight: 700, fontSize: 13, color: "#1e3a5f", minWidth: 28 }}>§{sec.section}</span>
+                                  <span style={{ fontSize: 13, color: "#374151" }}>
+                                    {sec.days.map((d) => DAY_LABELS[d]?.slice(0, 3)).join(", ")} · {formatTime(sec.startTime)} – {formatTime(sec.endTime)}
+                                  </span>
+                                  <span style={{ fontSize: 13, color: "#6b7280" }}>{sec.instructor || "TBA"}</span>
+                                  <span style={{ fontSize: 12, color: "#9ca3af" }}>CRN {sec.crn}</span>
+                                </div>
+                                {sec.crn === c.crn ? (
+                                  <span style={{ fontSize: 12, color: "#2563eb", fontWeight: 600, flexShrink: 0 }}>Current</span>
+                                ) : (
+                                  <span style={{ fontSize: 12, color: "#2563eb", fontWeight: 600, flexShrink: 0 }}>Select →</span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
