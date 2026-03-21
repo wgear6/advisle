@@ -179,6 +179,22 @@ export function hasScheduleConflict(s: CourseSection, scheduled: CourseSection[]
   return false;
 }
 
+// ─── Prereq Checker ───────────────────────────────────────────────────────────
+
+export function prereqsSatisfied(prereqs: string, doneKeys: Set<string>): boolean {
+  if (!prereqs || prereqs.trim() === "") return true;
+  const codes = [...prereqs.matchAll(/\b([A-Z]{2,5})\s+(\d{3,4})\b/g)].map(
+    (m) => `${m[1]} ${m[2]}`
+  );
+  if (codes.length === 0) return true;
+  // OR logic: at least one option must be satisfied
+  if (prereqs.toLowerCase().includes(" or ")) {
+    return codes.some((c) => doneKeys.has(c));
+  }
+  // AND logic: all must be satisfied
+  return codes.every((c) => doneKeys.has(c));
+}
+
 // ─── Find Available Sections ──────────────────────────────────────────────────
 
 export function findAvailableSections(
@@ -440,6 +456,10 @@ schedule.total_credits = validSchedule.reduce((sum: number, c: {credits: number}
       const scheduledKeys = new Set(
         validSchedule.map((c: { subject: string; number: string }) => `${c.subject.toUpperCase()} ${c.number}`)
       );
+      const doneKeys = new Set([
+        ...completed_courses.map((c) => `${c.subject.toUpperCase()} ${c.number}`),
+        ...in_progress_courses.map((c) => `${c.subject.toUpperCase()} ${c.number}`),
+      ]);
       for (const course of remaining_courses) {
         if (schedule.total_credits >= target_credits) break;
         const key = `${course.subject.toUpperCase()} ${course.number}`;
@@ -448,7 +468,7 @@ schedule.total_credits = validSchedule.reduce((sum: number, c: {credits: number}
           course, allSections, blocked_times,
           validSchedule as CourseSection[],
           in_progress_courses, completed_courses
-        );
+        ).filter((s) => prereqsSatisfied(s.prereqs, doneKeys));
         if (candidates.length > 0) {
           const best = candidates.find((s) => !s.isFull) ?? candidates[0];
           const enrollment = crnEnrollmentMap.get(best.crn);

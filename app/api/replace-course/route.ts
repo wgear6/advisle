@@ -3,6 +3,7 @@ import {
   loadCourses,
   hasTimeConflict,
   hasScheduleConflict,
+  prereqsSatisfied,
   CourseSection,
   BlockedTime,
   RemainingCourse,
@@ -52,6 +53,10 @@ export async function POST(req: NextRequest) {
       ...in_progress_courses.map((c) => `${c.subject.toUpperCase()} ${c.number}`),
       ...completed_courses.map((c) => `${c.subject.toUpperCase()} ${c.number}`),
     ]);
+    const prereqDoneKeys = new Set([
+      ...completed_courses.map((c) => `${c.subject.toUpperCase()} ${c.number}`),
+      ...in_progress_courses.map((c) => `${c.subject.toUpperCase()} ${c.number}`),
+    ]);
 
     for (const course of remaining_courses) {
       const key = `${course.subject.toUpperCase()} ${course.number}`;
@@ -79,6 +84,7 @@ export async function POST(req: NextRequest) {
         if (!s.startTime || s.startTime === "TBA") return false;
         if (hasTimeConflict(s, blocked_times)) return false;
         if (hasScheduleConflict(s, scheduledSections)) return false;
+        if (!prereqsSatisfied(s.prereqs, prereqDoneKeys)) return false;
 
         return true;
       });
