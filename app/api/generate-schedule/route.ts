@@ -276,7 +276,7 @@ async function generateScheduleWithAI(
         role: "system",
         content: `You are a UVM academic advisor helping students build their Fall 2026 semester schedule.
 
-Given a list of courses a student still needs and the available sections, recommend the BEST schedule of 4-5 courses, 12-16 credits.
+Given a list of courses a student still needs and the available sections, recommend the BEST schedule targeting ${targetCredits} credits (typically ${Math.ceil(targetCredits / 3)}-${Math.ceil((targetCredits + 4) / 3)} courses depending on credit values).
 ${yearContext ? `\nSTUDENT YEAR: ${yearContext}` : ""}${major ? `\nSTUDENT MAJOR: ${major}` : ""}
 
 CRITICAL RULES:
