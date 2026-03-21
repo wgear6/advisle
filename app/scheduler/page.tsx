@@ -668,6 +668,11 @@ export default function Home() {
                   </button>
                 </div>
               </div>
+              {schedule.total_credits < targetCredits && (
+                <div style={{ marginBottom: 16, padding: "10px 14px", background: "#fff7ed", borderRadius: 8, border: "1px solid #fed7aa", fontSize: 13, color: "#c2410c" }}>
+                  <strong>Heads up:</strong> We could only find {schedule.total_credits} credits of non-conflicting courses — {targetCredits - schedule.total_credits} cr short of your {targetCredits}-credit goal. This usually means limited section availability for your remaining requirements. Try removing some blocked times or use the notes field to give the AI more flexibility.
+                </div>
+              )}
               {scheduleId && (
                 <div style={{ marginBottom: 16, padding: "10px 14px", background: "#f0fdf4", borderRadius: 8, border: "1px solid #bbf7d0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
                   <span style={{ fontSize: 13, color: "#166534" }}>🔗 Share this schedule:</span>
