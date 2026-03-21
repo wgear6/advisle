@@ -289,7 +289,7 @@ CRITICAL RULES:
    - Example: MATH 2522 requires MATH 1248. If MATH 1248 is in remaining_courses but NOT in in_progress_courses, skip MATH 2522. But if MATH 1248 IS in in_progress_courses, MATH 2522 is fine to schedule.
    - Be lenient with transfer credits — if unsure, include the course
 6. YEAR-APPROPRIATE COURSES: ${yearContext || "Use judgment based on credits completed."} Do NOT schedule capstone, senior thesis, or courses clearly labeled as senior-only for freshmen or sophomores. Do not schedule 4000+ level courses as a core requirement for freshmen.
-7. The student wants ${targetCredits} credits. To account for potential conflicts being removed after scheduling, aim for ${targetCredits + 4} credits initially by selecting MORE courses than needed. This buffer ensures the final schedule hits the target even if 1-2 courses get removed for conflicts.
+7. CREDIT TARGET: The student wants ${targetCredits} credits in their FINAL schedule. A post-processing step will remove any courses with time conflicts, so you MUST over-select. Aim for AT LEAST ${Math.round(targetCredits * 1.5)} credits in your initial list — this is non-negotiable. For example, if the target is 18, return courses totaling ~27 credits so that even after 2-3 courses are removed for conflicts, the final schedule still hits 18. Count your credits before returning and add more courses if you are under ${Math.round(targetCredits * 1.5)}.
 8. Only include courses that appear in available_sections with a real CRN
 9. Prioritize: Major Core > Major Elective > General Education > Free Elective
 10. Spread classes across the week — avoid 4+ classes on same day
