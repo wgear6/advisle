@@ -42,6 +42,10 @@ interface ScheduledCourse {
   building: string;
   room: string;
   requirement_category: string;
+  maxEnrollment?: number;
+  currentEnrollment?: number;
+  seatsAvailable?: number;
+  isFull?: boolean;
 }
 
 interface RMPRating {
@@ -65,6 +69,10 @@ interface SectionOption {
   credits: number;
   building: string;
   room: string;
+  maxEnrollment?: number;
+  currentEnrollment?: number;
+  seatsAvailable?: number;
+  isFull?: boolean;
 }
 
 interface GeneratedSchedule {
@@ -97,6 +105,14 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function seatsBadge(max?: number, current?: number, seats?: number): { label: string; bg: string; color: string } | null {
+  if (!max || max === 0) return null;
+  if (seats === 0) return { label: "Full", bg: "#fee2e2", color: "#dc2626" };
+  const pctFull = current! / max;
+  if (pctFull >= 0.75) return { label: `${seats} seats left`, bg: "#fff7ed", color: "#c2410c" };
+  return { label: `${seats} / ${max} seats`, bg: "#f0fdf4", color: "#15803d" };
+}
 
 function formatTime(t: string): string {
   if (!t) return "";
@@ -660,6 +676,7 @@ export default function Home() {
                             )}
                           </span>
                           <span style={{ color: "#6b7280" }}>CRN: {c.crn}</span>
+                          {(() => { const b = seatsBadge(c.maxEnrollment, c.currentEnrollment, c.seatsAvailable); return b ? <span style={{ padding: "1px 8px", borderRadius: 99, fontSize: 12, fontWeight: 600, background: b.bg, color: b.color }}>{b.label}</span> : null; })()}
                         </div>
                         <div style={{ marginTop: 8, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                           <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 99, background: (CATEGORY_COLORS[c.requirement_category] ?? "#6b7280") + "15", color: CATEGORY_COLORS[c.requirement_category] ?? "#6b7280", fontWeight: 600 }}>
@@ -702,6 +719,7 @@ export default function Home() {
                                   </span>
                                   <span style={{ fontSize: 13, color: "#6b7280" }}>{sec.instructor || "TBA"}</span>
                                   <span style={{ fontSize: 12, color: "#9ca3af" }}>CRN {sec.crn}</span>
+                                  {(() => { const b = seatsBadge(sec.maxEnrollment, sec.currentEnrollment, sec.seatsAvailable); return b ? <span style={{ padding: "1px 6px", borderRadius: 99, fontSize: 11, fontWeight: 600, background: b.bg, color: b.color }}>{b.label}</span> : null; })()}
                                 </div>
                                 {sec.crn === c.crn ? (
                                   <span style={{ fontSize: 12, color: "#2563eb", fontWeight: 600, flexShrink: 0 }}>Current</span>

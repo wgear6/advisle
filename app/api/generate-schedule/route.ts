@@ -44,6 +44,9 @@ export interface CourseSection {
   room: string;
   instructor: string;
   isFull: boolean;
+  maxEnrollment: number;
+  currentEnrollment: number;
+  seatsAvailable: number;
   attributes: string[];
   prereqs: string;
 }
@@ -112,6 +115,9 @@ export function loadCourses(): CourseSection[] {
     })
     .map((r): CourseSection => {
       const credits = parseCredits(r.Credits ?? "");
+      const maxEnrollment = parseInt(r["Max Enrollment"] ?? "0") || 0;
+      const currentEnrollment = parseInt(r["Current Enrollment"] ?? "0") || 0;
+      const seatsAvailable = Math.max(0, maxEnrollment - currentEnrollment);
       return {
         subject: r.Subj?.trim() ?? "",
         number: r["#"]?.trim() ?? "",
@@ -126,7 +132,10 @@ export function loadCourses(): CourseSection[] {
         building: r.Bldg?.trim() ?? "",
         room: r.Room?.trim() ?? "",
         instructor: r.Instructor?.trim() ?? "",
-        isFull: false, // enrollment data not reliable in scraped CSV
+        isFull: maxEnrollment > 0 && seatsAvailable === 0,
+        maxEnrollment,
+        currentEnrollment,
+        seatsAvailable,
         attributes: (r.Attr ?? "").split("|").map((a) => a.trim()).filter(Boolean),
         prereqs: r.Prerequisites?.trim() ?? "",
       };
@@ -358,6 +367,17 @@ export async function POST(req: NextRequest) {
     const cleaned = rawResponse.replace(/```json|```/g, "").trim();
     const schedule = JSON.parse(cleaned);
 
+    // Build a CRN → enrollment lookup from real CSV data
+    const crnEnrollmentMap = new Map<string, { maxEnrollment: number; currentEnrollment: number; seatsAvailable: number; isFull: boolean }>();
+    for (const s of allSections) {
+      crnEnrollmentMap.set(s.crn, {
+        maxEnrollment: s.maxEnrollment,
+        currentEnrollment: s.currentEnrollment,
+        seatsAvailable: s.seatsAvailable,
+        isFull: s.isFull,
+      });
+    }
+
     // Post-process: remove any conflicting courses GPT snuck in
 const validSchedule: typeof schedule.recommended_schedule = [];
 for (const course of schedule.recommended_schedule) {
@@ -367,7 +387,7 @@ for (const course of schedule.recommended_schedule) {
   const startMin = timeToMin(course.startTime);
   const endMin = timeToMin(course.endTime);
 
-  const hasConflict = validSchedule.some(existing => {
+  const hasConflict = validSchedule.some((existing: typeof course) => {
     const existingDays: string[] = Array.isArray(existing.days)
       ? existing.days
       : (existing.days ?? "").split("").filter((d: string) => ["M","T","W","R","F"].includes(d));
@@ -378,7 +398,10 @@ for (const course of schedule.recommended_schedule) {
     return !(endMin <= eStart || startMin >= eEnd);
   });
 
-  if (!hasConflict) validSchedule.push(course);
+  if (!hasConflict) {
+    const enrollment = crnEnrollmentMap.get(course.crn);
+    validSchedule.push(enrollment ? { ...course, ...enrollment } : course);
+  }
 }
 schedule.recommended_schedule = validSchedule;
 schedule.total_credits = validSchedule.reduce((sum: number, c: {credits: number}) => sum + (c.credits || 0), 0);
