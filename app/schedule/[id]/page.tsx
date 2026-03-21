@@ -68,7 +68,7 @@ export default async function SchedulePage({ params }: { params: Promise<{ id: s
     <div style={{ minHeight: "100vh", background: "#f8fafc", fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
       {/* Header */}
       <header style={{ background: "#1e3a5f", color: "#fff", padding: "20px 32px", display: "flex", alignItems: "center", gap: 16 }}>
-        <a href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 16 }}>
+        <a href="/scheduler" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 16 }}>
           <div style={{ width: 36, height: 36, background: "#f8b400", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 18, color: "#1e3a5f" }}>
             A
           </div>
@@ -94,7 +94,7 @@ export default async function SchedulePage({ params }: { params: Promise<{ id: s
               </p>
             </div>
             <a
-              href="/"
+              href="/scheduler"
               style={{ padding: "8px 14px", borderRadius: 8, border: "none", background: "#2563eb", color: "#fff", fontWeight: 600, fontSize: 13, cursor: "pointer", textDecoration: "none" }}
             >
               Make My Own →
