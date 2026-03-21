@@ -236,6 +236,10 @@ export default function Home() {
   // Custom notes
   const [customNotes, setCustomNotes] = useState("");
 
+  // Course removal / replacement
+  const [excludedCourses, setExcludedCourses] = useState<{ subject: string; number: string }[]>([]);
+  const [replacingCourse, setReplacingCourse] = useState(false);
+
   // Blocked time form state
   const [blockDay, setBlockDay] = useState("M");
   const [blockStart, setBlockStart] = useState("09:00");
@@ -400,6 +404,50 @@ export default function Home() {
     setSchedule({ ...schedule, recommended_schedule: updated });
     setSwitchingCrn(null);
     setAltSections({});
+  };
+
+  const removeCourseFromSchedule = async (courseIndex: number) => {
+    if (!schedule || !audit) return;
+    const removed = schedule.recommended_schedule[courseIndex];
+    const newExcluded = [...excludedCourses, { subject: removed.subject, number: removed.number }];
+
+    const newSchedule = schedule.recommended_schedule.filter((_, i) => i !== courseIndex);
+    setSchedule({
+      ...schedule,
+      recommended_schedule: newSchedule,
+      total_credits: newSchedule.reduce((sum, c) => sum + c.credits, 0),
+    });
+    setExcludedCourses(newExcluded);
+    setSwitchingCrn(null);
+    setAltSections({});
+    setReplacingCourse(true);
+
+    try {
+      const res = await fetch("/api/replace-course", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          current_schedule: newSchedule,
+          remaining_courses: audit.remaining_courses,
+          blocked_times: blockedTimes,
+          excluded_courses: newExcluded,
+          in_progress_courses: audit.in_progress_courses ?? [],
+          completed_courses: audit.completed_courses ?? [],
+        }),
+      });
+      const data = await res.json();
+      if (data.replacement) {
+        setSchedule((prev) => {
+          if (!prev) return prev;
+          const updated = [...prev.recommended_schedule, data.replacement];
+          return { ...prev, recommended_schedule: updated, total_credits: updated.reduce((sum, c) => sum + c.credits, 0) };
+        });
+      }
+    } catch {
+      // silently fail — course was already removed
+    } finally {
+      setReplacingCourse(false);
+    }
   };
 
   // ─── Render ───────────────────────────────────────────────────────────────
@@ -700,7 +748,17 @@ export default function Home() {
                             <span style={{ fontWeight: 700, color: "#1e3a5f", fontSize: 15 }}>{c.subject} {c.number}</span>
                             <span style={{ fontSize: 15, marginLeft: 8, color: "#1f2937" }}>{c.title}</span>
                           </div>
-                          <span style={{ fontSize: 13, color: "#6b7280", flexShrink: 0, marginLeft: 12 }}>{c.credits} credits</span>
+                          <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, marginLeft: 12 }}>
+                            <span style={{ fontSize: 13, color: "#6b7280" }}>{c.credits} credits</span>
+                            <button
+                              onClick={() => removeCourseFromSchedule(i)}
+                              disabled={replacingCourse}
+                              title="Remove and find replacement"
+                              style={{ background: "none", border: "none", cursor: replacingCourse ? "not-allowed" : "pointer", color: "#d1d5db", fontSize: 18, lineHeight: 1, padding: "0 2px" }}
+                              onMouseEnter={e => { if (!replacingCourse) e.currentTarget.style.color = "#dc2626"; }}
+                              onMouseLeave={e => { e.currentTarget.style.color = "#d1d5db"; }}
+                            >×</button>
+                          </div>
                         </div>
                         <div style={{ display: "flex", gap: 16, flexWrap: "wrap", fontSize: 13, color: "#4b5563" }}>
                           <span>📅 {c.days.map((d) => DAY_LABELS[d]?.slice(0, 3)).join(", ")} · {formatTime(c.startTime)} – {formatTime(c.endTime)}</span>
@@ -777,6 +835,13 @@ export default function Home() {
                   </div>
                 ))}
               </div>
+
+              {replacingCourse && (
+                <div style={{ marginTop: 10, padding: "10px 14px", background: "#eff6ff", borderRadius: 8, border: "1px solid #bfdbfe", fontSize: 13, color: "#1d4ed8", display: "flex", alignItems: "center", gap: 10 }}>
+                  <div style={{ width: 14, height: 14, border: "2px solid #bfdbfe", borderTop: "2px solid #2563eb", borderRadius: "50%", animation: "spin 1s linear infinite", flexShrink: 0 }} />
+                  Finding a replacement course…
+                </div>
+              )}
 
               {schedule.notes && (
                 <div style={{ marginTop: 16, padding: "12px 16px", background: "#f0f9ff", borderRadius: 8, border: "1px solid #bae6fd", fontSize: 14, color: "#0369a1" }}>
