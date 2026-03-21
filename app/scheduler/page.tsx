@@ -233,6 +233,9 @@ export default function Home() {
   const [altSections, setAltSections] = useState<Record<string, SectionOption[]>>({});
   const [loadingAlt, setLoadingAlt] = useState<string | null>(null);
 
+  // Custom notes
+  const [customNotes, setCustomNotes] = useState("");
+
   // Blocked time form state
   const [blockDay, setBlockDay] = useState("M");
   const [blockStart, setBlockStart] = useState("09:00");
@@ -290,6 +293,11 @@ export default function Home() {
     setBlockedTimes((prev) => prev.filter((_, idx) => idx !== i));
   };
 
+  const removeCourse = (i: number) => {
+    if (!audit) return;
+    setAudit({ ...audit, remaining_courses: audit.remaining_courses.filter((_, idx) => idx !== i) });
+  };
+
   // ── Step 3: Generate Schedule ──
 
   const generateSchedule = async () => {
@@ -306,6 +314,9 @@ export default function Home() {
           in_progress_courses: audit.in_progress_courses ?? [],
           blocked_times: blockedTimes,
           target_credits: targetCredits,
+          credits_completed: audit.credits_completed ?? null,
+          major: audit.major ?? null,
+          custom_notes: customNotes,
         }),
       });
       if (!res.ok) throw new Error("Failed to generate schedule");
@@ -519,6 +530,9 @@ export default function Home() {
                 {audit.student_name ? `${audit.student_name}'s` : "Your"} Remaining Courses
               </h2>
               {audit.major && <p style={{ margin: "0 0 12px", color: "#6b7280", fontSize: 14 }}>Major: <strong>{audit.major}</strong></p>}
+              <p style={{ margin: "0 0 10px", fontSize: 13, color: "#6b7280" }}>
+                Remove any courses you{"'"}ve already taken, had waived, or no longer need.
+              </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {audit.remaining_courses.map((c, i) => (
                   <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: "#f8fafc", borderRadius: 8, border: "1px solid #f1f5f9" }}>
@@ -528,8 +542,17 @@ export default function Home() {
                       {c.requirement_category}
                     </span>
                     <span style={{ fontSize: 13, color: "#6b7280", minWidth: 50, textAlign: "right" }}>{c.credits} cr</span>
+                    <button onClick={() => removeCourse(i)} title="Remove this course"
+                      style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af", fontSize: 18, padding: "0 2px", lineHeight: 1, flexShrink: 0 }}
+                      onMouseEnter={e => (e.currentTarget.style.color = "#dc2626")}
+                      onMouseLeave={e => (e.currentTarget.style.color = "#9ca3af")}>
+                      ×
+                    </button>
                   </div>
                 ))}
+                {audit.remaining_courses.length === 0 && (
+                  <p style={{ fontSize: 13, color: "#9ca3af", fontStyle: "italic" }}>No remaining courses — all requirements satisfied!</p>
+                )}
               </div>
             </div>
 
@@ -594,6 +617,20 @@ export default function Home() {
             </div>
           </div>
             
+            <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+              <h2 style={{ margin: "0 0 4px", fontSize: 18, fontWeight: 700 }}>Anything else to know?</h2>
+              <p style={{ margin: "0 0 12px", fontSize: 14, color: "#6b7280" }}>
+                Tell the AI about special circumstances — e.g. "I'm currently taking CALC II so CALC III prereq is satisfied", "I transferred in CS 101", "I want to avoid early morning classes", etc.
+              </p>
+              <textarea
+                value={customNotes}
+                onChange={(e) => setCustomNotes(e.target.value)}
+                placeholder="Optional: any notes for the AI scheduler…"
+                rows={3}
+                style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #d1d5db", fontSize: 14, color: "#111827", resize: "vertical", boxSizing: "border-box", fontFamily: "inherit" }}
+              />
+            </div>
+
             <button
               onClick={generateSchedule}
               disabled={loading}

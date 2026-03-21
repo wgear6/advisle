@@ -241,7 +241,10 @@ async function generateScheduleWithAI(
   blockedTimes: BlockedTime[],
   completedCourses: SimpleCourse[],
   inProgressCourses: SimpleCourse[],
-  targetCredits: number = 15
+  targetCredits: number = 15,
+  creditsCompleted: number | null = null,
+  major: string | null = null,
+  customNotes: string = ""
 ): Promise<string> {
   const context = {
     remaining_courses: remainingCourses,
@@ -250,7 +253,20 @@ async function generateScheduleWithAI(
     completed_courses: completedCourses,
     in_progress_courses: inProgressCourses,
     target_credits: targetCredits,
+    credits_completed: creditsCompleted,
+    major,
+    custom_notes: customNotes || undefined,
   };
+
+  const yearContext = creditsCompleted !== null
+    ? creditsCompleted < 30
+      ? "The student is a FRESHMAN (fewer than 30 credits completed)."
+      : creditsCompleted < 60
+        ? "The student is a SOPHOMORE (30–59 credits completed)."
+        : creditsCompleted < 90
+          ? "The student is a JUNIOR (60–89 credits completed)."
+          : "The student is a SENIOR (90+ credits completed)."
+    : "";
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o",
@@ -261,21 +277,24 @@ async function generateScheduleWithAI(
         content: `You are a UVM academic advisor helping students build their Fall 2026 semester schedule.
 
 Given a list of courses a student still needs and the available sections, recommend the BEST schedule of 4-5 courses, 12-16 credits.
+${yearContext ? `\nSTUDENT YEAR: ${yearContext}` : ""}${major ? `\nSTUDENT MAJOR: ${major}` : ""}
 
 CRITICAL RULES:
 1. NEVER schedule a course that appears in in_progress_courses — these are already being taken this semester
 2. NEVER schedule a course that appears in completed_courses — already done
 3. NEVER schedule two courses that share any day AND have overlapping times. Before returning your answer, go through every pair of courses and verify they don't conflict. Here is how to check: if Course A is on days ["T","R"] from 8:30-9:45, then NO other course can be on T or R between 8:30-9:45. Check every single pair. If you find a conflict, remove the lower priority course and replace it with a different section or different course that fits.
 4. For OR alternatives (e.g. "MATH 2522 or 2544" listed as one entry): pick ONE section only, never both
-5. PREREQUISITE CHECK: Use your knowledge of UVM prereqs AND the completed_courses list:
-   - If a course requires a prereq that is still in remaining_courses (not yet taken), DO NOT schedule it
-   - Example: MATH 2522 requires MATH 1248. If MATH 1248 is in remaining_courses, skip MATH 2522
+5. PREREQUISITE CHECK: Use your knowledge of UVM prereqs AND the completed_courses list. IMPORTANT: courses in in_progress_courses are being taken RIGHT NOW and count as satisfied prerequisites for next semester — treat them exactly like completed_courses when checking prereqs.
+   - If a course requires a prereq that is still in remaining_courses AND not in in_progress_courses, DO NOT schedule it
+   - Example: MATH 2522 requires MATH 1248. If MATH 1248 is in remaining_courses but NOT in in_progress_courses, skip MATH 2522. But if MATH 1248 IS in in_progress_courses, MATH 2522 is fine to schedule.
    - Be lenient with transfer credits — if unsure, include the course
-6. The student wants ${targetCredits} credits. To account for potential conflicts being removed after scheduling, aim for ${targetCredits + 4} credits initially by selecting MORE courses than needed. This buffer ensures the final schedule hits the target even if 1-2 courses get removed for conflicts.
-7. Only include courses that appear in available_sections with a real CRN
-8. Prioritize: Major Core > Major Elective > General Education > Free Elective
-9. Spread classes across the week — avoid 4+ classes on same day
-10. For "3000+" or level requirements: pick ONE good course from available sections, not multiple
+6. YEAR-APPROPRIATE COURSES: ${yearContext || "Use judgment based on credits completed."} Do NOT schedule capstone, senior thesis, or courses clearly labeled as senior-only for freshmen or sophomores. Do not schedule 4000+ level courses as a core requirement for freshmen.
+7. The student wants ${targetCredits} credits. To account for potential conflicts being removed after scheduling, aim for ${targetCredits + 4} credits initially by selecting MORE courses than needed. This buffer ensures the final schedule hits the target even if 1-2 courses get removed for conflicts.
+8. Only include courses that appear in available_sections with a real CRN
+9. Prioritize: Major Core > Major Elective > General Education > Free Elective
+10. Spread classes across the week — avoid 4+ classes on same day
+11. For "3000+" or level requirements: pick ONE good course from available sections, not multiple
+${customNotes ? `\nSTUDENT NOTES (read carefully and follow): ${customNotes}` : ""}
 
 IMPORTANT: When you select a real course from available_sections to satisfy a GEN_ED requirement, use that course's actual subject and number in the output — NOT "GEN_ED" or "AH1" etc. For example if ARTH 1010 satisfies an AH1 requirement, output subject: "ARTH", number: "1010", not subject: "GEN_ED", number: "AH1".
 
@@ -324,12 +343,18 @@ export async function POST(req: NextRequest) {
       in_progress_courses = [],
       blocked_times = [],
       target_credits = 15,
+      credits_completed = null,
+      major = null,
+      custom_notes = "",
 }: {
       remaining_courses: RemainingCourse[];
       completed_courses: SimpleCourse[];
       in_progress_courses: SimpleCourse[];
       blocked_times: BlockedTime[];
       target_credits?: number;
+      credits_completed?: number | null;
+      major?: string | null;
+      custom_notes?: string;
 } = body;
 
     if (!remaining_courses || remaining_courses.length === 0) {
@@ -361,7 +386,10 @@ export async function POST(req: NextRequest) {
       blocked_times,
       completed_courses,
       in_progress_courses,
-      target_credits
+      target_credits,
+      credits_completed,
+      major,
+      custom_notes
     );
 
     const cleaned = rawResponse.replace(/```json|```/g, "").trim();
