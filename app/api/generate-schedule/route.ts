@@ -181,7 +181,7 @@ export function hasScheduleConflict(s: CourseSection, scheduled: CourseSection[]
 
 // ─── Find Available Sections ──────────────────────────────────────────────────
 
-function findAvailableSections(
+export function findAvailableSections(
   course: RemainingCourse,
   allSections: CourseSection[],
   blocked: BlockedTime[],
@@ -190,6 +190,7 @@ function findAvailableSections(
   completedCourses: SimpleCourse[]
 ): CourseSection[] {
   const allDone = [...inProgressCourses, ...completedCourses];
+  const allDoneKeys = new Set(allDone.map((d) => `${d.subject.toUpperCase()} ${d.number}`));
 
   return allSections.filter((s) => {
     // Subject must match (handle GEN_ED separately)
@@ -221,7 +222,7 @@ function findAvailableSections(
     if (!s.startTime || s.startTime === "TBA") return false;
 
     // Skip courses already in-progress or completed
-    if (allDone.some((d) => d.subject === s.subject && d.number === s.number)) return false;
+    if (allDoneKeys.has(`${s.subject.toUpperCase()} ${s.number}`)) return false;
 
     // No blocked time conflict
     if (hasTimeConflict(s, blocked)) return false;
@@ -433,6 +434,32 @@ for (const course of schedule.recommended_schedule) {
 }
 schedule.recommended_schedule = validSchedule;
 schedule.total_credits = validSchedule.reduce((sum: number, c: {credits: number}) => sum + (c.credits || 0), 0);
+
+    // Top-up: if still under target, greedily add more courses
+    if (schedule.total_credits < target_credits) {
+      const scheduledKeys = new Set(
+        validSchedule.map((c: { subject: string; number: string }) => `${c.subject.toUpperCase()} ${c.number}`)
+      );
+      for (const course of remaining_courses) {
+        if (schedule.total_credits >= target_credits) break;
+        const key = `${course.subject.toUpperCase()} ${course.number}`;
+        if (scheduledKeys.has(key)) continue;
+        const candidates = findAvailableSections(
+          course, allSections, blocked_times,
+          validSchedule as CourseSection[],
+          in_progress_courses, completed_courses
+        );
+        if (candidates.length > 0) {
+          const best = candidates.find((s) => !s.isFull) ?? candidates[0];
+          const enrollment = crnEnrollmentMap.get(best.crn);
+          validSchedule.push({ ...best, requirement_category: course.requirement_category, ...(enrollment ?? {}) });
+          scheduledKeys.add(key);
+          schedule.total_credits += best.credits;
+        }
+      }
+      schedule.recommended_schedule = validSchedule;
+      schedule.total_credits = validSchedule.reduce((sum: number, c: { credits: number }) => sum + (c.credits || 0), 0);
+    }
 
     return NextResponse.json({
       ...schedule,

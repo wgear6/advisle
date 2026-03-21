@@ -43,18 +43,18 @@ export async function POST(req: NextRequest) {
     const scheduledSections = current_schedule as unknown as CourseSection[];
 
     const scheduledKeys = new Set(
-      current_schedule.map((c) => `${c.subject} ${c.number}`)
+      current_schedule.map((c) => `${c.subject.toUpperCase()} ${c.number}`)
     );
     const excludedKeys = new Set(
-      excluded_courses.map((c) => `${c.subject} ${c.number}`)
+      excluded_courses.map((c) => `${c.subject.toUpperCase()} ${c.number}`)
     );
     const allDoneKeys = new Set([
-      ...in_progress_courses.map((c) => `${c.subject} ${c.number}`),
-      ...completed_courses.map((c) => `${c.subject} ${c.number}`),
+      ...in_progress_courses.map((c) => `${c.subject.toUpperCase()} ${c.number}`),
+      ...completed_courses.map((c) => `${c.subject.toUpperCase()} ${c.number}`),
     ]);
 
     for (const course of remaining_courses) {
-      const key = `${course.subject} ${course.number}`;
+      const key = `${course.subject.toUpperCase()} ${course.number}`;
       if (scheduledKeys.has(key) || excludedKeys.has(key) || allDoneKeys.has(key)) continue;
 
       const candidates = allSections.filter((s) => {
