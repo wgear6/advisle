@@ -113,10 +113,10 @@ export async function POST(req: NextRequest) {
       };
     });
 
-    // Sort by courses_needed ascending, filter to reachable ones (<=5 missing)
+    // Sort by courses_needed, then elective_credits as tiebreaker
     const reachable = suggestions
       .filter((s) => s.courses_needed <= 5)
-      .sort((a, b) => a.courses_needed - b.courses_needed);
+      .sort((a, b) => a.courses_needed - b.courses_needed || a.elective_credits - b.elective_credits);
 
     return NextResponse.json({ suggestions: reachable });
   } catch (err) {
