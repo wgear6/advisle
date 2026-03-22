@@ -1,0 +1,318 @@
+[
+  {
+    "name": "Economics",
+    "total_credits": 18,
+    "required": [
+      { "subject": "ECON", "number": "1400", "title": "Principles of Macroeconomics", "credits": 3 },
+      { "subject": "ECON", "number": "1450", "title": "Principles of Microeconomics", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      {
+        "description": "Core Theory (choose 1)",
+        "options": [
+          { "subject": "ECON", "number": "2400", "title": "Macroeconomic Theory", "credits": 3 },
+          { "subject": "ECON", "number": "2450", "title": "Microeconomic Theory", "credits": 3 }
+        ]
+      }
+    ],
+    "elective_note": "12 additional credits in ECON courses at various levels"
+  },
+  {
+    "name": "Psychological Science",
+    "total_credits": 18,
+    "required": [
+      { "subject": "PSYS", "number": "1400", "title": "Intro to Psychological Science", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      {
+        "description": "Research Methods (choose 1)",
+        "options": [
+          { "subject": "PSYS", "number": "2000", "title": "Psych Research Methods w/lab", "credits": 4 },
+          { "subject": "PSYS", "number": "2002", "title": "Psych Research Methods", "credits": 3 }
+        ]
+      },
+      {
+        "description": "Content Elective 1 (choose 1)",
+        "options": [
+          { "subject": "PSYS", "number": "2100", "title": "Learning, Cognition & Behavior", "credits": 3 },
+          { "subject": "PSYS", "number": "2200", "title": "Biopsychology", "credits": 3 },
+          { "subject": "PSYS", "number": "2300", "title": "Social Psychology", "credits": 3 },
+          { "subject": "PSYS", "number": "2400", "title": "Developmental Psych: Childhood", "credits": 3 },
+          { "subject": "PSYS", "number": "2500", "title": "Psychopathology", "credits": 3 }
+        ]
+      },
+      {
+        "description": "Content Elective 2 (choose 1)",
+        "options": [
+          { "subject": "PSYS", "number": "2100", "title": "Learning, Cognition & Behavior", "credits": 3 },
+          { "subject": "PSYS", "number": "2200", "title": "Biopsychology", "credits": 3 },
+          { "subject": "PSYS", "number": "2300", "title": "Social Psychology", "credits": 3 },
+          { "subject": "PSYS", "number": "2400", "title": "Developmental Psych: Childhood", "credits": 3 },
+          { "subject": "PSYS", "number": "2500", "title": "Psychopathology", "credits": 3 }
+        ]
+      },
+      {
+        "description": "Content Elective 3 (choose 1)",
+        "options": [
+          { "subject": "PSYS", "number": "2100", "title": "Learning, Cognition & Behavior", "credits": 3 },
+          { "subject": "PSYS", "number": "2200", "title": "Biopsychology", "credits": 3 },
+          { "subject": "PSYS", "number": "2300", "title": "Social Psychology", "credits": 3 },
+          { "subject": "PSYS", "number": "2400", "title": "Developmental Psych: Childhood", "credits": 3 },
+          { "subject": "PSYS", "number": "2500", "title": "Psychopathology", "credits": 3 }
+        ]
+      },
+      {
+        "description": "Advanced Elective (choose 1)",
+        "options": [
+          { "subject": "PSYS", "number": "3100", "title": "Advanced Psych Elective (3100+)", "credits": 3 }
+        ]
+      }
+    ],
+    "elective_note": "One advanced PSYS course (3100–3990 or 4990)"
+  },
+  {
+    "name": "Political Science",
+    "total_credits": 18,
+    "required": [],
+    "choose_one_groups": [
+      {
+        "description": "Intro core course 1 (choose 1)",
+        "options": [
+          { "subject": "POLS", "number": "1200", "title": "Intro to Political Theory", "credits": 3 },
+          { "subject": "POLS", "number": "1300", "title": "US Political System", "credits": 3 },
+          { "subject": "POLS", "number": "1500", "title": "Intro International Relations", "credits": 3 },
+          { "subject": "POLS", "number": "1700", "title": "Comparative World Politics", "credits": 3 }
+        ]
+      },
+      {
+        "description": "Intro core course 2 (choose 1 different from above)",
+        "options": [
+          { "subject": "POLS", "number": "1200", "title": "Intro to Political Theory", "credits": 3 },
+          { "subject": "POLS", "number": "1300", "title": "US Political System", "credits": 3 },
+          { "subject": "POLS", "number": "1500", "title": "Intro International Relations", "credits": 3 },
+          { "subject": "POLS", "number": "1700", "title": "Comparative World Politics", "credits": 3 }
+        ]
+      }
+    ],
+    "elective_note": "12 additional credits in POLS courses (2200-level or above recommended)"
+  },
+  {
+    "name": "Environmental Studies",
+    "total_credits": 16,
+    "required": [
+      { "subject": "ENVS", "number": "1500", "title": "Intro to Environmental Studies", "credits": 4 }
+    ],
+    "choose_one_groups": [
+      {
+        "description": "Second intro course (choose 1)",
+        "options": [
+          { "subject": "GEOG", "number": "1200", "title": "World Regional Geography", "credits": 3 },
+          { "subject": "GEOL", "number": "1020", "title": "Dynamic Earth", "credits": 3 },
+          { "subject": "ECON", "number": "1280", "title": "Intro to Environmental Economics", "credits": 3 }
+        ]
+      }
+    ],
+    "elective_note": "9 credits across Environmental Humanities, Natural Science, and Social Science categories"
+  },
+  {
+    "name": "Sociology",
+    "total_credits": 18,
+    "required": [
+      { "subject": "SOC", "number": "1500", "title": "Introduction to Sociology", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      {
+        "description": "Methods/Theory (choose 1 track)",
+        "options": [
+          { "subject": "SOC", "number": "2500", "title": "Social Research Methods", "credits": 3 },
+          { "subject": "SOC", "number": "2550", "title": "Social Theory", "credits": 3 }
+        ]
+      }
+    ],
+    "elective_note": "9 additional credits in SOC courses (open, intermediate, and advanced levels)"
+  },
+  {
+    "name": "Neuroscience",
+    "total_credits": 18,
+    "required": [],
+    "choose_one_groups": [
+      {
+        "description": "Intro Neuroscience (choose 1)",
+        "options": [
+          { "subject": "NSCI", "number": "2100", "title": "Exploring Neuroscience w/lab", "credits": 4 },
+          { "subject": "NSCI", "number": "2105", "title": "Exploring Neuroscience", "credits": 3 }
+        ]
+      },
+      {
+        "description": "Research Methods (choose 1)",
+        "options": [
+          { "subject": "PSYS", "number": "2000", "title": "Psych Research Methods w/lab", "credits": 4 },
+          { "subject": "PSYS", "number": "2002", "title": "Psych Research Methods", "credits": 3 }
+        ]
+      }
+    ],
+    "elective_note": "12 credits across Behavioral/Cognitive (PSYS 2100-3299, CSD courses) and Cellular/Molecular (BCOR 2300, NSCI 3000+ courses) categories. Prerequisites: PSYS 1400, general chemistry, two biology courses."
+  },
+  {
+    "name": "History",
+    "total_credits": 18,
+    "required": [],
+    "choose_one_groups": [
+      {
+        "description": "Geographic breadth area 1 (choose 1 HST course)",
+        "options": [
+          { "subject": "HST", "number": "1200", "title": "History course (1000-level)", "credits": 3 }
+        ]
+      },
+      {
+        "description": "Geographic breadth area 2 (choose 1 HST course from different region)",
+        "options": [
+          { "subject": "HST", "number": "1300", "title": "History course (1000-level)", "credits": 3 }
+        ]
+      },
+      {
+        "description": "Geographic breadth area 3 (choose 1 HST course from different region)",
+        "options": [
+          { "subject": "HST", "number": "2200", "title": "History course (2000-level)", "credits": 3 }
+        ]
+      },
+      {
+        "description": "Geographic breadth area 4 (choose 1 HST course from different region)",
+        "options": [
+          { "subject": "HST", "number": "2300", "title": "History course (2000-level)", "credits": 3 }
+        ]
+      }
+    ],
+    "elective_note": "6 additional credits in HST courses at any level. Must span at least 2 of 4 geographic regions."
+  },
+  {
+    "name": "English",
+    "total_credits": 18,
+    "required": [
+      { "subject": "ENGL", "number": "1500", "title": "Intro to Literary Studies", "credits": 3 },
+      { "subject": "ENGL", "number": "2000", "title": "Literary Theory", "credits": 3 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "12 additional credits: 6-9 credits in ENGL 2060-3880 or FTS courses, plus open-level ENGL elective"
+  },
+  {
+    "name": "Biology",
+    "total_credits": 16,
+    "required": [],
+    "choose_one_groups": [
+      {
+        "description": "Foundation sequence (choose 1 option — 2 courses)",
+        "options": [
+          { "subject": "BCOR", "number": "1400", "title": "Exploring Biology 1", "credits": 4 },
+          { "subject": "BIOL", "number": "1400", "title": "Principles of Biology 1", "credits": 4 }
+        ]
+      },
+      {
+        "description": "Foundation sequence part 2 (choose 1)",
+        "options": [
+          { "subject": "BCOR", "number": "1450", "title": "Exploring Biology 2", "credits": 4 },
+          { "subject": "BIOL", "number": "1450", "title": "Principles of Biology 2", "credits": 4 }
+        ]
+      },
+      {
+        "description": "Core biology course (choose 1)",
+        "options": [
+          { "subject": "BCOR", "number": "2100", "title": "Ecology and Evolution", "credits": 3 },
+          { "subject": "BCOR", "number": "2300", "title": "Genetics", "credits": 3 },
+          { "subject": "BCOR", "number": "2500", "title": "Molecular & Cell Biology w/lab", "credits": 4 },
+          { "subject": "BCOR", "number": "2505", "title": "Molecular & Cell Biology", "credits": 3 }
+        ]
+      }
+    ],
+    "elective_note": "9-12 credits: 1 lecture-only BIOL elective (2100-2699 or 3100-3699), 1 lab BIOL course (4100-4699), plus 2 additional BCOR/BIOL courses"
+  },
+  {
+    "name": "Mathematics",
+    "total_credits": 21,
+    "required": [
+      { "subject": "MATH", "number": "1234", "title": "Calculus I", "credits": 4 },
+      { "subject": "MATH", "number": "1248", "title": "Calculus II", "credits": 4 }
+    ],
+    "choose_one_groups": [
+      {
+        "description": "Calculus III or Foundations (choose 1)",
+        "options": [
+          { "subject": "MATH", "number": "2248", "title": "Calculus III", "credits": 4 },
+          { "subject": "MATH", "number": "2055", "title": "Fundamentals of Mathematics", "credits": 3 }
+        ]
+      }
+    ],
+    "elective_note": "9 additional credits in MATH courses at the 2000-level or above (excluding MATH 2111 and MATH 2180)"
+  },
+  {
+    "name": "Statistics",
+    "total_credits": 18,
+    "required": [],
+    "choose_one_groups": [
+      {
+        "description": "Calculus prerequisite (choose 1)",
+        "options": [
+          { "subject": "MATH", "number": "1212", "title": "Fundamentals of Calculus I", "credits": 3 },
+          { "subject": "MATH", "number": "1234", "title": "Calculus I", "credits": 4 }
+        ]
+      },
+      {
+        "description": "Intro Statistics (choose 1)",
+        "options": [
+          { "subject": "STAT", "number": "1410", "title": "Basic Statistical Methods 1", "credits": 3 },
+          { "subject": "STAT", "number": "2430", "title": "Statistics for Engineering", "credits": 3 }
+        ]
+      },
+      {
+        "description": "Intermediate Statistics (choose 1)",
+        "options": [
+          { "subject": "STAT", "number": "2830", "title": "Basic Statistical Methods 2", "credits": 3 },
+          { "subject": "STAT", "number": "3210", "title": "Advanced Statistical Methods", "credits": 3 }
+        ]
+      },
+      {
+        "description": "Computing/Data Science (choose 1)",
+        "options": [
+          { "subject": "STAT", "number": "2870", "title": "Basics of Data Science", "credits": 3 },
+          { "subject": "STAT", "number": "3010", "title": "Stat Computing & Data Analysis", "credits": 3 },
+          { "subject": "CS", "number": "1210", "title": "Intro to Computing", "credits": 3 }
+        ]
+      }
+    ],
+    "elective_note": "6 additional credits in STAT courses"
+  },
+  {
+    "name": "Computer Science",
+    "total_credits": 18,
+    "required": [
+      { "subject": "CS", "number": "1210", "title": "Intro to Computing", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      {
+        "description": "Intermediate CS (choose 1)",
+        "options": [
+          { "subject": "CS", "number": "2100", "title": "Intermediate Programming", "credits": 3 },
+          { "subject": "CS", "number": "2110", "title": "Intermediate Programming", "credits": 3 }
+        ]
+      }
+    ],
+    "elective_note": "12 additional credits in CS courses at the 2000-level or above"
+  },
+  {
+    "name": "Philosophy",
+    "total_credits": 18,
+    "required": [],
+    "choose_one_groups": [
+      {
+        "description": "Intro Philosophy course (choose 1)",
+        "options": [
+          { "subject": "PHIL", "number": "1000", "title": "Intro to Philosophy", "credits": 3 },
+          { "subject": "PHIL", "number": "1010", "title": "Critical Thinking", "credits": 3 },
+          { "subject": "PHIL", "number": "1100", "title": "Ethics", "credits": 3 },
+          { "subject": "PHIL", "number": "1200", "title": "Logic", "credits": 3 }
+        ]
+      }
+    ],
+    "elective_note": "15 additional credits in PHIL courses including at least 9 credits at or above the 2000-level"
+  }
+]

@@ -82,6 +82,15 @@ interface GeneratedSchedule {
   unscheduled_courses: string[];
 }
 
+interface MinorSuggestion {
+  name: string;
+  courses_needed: number;
+  courses_satisfied: number;
+  total_specific_courses: number;
+  missing_required: { subject: string; number: string; title: string; credits: number; requirement_category: string }[];
+  elective_note: string;
+}
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const DAYS = ["M", "T", "W", "R", "F"];
@@ -240,6 +249,11 @@ export default function Home() {
   const [excludedCourses, setExcludedCourses] = useState<{ subject: string; number: string }[]>([]);
   const [replacingCourse, setReplacingCourse] = useState(false);
 
+  // Minor explorer
+  const [minorSuggestions, setMinorSuggestions] = useState<MinorSuggestion[]>([]);
+  const [selectedMinors, setSelectedMinors] = useState<string[]>([]);
+  const [minorMissingCourses, setMinorMissingCourses] = useState<Record<string, RemainingCourse[]>>({});
+
   // Blocked time form state
   const [blockDay, setBlockDay] = useState("M");
   const [blockStart, setBlockStart] = useState("09:00");
@@ -275,6 +289,19 @@ export default function Home() {
       const data: ParsedAudit = await res.json();
       setAudit(data);
       setStep(2);
+
+      // Fetch minor suggestions in background
+      fetch("/api/minor-suggestions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          completed_courses: data.completed_courses ?? [],
+          in_progress_courses: data.in_progress_courses ?? [],
+        }),
+      })
+        .then((r) => r.json())
+        .then((d) => setMinorSuggestions(d.suggestions ?? []))
+        .catch(() => {});
     } catch (e) {
       setError("Could not parse your degree audit. Make sure it's a UVM audit PDF.");
     } finally {
@@ -302,6 +329,26 @@ export default function Home() {
     setAudit({ ...audit, remaining_courses: audit.remaining_courses.filter((_, idx) => idx !== i) });
   };
 
+  const toggleMinor = (suggestion: MinorSuggestion) => {
+    const name = suggestion.name;
+    if (selectedMinors.includes(name)) {
+      setSelectedMinors((prev) => prev.filter((m) => m !== name));
+      setMinorMissingCourses((prev) => { const next = { ...prev }; delete next[name]; return next; });
+    } else {
+      setSelectedMinors((prev) => [...prev, name]);
+      setMinorMissingCourses((prev) => ({
+        ...prev,
+        [name]: suggestion.missing_required.map((c) => ({
+          subject: c.subject,
+          number: c.number,
+          title: c.title,
+          credits: c.credits,
+          requirement_category: "Minor",
+        })),
+      }));
+    }
+  };
+
   // ── Step 3: Generate Schedule ──
 
   const generateSchedule = async () => {
@@ -313,14 +360,24 @@ export default function Home() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          remaining_courses: audit.remaining_courses,
+          remaining_courses: [
+            ...audit.remaining_courses,
+            ...Object.values(minorMissingCourses).flat().filter(
+              (mc) => !audit.remaining_courses.some((rc) => rc.subject === mc.subject && rc.number === mc.number)
+            ),
+          ],
           completed_courses: audit.completed_courses ?? [],
           in_progress_courses: audit.in_progress_courses ?? [],
           blocked_times: blockedTimes,
           target_credits: targetCredits,
           credits_completed: audit.credits_completed ?? null,
           major: audit.major ?? null,
-          custom_notes: customNotes,
+          custom_notes: [
+            customNotes,
+            selectedMinors.length > 0
+              ? `Student wants to pursue the following minor(s): ${selectedMinors.join(", ")}. Prioritize scheduling their missing required courses.`
+              : "",
+          ].filter(Boolean).join(" "),
         }),
       });
       if (!res.ok) throw new Error("Failed to generate schedule");
@@ -603,6 +660,60 @@ export default function Home() {
                 )}
               </div>
             </div>
+
+            {/* Minor Explorer */}
+            {minorSuggestions.length > 0 && (
+              <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+                <h2 style={{ margin: "0 0 4px", fontSize: 18, fontWeight: 700 }}>Minor Explorer</h2>
+                <p style={{ margin: "0 0 16px", fontSize: 14, color: "#6b7280" }}>
+                  Based on your completed courses, here are minors sorted by how close you are. Click "Add to plan" to include those courses in your schedule.
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {minorSuggestions.map((s) => {
+                    const isSelected = selectedMinors.includes(s.name);
+                    const isComplete = s.courses_needed === 0;
+                    return (
+                      <div key={s.name} style={{ borderRadius: 10, border: `1px solid ${isSelected ? "#2563eb" : "#e5e7eb"}`, background: isSelected ? "#eff6ff" : "#fafafa", padding: "14px 16px" }}>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4, flexWrap: "wrap" }}>
+                              <span style={{ fontWeight: 700, fontSize: 15, color: "#1e3a5f" }}>{s.name} Minor</span>
+                              {isComplete ? (
+                                <span style={{ fontSize: 12, padding: "2px 8px", borderRadius: 99, background: "#dcfce7", color: "#15803d", fontWeight: 600 }}>Already complete!</span>
+                              ) : (
+                                <span style={{ fontSize: 12, padding: "2px 8px", borderRadius: 99, background: s.courses_needed <= 2 ? "#fef9c3" : "#f1f5f9", color: s.courses_needed <= 2 ? "#854d0e" : "#4b5563", fontWeight: 600 }}>
+                                  {s.courses_needed} course{s.courses_needed !== 1 ? "s" : ""} away
+                                </span>
+                              )}
+                            </div>
+                            {!isComplete && s.missing_required.length > 0 && (
+                              <p style={{ margin: "0 0 2px", fontSize: 13, color: "#374151" }}>
+                                <strong>Still need:</strong> {s.missing_required.map((c) => `${c.subject} ${c.number}`).join(", ")}
+                              </p>
+                            )}
+                            {s.elective_note && (
+                              <p style={{ margin: 0, fontSize: 12, color: "#9ca3af" }}>{s.elective_note}</p>
+                            )}
+                          </div>
+                          {!isComplete && (
+                            <button
+                              onClick={() => toggleMinor(s)}
+                              style={{ padding: "7px 14px", borderRadius: 8, border: `1px solid ${isSelected ? "#2563eb" : "#d1d5db"}`, background: isSelected ? "#2563eb" : "#fff", color: isSelected ? "#fff" : "#374151", fontWeight: 600, fontSize: 13, cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap" }}>
+                              {isSelected ? "✓ Added" : "+ Add to plan"}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                {selectedMinors.length > 0 && (
+                  <p style={{ margin: "12px 0 0", fontSize: 13, color: "#2563eb", fontWeight: 500 }}>
+                    {selectedMinors.length} minor{selectedMinors.length !== 1 ? "s" : ""} added — missing courses will be prioritized when generating your schedule.
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Block times */}
             <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
