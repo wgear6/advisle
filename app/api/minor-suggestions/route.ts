@@ -27,6 +27,7 @@ export interface MinorSuggestion {
   courses_needed: number;
   courses_satisfied: number;
   total_specific_courses: number;
+  elective_credits: number;
   missing_required: (MinorCourse & { requirement_category: string })[];
   elective_note: string;
 }
@@ -92,11 +93,17 @@ export async function POST(req: NextRequest) {
         }
       }
 
+      const specificCredits =
+        minor.required.reduce((sum, c) => sum + (c.credits ?? 3), 0) +
+        (minor.choose_one_groups ?? []).reduce((sum, g) => sum + (g.options[0]?.credits ?? 3), 0);
+      const electiveCredits = Math.max(0, (minor.total_credits ?? 0) - specificCredits);
+
       return {
         name: minor.name,
         courses_needed: total - satisfied,
         courses_satisfied: satisfied,
         total_specific_courses: total,
+        elective_credits: electiveCredits,
         missing_required: missing,
         elective_note: minor.elective_note,
       };

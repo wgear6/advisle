@@ -87,6 +87,7 @@ interface MinorSuggestion {
   courses_needed: number;
   courses_satisfied: number;
   total_specific_courses: number;
+  elective_credits: number;
   missing_required: { subject: string; number: string; title: string; credits: number; requirement_category: string }[];
   elective_note: string;
 }
@@ -671,7 +672,14 @@ export default function Home() {
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   {minorSuggestions.map((s) => {
                     const isSelected = selectedMinors.includes(s.name);
-                    const isComplete = s.courses_needed === 0;
+                    const isComplete = s.courses_needed === 0 && s.elective_credits === 0;
+                    const badgeText = (() => {
+                      const parts: string[] = [];
+                      if (s.courses_needed > 0) parts.push(`${s.courses_needed} course${s.courses_needed !== 1 ? "s" : ""}`);
+                      if (s.elective_credits > 0) parts.push(`${s.elective_credits} elective cr.`);
+                      return parts.join(" + ") + " needed";
+                    })();
+                    const isClose = s.courses_needed <= 2 && s.elective_credits <= 9;
                     return (
                       <div key={s.name} style={{ borderRadius: 10, border: `1px solid ${isSelected ? "#2563eb" : "#e5e7eb"}`, background: isSelected ? "#eff6ff" : "#fafafa", padding: "14px 16px" }}>
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
@@ -681,8 +689,8 @@ export default function Home() {
                               {isComplete ? (
                                 <span style={{ fontSize: 12, padding: "2px 8px", borderRadius: 99, background: "#dcfce7", color: "#15803d", fontWeight: 600 }}>Already complete!</span>
                               ) : (
-                                <span style={{ fontSize: 12, padding: "2px 8px", borderRadius: 99, background: s.courses_needed <= 2 ? "#fef9c3" : "#f1f5f9", color: s.courses_needed <= 2 ? "#854d0e" : "#4b5563", fontWeight: 600 }}>
-                                  {s.courses_needed} course{s.courses_needed !== 1 ? "s" : ""} away
+                                <span style={{ fontSize: 12, padding: "2px 8px", borderRadius: 99, background: isClose ? "#fef9c3" : "#f1f5f9", color: isClose ? "#854d0e" : "#4b5563", fontWeight: 600 }}>
+                                  {badgeText}
                                 </span>
                               )}
                             </div>
