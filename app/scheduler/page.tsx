@@ -254,6 +254,7 @@ export default function Home() {
   const [minorSuggestions, setMinorSuggestions] = useState<MinorSuggestion[]>([]);
   const [selectedMinors, setSelectedMinors] = useState<string[]>([]);
   const [minorMissingCourses, setMinorMissingCourses] = useState<Record<string, RemainingCourse[]>>({});
+  const [showAllMinors, setShowAllMinors] = useState(false);
 
   // Blocked time form state
   const [blockDay, setBlockDay] = useState("M");
@@ -672,7 +673,7 @@ export default function Home() {
                   Based on your completed courses, here are minors sorted by how close you are. Click "Add to plan" to include those courses in your schedule.
                 </p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  {minorSuggestions.map((s) => {
+                  {(showAllMinors ? minorSuggestions : minorSuggestions.slice(0, 3)).map((s) => {
                     const isSelected = selectedMinors.includes(s.name);
                     const isComplete = s.courses_needed === 0 && s.elective_credits === 0;
                     const badgeText = (() => {
@@ -717,6 +718,13 @@ export default function Home() {
                     );
                   })}
                 </div>
+                {minorSuggestions.length > 3 && (
+                  <button
+                    onClick={() => setShowAllMinors((v) => !v)}
+                    style={{ marginTop: 10, background: "none", border: "none", color: "#2563eb", fontWeight: 600, fontSize: 13, cursor: "pointer", padding: 0, textAlign: "left" }}>
+                    {showAllMinors ? "▲ Show less" : `▼ Show ${minorSuggestions.length - 3} more minors`}
+                  </button>
+                )}
                 {selectedMinors.length > 0 && (
                   <p style={{ margin: "12px 0 0", fontSize: 13, color: "#2563eb", fontWeight: 500 }}>
                     {selectedMinors.length} minor{selectedMinors.length !== 1 ? "s" : ""} added — missing courses will be prioritized when generating your schedule.
