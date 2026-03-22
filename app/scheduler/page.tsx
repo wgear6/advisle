@@ -88,6 +88,7 @@ interface MinorSuggestion {
   courses_satisfied: number;
   total_specific_courses: number;
   elective_credits: number;
+  total_credits_needed: number;
   missing_required: { subject: string; number: string; title: string; credits: number; requirement_category: string }[];
   elective_note: string;
 }
@@ -299,6 +300,7 @@ export default function Home() {
         body: JSON.stringify({
           completed_courses: data.completed_courses ?? [],
           in_progress_courses: data.in_progress_courses ?? [],
+          major: data.major ?? null,
         }),
       })
         .then((r) => r.json())

@@ -28,6 +28,7 @@ export interface MinorSuggestion {
   courses_satisfied: number;
   total_specific_courses: number;
   elective_credits: number;
+  total_credits_needed: number;
   missing_required: (MinorCourse & { requirement_category: string })[];
   elective_note: string;
 }
@@ -44,9 +45,11 @@ export async function POST(req: NextRequest) {
     const {
       completed_courses = [],
       in_progress_courses = [],
+      major = null,
     }: {
       completed_courses: SimpleCourse[];
       in_progress_courses: SimpleCourse[];
+      major?: string | null;
     } = await req.json();
 
     const minorsPath = path.join(process.cwd(), "data", "minors.json");
@@ -96,7 +99,17 @@ export async function POST(req: NextRequest) {
       const specificCredits =
         minor.required.reduce((sum, c) => sum + (c.credits ?? 3), 0) +
         (minor.choose_one_groups ?? []).reduce((sum, g) => sum + (g.options[0]?.credits ?? 3), 0);
-      const electiveCredits = Math.max(0, (minor.total_credits ?? 0) - specificCredits);
+      const totalElectiveCredits = Math.max(0, (minor.total_credits ?? 0) - specificCredits);
+
+      // Missing courses at 2000+ level count toward elective credits (they satisfy the same pool),
+      // so subtract them to avoid double-counting. 1000-level required courses (like BUS 1610) do not.
+      const missingUpperCredits = missing
+        .filter((c) => parseInt(c.number) >= 2000)
+        .reduce((sum, c) => sum + (c.credits ?? 3), 0);
+      const electiveCredits = Math.max(0, totalElectiveCredits - missingUpperCredits);
+
+      const totalCreditsNeeded =
+        missing.reduce((sum, c) => sum + (c.credits ?? 3), 0) + electiveCredits;
 
       return {
         name: minor.name,
@@ -104,15 +117,18 @@ export async function POST(req: NextRequest) {
         courses_satisfied: satisfied,
         total_specific_courses: total,
         elective_credits: electiveCredits,
+        total_credits_needed: totalCreditsNeeded,
         missing_required: missing,
         elective_note: minor.elective_note,
       };
     });
 
-    // Sort by courses_needed, then elective_credits as tiebreaker
+    // Filter out the student's own major, then sort by total credits needed
+    const majorLower = major?.toLowerCase() ?? "";
     const reachable = suggestions
       .filter((s) => s.courses_needed <= 5)
-      .sort((a, b) => a.courses_needed - b.courses_needed || a.elective_credits - b.elective_credits);
+      .filter((s) => !majorLower || !s.name.toLowerCase().includes(majorLower))
+      .sort((a, b) => a.total_credits_needed - b.total_credits_needed);
 
     return NextResponse.json({ suggestions: reachable });
   } catch (err) {
