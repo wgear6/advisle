@@ -99,14 +99,7 @@ export async function POST(req: NextRequest) {
       const specificCredits =
         minor.required.reduce((sum, c) => sum + (c.credits ?? 3), 0) +
         (minor.choose_one_groups ?? []).reduce((sum, g) => sum + (g.options[0]?.credits ?? 3), 0);
-      const totalElectiveCredits = Math.max(0, (minor.total_credits ?? 0) - specificCredits);
-
-      // Missing courses at 2000+ level count toward elective credits (they satisfy the same pool),
-      // so subtract them to avoid double-counting. 1000-level required courses (like BUS 1610) do not.
-      const missingUpperCredits = missing
-        .filter((c) => parseInt(c.number) >= 2000)
-        .reduce((sum, c) => sum + (c.credits ?? 3), 0);
-      const electiveCredits = Math.max(0, totalElectiveCredits - missingUpperCredits);
+      const electiveCredits = Math.max(0, (minor.total_credits ?? 0) - specificCredits);
 
       const totalCreditsNeeded =
         missing.reduce((sum, c) => sum + (c.credits ?? 3), 0) + electiveCredits;

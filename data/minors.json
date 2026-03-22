@@ -214,7 +214,7 @@
   },
   {
     "name": "Computer Science",
-    "total_credits": 18,
+    "total_credits": 15,
     "required": [
       { "subject": "CS", "number": "1210", "title": "Intro to Computing", "credits": 3 }
     ],
@@ -224,7 +224,7 @@
         { "subject": "CS", "number": "2110", "title": "Intermediate Programming", "credits": 3 }
       ]}
     ],
-    "elective_note": "12 additional credits in CS courses at the 2000-level or above"
+    "elective_note": "9 additional credits in CS courses at the 2000-level or above"
   },
   {
     "name": "Critical Race and Ethnic Studies",
