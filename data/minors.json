@@ -1,5 +1,254 @@
 [
   {
+    "name": "African Studies",
+    "total_credits": 18,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Core course 1 (choose 1)", "options": [
+        { "subject": "ENGL", "number": "2248", "title": "Topics in African Literature", "credits": 3 },
+        { "subject": "HST", "number": "2410", "title": "Topics in African History", "credits": 3 },
+        { "subject": "POLS", "number": "2725", "title": "African Politics", "credits": 3 },
+        { "subject": "REL", "number": "1650", "title": "Religion, Health, & Healing", "credits": 3 }
+      ]},
+      { "description": "Core course 2 (choose 1 different)", "options": [
+        { "subject": "ENGL", "number": "2248", "title": "Topics in African Literature", "credits": 3 },
+        { "subject": "HST", "number": "2410", "title": "Topics in African History", "credits": 3 },
+        { "subject": "POLS", "number": "2725", "title": "African Politics", "credits": 3 },
+        { "subject": "REL", "number": "1650", "title": "Religion, Health, & Healing", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "9 additional credits from approved African Studies courses (at least 9 cr at 2000-level+, max 6 cr from any single discipline)"
+  },
+  {
+    "name": "Anthropology",
+    "total_credits": 18,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Foundations course 1 (choose 1)", "options": [
+        { "subject": "ANTH", "number": "1100", "title": "Cultural Anthropology", "credits": 3 },
+        { "subject": "ANTH", "number": "1400", "title": "Biological Anthropology", "credits": 3 },
+        { "subject": "ANTH", "number": "1600", "title": "Linguistic Anthropology", "credits": 3 },
+        { "subject": "ANTH", "number": "1800", "title": "Archaeological Anthropology", "credits": 3 }
+      ]},
+      { "description": "Foundations course 2 (choose 1 different)", "options": [
+        { "subject": "ANTH", "number": "1100", "title": "Cultural Anthropology", "credits": 3 },
+        { "subject": "ANTH", "number": "1400", "title": "Biological Anthropology", "credits": 3 },
+        { "subject": "ANTH", "number": "1600", "title": "Linguistic Anthropology", "credits": 3 },
+        { "subject": "ANTH", "number": "1800", "title": "Archaeological Anthropology", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "9 more credits: 1 open-level ANTH elective + 2 intermediate/advanced ANTH courses (2000-level+)"
+  },
+  {
+    "name": "Art",
+    "total_credits": 19,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Studio Art foundation (choose 1)", "options": [
+        { "subject": "ARTS", "number": "1100", "title": "Drawing", "credits": 4 },
+        { "subject": "ARTS", "number": "1400", "title": "Perspectives on Art Making", "credits": 4 }
+      ]},
+      { "description": "Art History foundation (choose 1)", "options": [
+        { "subject": "ARTH", "number": "1410", "title": "Art History before 1300", "credits": 3 },
+        { "subject": "ARTH", "number": "1420", "title": "Art History after 1300", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "12 additional credits: 3 courses from ARTS 2100-3990 (intermediate/advanced) + 1 open-level ARTH or ARTS course. Requires departmental admission after foundations."
+  },
+  {
+    "name": "Art History",
+    "total_credits": 18,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Survey 1 (choose 1)", "options": [
+        { "subject": "ARTH", "number": "1410", "title": "Art History before 1300", "credits": 3 },
+        { "subject": "ARTH", "number": "1016", "title": "FYS Art History before 1300", "credits": 3 }
+      ]},
+      { "description": "Survey 2 (choose 1)", "options": [
+        { "subject": "ARTH", "number": "1420", "title": "Art History after 1300", "credits": 3 },
+        { "subject": "ARTH", "number": "1018", "title": "FYS Art History after 1300", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "12 additional credits: 3-4 courses from ARTH 2000-2990, ARTH 3990, or ARTH 4990"
+  },
+  {
+    "name": "Asian Studies",
+    "total_credits": 18,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Asian language sequence 1 (choose 1)", "options": [
+        { "subject": "CHIN", "number": "1100", "title": "Elementary Chinese I", "credits": 4 },
+        { "subject": "JAPN", "number": "1100", "title": "Elementary Japanese I", "credits": 4 }
+      ]},
+      { "description": "Asian language sequence 2 (choose 1)", "options": [
+        { "subject": "CHIN", "number": "1200", "title": "Elementary Chinese II", "credits": 4 },
+        { "subject": "JAPN", "number": "1200", "title": "Elementary Japanese II", "credits": 4 }
+      ]}
+    ],
+    "elective_note": "10+ credits from at least 2 disciplines: ANTH 2170, HST 2443/2447/2448, PHIL 2760, POLS 2715, REL 2220/2235/2310, WLIT 2310-2375, plus open-level options"
+  },
+  {
+    "name": "Biochemistry",
+    "total_credits": 17,
+    "required": [
+      { "subject": "BIOC", "number": "3005", "title": "Biochemistry I", "credits": 3 },
+      { "subject": "BIOC", "number": "3006", "title": "Biochemistry II", "credits": 3 },
+      { "subject": "BIOC", "number": "3007", "title": "Biochemistry Lab", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Organic Chemistry (choose 1 sequence)", "options": [
+        { "subject": "CHEM", "number": "2580", "title": "Organic Chemistry 1", "credits": 4 },
+        { "subject": "CHEM", "number": "1500", "title": "Organic Chemistry for Majors 1", "credits": 4 }
+      ]}
+    ],
+    "elective_note": "Requires Organic Chemistry sequence (CHEM 2580+2585 or CHEM 1500+1550). Prerequisites typically include General Chemistry (CHEM 1400+1450)."
+  },
+  {
+    "name": "Biology",
+    "total_credits": 16,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Foundation sequence part 1 (choose 1)", "options": [
+        { "subject": "BCOR", "number": "1400", "title": "Exploring Biology 1", "credits": 4 },
+        { "subject": "BIOL", "number": "1400", "title": "Principles of Biology 1", "credits": 4 }
+      ]},
+      { "description": "Foundation sequence part 2 (choose 1)", "options": [
+        { "subject": "BCOR", "number": "1450", "title": "Exploring Biology 2", "credits": 4 },
+        { "subject": "BIOL", "number": "1450", "title": "Principles of Biology 2", "credits": 4 }
+      ]},
+      { "description": "Core biology course (choose 1)", "options": [
+        { "subject": "BCOR", "number": "2100", "title": "Ecology and Evolution", "credits": 3 },
+        { "subject": "BCOR", "number": "2300", "title": "Genetics", "credits": 3 },
+        { "subject": "BCOR", "number": "2500", "title": "Molecular & Cell Biology w/lab", "credits": 4 },
+        { "subject": "BCOR", "number": "2505", "title": "Molecular & Cell Biology", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "9-12 credits: 1 lecture BIOL elective (2100-3699), 1 lab BIOL course (4100-4699), plus 2 additional BCOR/BIOL courses"
+  },
+  {
+    "name": "Canadian Studies",
+    "total_credits": 15,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Canadian History (choose 1)", "options": [
+        { "subject": "HST", "number": "1550", "title": "Topics in Canadian History", "credits": 3 },
+        { "subject": "HST", "number": "2555", "title": "Canadian-American Relations", "credits": 3 }
+      ]},
+      { "description": "French language 1 (choose 1)", "options": [
+        { "subject": "FREN", "number": "2100", "title": "Intermediate French I", "credits": 3 },
+        { "subject": "FREN", "number": "2200", "title": "Intermediate French II", "credits": 3 }
+      ]},
+      { "description": "French language 2 (choose 1)", "options": [
+        { "subject": "FREN", "number": "2200", "title": "Intermediate French II", "credits": 3 },
+        { "subject": "FREN", "number": "3110", "title": "French Writing Workshop", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "6 more credits from Canadian History courses, GEOG 2715, or FREN 4680. Prereq: French through FREN 1200."
+  },
+  {
+    "name": "Chemistry",
+    "total_credits": 19,
+    "required": [
+      { "subject": "CHEM", "number": "1400", "title": "General Chemistry 1", "credits": 4 },
+      { "subject": "CHEM", "number": "1450", "title": "General Chemistry 2", "credits": 4 }
+    ],
+    "choose_one_groups": [
+      { "description": "Track 1 or 2 (choose 1 sequence)", "options": [
+        { "subject": "CHEM", "number": "2580", "title": "Organic Chemistry 1", "credits": 4 },
+        { "subject": "CHEM", "number": "3610", "title": "Chemical Thermodynamics", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "Track 1 (Organic): CHEM 2580+2585 + 1 elective (CHEM 2310/2400/2600). Track 2 (Physical): CHEM 3602+3610+3620 + 1 organic course. 19 credits total."
+  },
+  {
+    "name": "Chinese",
+    "total_credits": 15,
+    "required": [
+      { "subject": "CHIN", "number": "2100", "title": "Intermediate Chinese I", "credits": 4 },
+      { "subject": "CHIN", "number": "3100", "title": "3rd Year College Chinese I", "credits": 3 },
+      { "subject": "CHIN", "number": "3200", "title": "3rd Year College Chinese II", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Elective (choose 1)", "options": [
+        { "subject": "CHIN", "number": "3000", "title": "Chinese course (3000+)", "credits": 3 },
+        { "subject": "WLIT", "number": "2310", "title": "Classical Chinese Lit in Translation", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "Prereq: Chinese through CHIN 1200. 15 credits total."
+  },
+  {
+    "name": "Civic Engagement",
+    "total_credits": 18,
+    "required": [
+      { "subject": "HCOL", "number": "2989", "title": "Citizenship & Effective Action", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "US Politics (choose 1)", "options": [
+        { "subject": "POLS", "number": "1300", "title": "US Political System", "credits": 3 },
+        { "subject": "POLS", "number": "1013", "title": "FYS US Political System", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "9 credits from approved thematic categories (Contemporary Challenges, Ethical Deliberation, Civil Discourse, Theory/Policy/Governance, Social Change, Engaged Art/Science) + 3 credits Civic/Service Learning (CL/SL) course"
+  },
+  {
+    "name": "Classics",
+    "total_credits": 18,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Classical Studies course (choose 1)", "options": [
+        { "subject": "CLAS", "number": "1010", "title": "Classical Studies course", "credits": 3 },
+        { "subject": "ARTH", "number": "2100", "title": "Ancient Art and Architecture", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "Track 1 (Classical Studies): 1 language course (GRK or LAT) + 5 CLAS/ARTH 2100 courses, min 12 cr at 2000+. Track 2 (Classical Languages): 9-15 cr of GRK/LAT at 2000+ + 1 CLAS course."
+  },
+  {
+    "name": "Computer Science",
+    "total_credits": 18,
+    "required": [
+      { "subject": "CS", "number": "1210", "title": "Intro to Computing", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Intermediate CS (choose 1)", "options": [
+        { "subject": "CS", "number": "2100", "title": "Intermediate Programming", "credits": 3 },
+        { "subject": "CS", "number": "2110", "title": "Intermediate Programming", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "12 additional credits in CS courses at the 2000-level or above"
+  },
+  {
+    "name": "Critical Race and Ethnic Studies",
+    "total_credits": 18,
+    "required": [
+      { "subject": "CRES", "number": "2881", "title": "Racial Inequality in the US", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Arts & Humanities intro (choose 1)", "options": [
+        { "subject": "CRES", "number": "1811", "title": "CRES Arts/Humanities course", "credits": 3 },
+        { "subject": "ENGL", "number": "1210", "title": "African American Literature", "credits": 3 },
+        { "subject": "HST", "number": "1525", "title": "Race in US History", "credits": 3 },
+        { "subject": "MU", "number": "1120", "title": "African American Music", "credits": 3 }
+      ]},
+      { "description": "Social Sciences intro (choose 1)", "options": [
+        { "subject": "CRES", "number": "1861", "title": "CRES Social Sciences course", "credits": 3 },
+        { "subject": "GEOG", "number": "1770", "title": "Race, Space, and Place", "credits": 3 },
+        { "subject": "SOC", "number": "1370", "title": "Race and Ethnicity", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "9 credits: 2-3 courses at 2000-level+ (6-9 cr) + up to 1 open-level course (0-3 cr)"
+  },
+  {
+    "name": "Dance",
+    "total_credits": 18,
+    "required": [
+      { "subject": "DNCE", "number": "1500", "title": "Dance History & Legends", "credits": 3 },
+      { "subject": "DNCE", "number": "1200", "title": "Movement & Improvisation", "credits": 3 },
+      { "subject": "DNCE", "number": "2100", "title": "Contemporary: Intermediate", "credits": 3 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "9 more credits: 6 cr from DNCE 2000+ + 3 cr from any DNCE level"
+  },
+  {
     "name": "Economics",
     "total_credits": 18,
     "required": [
@@ -7,183 +256,12 @@
       { "subject": "ECON", "number": "1450", "title": "Principles of Microeconomics", "credits": 3 }
     ],
     "choose_one_groups": [
-      {
-        "description": "Core Theory (choose 1)",
-        "options": [
-          { "subject": "ECON", "number": "2400", "title": "Macroeconomic Theory", "credits": 3 },
-          { "subject": "ECON", "number": "2450", "title": "Microeconomic Theory", "credits": 3 }
-        ]
-      }
+      { "description": "Core Theory (choose 1)", "options": [
+        { "subject": "ECON", "number": "2400", "title": "Macroeconomic Theory", "credits": 3 },
+        { "subject": "ECON", "number": "2450", "title": "Microeconomic Theory", "credits": 3 }
+      ]}
     ],
     "elective_note": "12 additional credits in ECON courses at various levels"
-  },
-  {
-    "name": "Psychological Science",
-    "total_credits": 18,
-    "required": [
-      { "subject": "PSYS", "number": "1400", "title": "Intro to Psychological Science", "credits": 3 }
-    ],
-    "choose_one_groups": [
-      {
-        "description": "Research Methods (choose 1)",
-        "options": [
-          { "subject": "PSYS", "number": "2000", "title": "Psych Research Methods w/lab", "credits": 4 },
-          { "subject": "PSYS", "number": "2002", "title": "Psych Research Methods", "credits": 3 }
-        ]
-      },
-      {
-        "description": "Content Elective 1 (choose 1)",
-        "options": [
-          { "subject": "PSYS", "number": "2100", "title": "Learning, Cognition & Behavior", "credits": 3 },
-          { "subject": "PSYS", "number": "2200", "title": "Biopsychology", "credits": 3 },
-          { "subject": "PSYS", "number": "2300", "title": "Social Psychology", "credits": 3 },
-          { "subject": "PSYS", "number": "2400", "title": "Developmental Psych: Childhood", "credits": 3 },
-          { "subject": "PSYS", "number": "2500", "title": "Psychopathology", "credits": 3 }
-        ]
-      },
-      {
-        "description": "Content Elective 2 (choose 1)",
-        "options": [
-          { "subject": "PSYS", "number": "2100", "title": "Learning, Cognition & Behavior", "credits": 3 },
-          { "subject": "PSYS", "number": "2200", "title": "Biopsychology", "credits": 3 },
-          { "subject": "PSYS", "number": "2300", "title": "Social Psychology", "credits": 3 },
-          { "subject": "PSYS", "number": "2400", "title": "Developmental Psych: Childhood", "credits": 3 },
-          { "subject": "PSYS", "number": "2500", "title": "Psychopathology", "credits": 3 }
-        ]
-      },
-      {
-        "description": "Content Elective 3 (choose 1)",
-        "options": [
-          { "subject": "PSYS", "number": "2100", "title": "Learning, Cognition & Behavior", "credits": 3 },
-          { "subject": "PSYS", "number": "2200", "title": "Biopsychology", "credits": 3 },
-          { "subject": "PSYS", "number": "2300", "title": "Social Psychology", "credits": 3 },
-          { "subject": "PSYS", "number": "2400", "title": "Developmental Psych: Childhood", "credits": 3 },
-          { "subject": "PSYS", "number": "2500", "title": "Psychopathology", "credits": 3 }
-        ]
-      },
-      {
-        "description": "Advanced Elective (choose 1)",
-        "options": [
-          { "subject": "PSYS", "number": "3100", "title": "Advanced Psych Elective (3100+)", "credits": 3 }
-        ]
-      }
-    ],
-    "elective_note": "One advanced PSYS course (3100–3990 or 4990)"
-  },
-  {
-    "name": "Political Science",
-    "total_credits": 18,
-    "required": [],
-    "choose_one_groups": [
-      {
-        "description": "Intro core course 1 (choose 1)",
-        "options": [
-          { "subject": "POLS", "number": "1200", "title": "Intro to Political Theory", "credits": 3 },
-          { "subject": "POLS", "number": "1300", "title": "US Political System", "credits": 3 },
-          { "subject": "POLS", "number": "1500", "title": "Intro International Relations", "credits": 3 },
-          { "subject": "POLS", "number": "1700", "title": "Comparative World Politics", "credits": 3 }
-        ]
-      },
-      {
-        "description": "Intro core course 2 (choose 1 different from above)",
-        "options": [
-          { "subject": "POLS", "number": "1200", "title": "Intro to Political Theory", "credits": 3 },
-          { "subject": "POLS", "number": "1300", "title": "US Political System", "credits": 3 },
-          { "subject": "POLS", "number": "1500", "title": "Intro International Relations", "credits": 3 },
-          { "subject": "POLS", "number": "1700", "title": "Comparative World Politics", "credits": 3 }
-        ]
-      }
-    ],
-    "elective_note": "12 additional credits in POLS courses (2200-level or above recommended)"
-  },
-  {
-    "name": "Environmental Studies",
-    "total_credits": 16,
-    "required": [
-      { "subject": "ENVS", "number": "1500", "title": "Intro to Environmental Studies", "credits": 4 }
-    ],
-    "choose_one_groups": [
-      {
-        "description": "Second intro course (choose 1)",
-        "options": [
-          { "subject": "GEOG", "number": "1200", "title": "World Regional Geography", "credits": 3 },
-          { "subject": "GEOL", "number": "1020", "title": "Dynamic Earth", "credits": 3 },
-          { "subject": "ECON", "number": "1280", "title": "Intro to Environmental Economics", "credits": 3 }
-        ]
-      }
-    ],
-    "elective_note": "9 credits across Environmental Humanities, Natural Science, and Social Science categories"
-  },
-  {
-    "name": "Sociology",
-    "total_credits": 18,
-    "required": [
-      { "subject": "SOC", "number": "1500", "title": "Introduction to Sociology", "credits": 3 }
-    ],
-    "choose_one_groups": [
-      {
-        "description": "Methods/Theory (choose 1 track)",
-        "options": [
-          { "subject": "SOC", "number": "2500", "title": "Social Research Methods", "credits": 3 },
-          { "subject": "SOC", "number": "2550", "title": "Social Theory", "credits": 3 }
-        ]
-      }
-    ],
-    "elective_note": "9 additional credits in SOC courses (open, intermediate, and advanced levels)"
-  },
-  {
-    "name": "Neuroscience",
-    "total_credits": 18,
-    "required": [],
-    "choose_one_groups": [
-      {
-        "description": "Intro Neuroscience (choose 1)",
-        "options": [
-          { "subject": "NSCI", "number": "2100", "title": "Exploring Neuroscience w/lab", "credits": 4 },
-          { "subject": "NSCI", "number": "2105", "title": "Exploring Neuroscience", "credits": 3 }
-        ]
-      },
-      {
-        "description": "Research Methods (choose 1)",
-        "options": [
-          { "subject": "PSYS", "number": "2000", "title": "Psych Research Methods w/lab", "credits": 4 },
-          { "subject": "PSYS", "number": "2002", "title": "Psych Research Methods", "credits": 3 }
-        ]
-      }
-    ],
-    "elective_note": "12 credits across Behavioral/Cognitive (PSYS 2100-3299, CSD courses) and Cellular/Molecular (BCOR 2300, NSCI 3000+ courses) categories. Prerequisites: PSYS 1400, general chemistry, two biology courses."
-  },
-  {
-    "name": "History",
-    "total_credits": 18,
-    "required": [],
-    "choose_one_groups": [
-      {
-        "description": "Geographic breadth area 1 (choose 1 HST course)",
-        "options": [
-          { "subject": "HST", "number": "1200", "title": "History course (1000-level)", "credits": 3 }
-        ]
-      },
-      {
-        "description": "Geographic breadth area 2 (choose 1 HST course from different region)",
-        "options": [
-          { "subject": "HST", "number": "1300", "title": "History course (1000-level)", "credits": 3 }
-        ]
-      },
-      {
-        "description": "Geographic breadth area 3 (choose 1 HST course from different region)",
-        "options": [
-          { "subject": "HST", "number": "2200", "title": "History course (2000-level)", "credits": 3 }
-        ]
-      },
-      {
-        "description": "Geographic breadth area 4 (choose 1 HST course from different region)",
-        "options": [
-          { "subject": "HST", "number": "2300", "title": "History course (2000-level)", "credits": 3 }
-        ]
-      }
-    ],
-    "elective_note": "6 additional credits in HST courses at any level. Must span at least 2 of 4 geographic regions."
   },
   {
     "name": "English",
@@ -193,38 +271,376 @@
       { "subject": "ENGL", "number": "2000", "title": "Literary Theory", "credits": 3 }
     ],
     "choose_one_groups": [],
-    "elective_note": "12 additional credits: 6-9 credits in ENGL 2060-3880 or FTS courses, plus open-level ENGL elective"
+    "elective_note": "12 more credits: 6-9 cr from ENGL 2060-3880 or FTS courses (intermediate+) + 1 open-level ENGL elective"
   },
   {
-    "name": "Biology",
+    "name": "Environmental Studies",
     "total_credits": 16,
+    "required": [
+      { "subject": "ENVS", "number": "1500", "title": "Intro to Environmental Studies", "credits": 4 }
+    ],
+    "choose_one_groups": [
+      { "description": "Second intro course (choose 1)", "options": [
+        { "subject": "GEOG", "number": "1200", "title": "Weather, Climate & Landscapes", "credits": 3 },
+        { "subject": "GEOL", "number": "1020", "title": "Dynamic Earth", "credits": 3 },
+        { "subject": "ECON", "number": "1280", "title": "Intro to Environmental Economics", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "9 credits across Environmental Humanities (ENVS 2200-2299), Natural Science (ENVS 2600-2699), and Social Science (ENVS 2400-2499) categories"
+  },
+  {
+    "name": "European Studies",
+    "total_credits": 18,
     "required": [],
     "choose_one_groups": [
-      {
-        "description": "Foundation sequence (choose 1 option — 2 courses)",
-        "options": [
-          { "subject": "BCOR", "number": "1400", "title": "Exploring Biology 1", "credits": 4 },
-          { "subject": "BIOL", "number": "1400", "title": "Principles of Biology 1", "credits": 4 }
-        ]
-      },
-      {
-        "description": "Foundation sequence part 2 (choose 1)",
-        "options": [
-          { "subject": "BCOR", "number": "1450", "title": "Exploring Biology 2", "credits": 4 },
-          { "subject": "BIOL", "number": "1450", "title": "Principles of Biology 2", "credits": 4 }
-        ]
-      },
-      {
-        "description": "Core biology course (choose 1)",
-        "options": [
-          { "subject": "BCOR", "number": "2100", "title": "Ecology and Evolution", "credits": 3 },
-          { "subject": "BCOR", "number": "2300", "title": "Genetics", "credits": 3 },
-          { "subject": "BCOR", "number": "2500", "title": "Molecular & Cell Biology w/lab", "credits": 4 },
-          { "subject": "BCOR", "number": "2505", "title": "Molecular & Cell Biology", "credits": 3 }
-        ]
-      }
+      { "description": "European Language 1 (choose 1 at 3000+)", "options": [
+        { "subject": "FREN", "number": "3110", "title": "French Writing Workshop", "credits": 3 },
+        { "subject": "GERM", "number": "3500", "title": "German course (3000+)", "credits": 3 },
+        { "subject": "SPAN", "number": "3100", "title": "Spanish Composition & Conversation", "credits": 3 }
+      ]},
+      { "description": "European Language 2 (choose 1 at 3000+)", "options": [
+        { "subject": "FREN", "number": "3400", "title": "French Literature course", "credits": 3 },
+        { "subject": "GERM", "number": "3600", "title": "German course (3000+)", "credits": 3 },
+        { "subject": "SPAN", "number": "3610", "title": "Analyzing Hispanic Literatures", "credits": 3 }
+      ]}
     ],
-    "elective_note": "9-12 credits: 1 lecture-only BIOL elective (2100-2699 or 3100-3699), 1 lab BIOL course (4100-4699), plus 2 additional BCOR/BIOL courses"
+    "elective_note": "12 more credits: European Culture & Thought (ARTH, CLAS, ENGL, MU, PHIL, POLS) + European History & Society (CLAS, HST) + 1 advanced course (3000+ in English or 4000+ in language)"
+  },
+  {
+    "name": "Film and Television Studies",
+    "total_credits": 18,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Intro Film/TV course (choose 1)", "options": [
+        { "subject": "FTS", "number": "1400", "title": "History of Television", "credits": 3 },
+        { "subject": "FTS", "number": "1420", "title": "Classical Cinema", "credits": 3 },
+        { "subject": "FTS", "number": "1430", "title": "Contemporary Cinema", "credits": 3 },
+        { "subject": "FTS", "number": "2050", "title": "Film/TV Theory", "credits": 3 }
+      ]},
+      { "description": "Global Cinema (choose 1, FTS 2060-2069)", "options": [
+        { "subject": "FTS", "number": "2060", "title": "Global Cinema course", "credits": 3 }
+      ]},
+      { "description": "Intermediate or Advanced FTS (choose 1)", "options": [
+        { "subject": "FTS", "number": "2700", "title": "FTS Intermediate/Advanced course", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "9 more credits: 2 open-level FTS courses (6 cr) + 1 intermediate/advanced FTS course (3 cr)"
+  },
+  {
+    "name": "French",
+    "total_credits": 18,
+    "required": [
+      { "subject": "FREN", "number": "3110", "title": "French Writing Workshop", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Civilization/Culture (choose 1)", "options": [
+        { "subject": "FREN", "number": "3400", "title": "French Civilization & Culture", "credits": 3 },
+        { "subject": "FREN", "number": "3410", "title": "French Civilization & Culture II", "credits": 3 }
+      ]},
+      { "description": "Literature (choose 1)", "options": [
+        { "subject": "FREN", "number": "3610", "title": "French Literature", "credits": 3 },
+        { "subject": "FREN", "number": "3620", "title": "French Literature II", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "6-9 cr from FREN 3100-4700 (intermediate) + 3 cr from FREN 4100-4700 (advanced). Prereq: FREN 1200 or equivalent."
+  },
+  {
+    "name": "Gender, Sexuality, and Women's Studies",
+    "total_credits": 18,
+    "required": [
+      { "subject": "GSWS", "number": "2050", "title": "Gender and Feminism(s)", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Intro GSWS (choose 1)", "options": [
+        { "subject": "GSWS", "number": "1500", "title": "Intro to GSWS", "credits": 3 },
+        { "subject": "GSWS", "number": "1010", "title": "FYS: Gender, Sex & Women's Study", "credits": 3 }
+      ]},
+      { "description": "Senior Seminar (choose 1)", "options": [
+        { "subject": "GSWS", "number": "4050", "title": "Topics In: GSWS Senior Seminar", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "9 more credits: 6-9 cr from GSWS 2600-3990 or cross-listed courses (intermediate+) + up to 3 cr open-level"
+  },
+  {
+    "name": "Geography",
+    "total_credits": 18,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Foundation course 1 (choose 1)", "options": [
+        { "subject": "GEOG", "number": "1200", "title": "Weather, Climate & Landscapes", "credits": 3 },
+        { "subject": "GEOG", "number": "1760", "title": "Global Environments & Cultures", "credits": 3 },
+        { "subject": "GEOG", "number": "1780", "title": "Society, Place, and Power", "credits": 3 }
+      ]},
+      { "description": "Foundation course 2 (choose 1 different)", "options": [
+        { "subject": "GEOG", "number": "1200", "title": "Weather, Climate & Landscapes", "credits": 3 },
+        { "subject": "GEOG", "number": "1760", "title": "Global Environments & Cultures", "credits": 3 },
+        { "subject": "GEOG", "number": "1780", "title": "Society, Place, and Power", "credits": 3 }
+      ]},
+      { "description": "Geographic Methods course (choose 1, GEOG 1500-3599)", "options": [
+        { "subject": "GEOG", "number": "1500", "title": "Geographic Methods", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "6 cr from GEOG 2000-4990 or GEOL 3410 (intermediate/advanced) + 3 cr open-level GEOG"
+  },
+  {
+    "name": "Geosciences",
+    "total_credits": 15,
+    "required": [
+      { "subject": "GEOG", "number": "1200", "title": "Weather, Climate & Landscapes", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Geology foundation (choose 1)", "options": [
+        { "subject": "GEOL", "number": "1020", "title": "Dynamic Earth", "credits": 3 },
+        { "subject": "GEOL", "number": "1400", "title": "Earth History", "credits": 3 },
+        { "subject": "GEOL", "number": "1100", "title": "The Ocean", "credits": 3 }
+      ]},
+      { "description": "Geosciences practice (choose 1)", "options": [
+        { "subject": "GEOG", "number": "2510", "title": "Geographic Information Systems", "credits": 3 },
+        { "subject": "GEOG", "number": "2520", "title": "Remote Sensing", "credits": 3 },
+        { "subject": "GEOL", "number": "2525", "title": "Geocomputing", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "6-8 cr from Earth Materials, Land-Surface Processes, and Atmospheric/Climatological topics. 15 credits total."
+  },
+  {
+    "name": "Geospatial Technologies",
+    "total_credits": 15,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Core requirement (choose 1)", "options": [
+        { "subject": "CEE", "number": "2000", "title": "Geomatics", "credits": 3 },
+        { "subject": "GEOL", "number": "2525", "title": "Geocomputing", "credits": 3 },
+        { "subject": "ENSC", "number": "2300", "title": "Global Environmental Assessment", "credits": 3 }
+      ]},
+      { "description": "GIS breadth (choose 1)", "options": [
+        { "subject": "GEOG", "number": "2510", "title": "Geographic Information Systems", "credits": 3 },
+        { "subject": "NR", "number": "2430", "title": "GIS for Natural Resources", "credits": 3 }
+      ]},
+      { "description": "Data Science breadth (choose 1)", "options": [
+        { "subject": "CS", "number": "1210", "title": "Intro to Computing", "credits": 3 },
+        { "subject": "CS", "number": "2100", "title": "Intermediate Programming", "credits": 3 }
+      ]},
+      { "description": "Capstone/Advanced (choose 1)", "options": [
+        { "subject": "GEOG", "number": "3505", "title": "Advanced GIS", "credits": 3 },
+        { "subject": "GEOG", "number": "3520", "title": "Advanced Remote Sensing", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "3 more credits from GIS, Remote Sensing, or Data Science categories. At least 9 cr at 2000-level+."
+  },
+  {
+    "name": "German",
+    "total_credits": 18,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "German 2000-level (choose 1)", "options": [
+        { "subject": "GERM", "number": "2100", "title": "Intermediate German I", "credits": 3 },
+        { "subject": "GERM", "number": "2200", "title": "Intermediate German II", "credits": 3 }
+      ]},
+      { "description": "German 3000-level (choose 1)", "options": [
+        { "subject": "GERM", "number": "3500", "title": "Advanced German course", "credits": 3 }
+      ]},
+      { "description": "German advanced elective (choose 1, GERM 4500-4990)", "options": [
+        { "subject": "GERM", "number": "4500", "title": "Advanced German course", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "18 credits total: 15 cr from GERM 2100-4995 + 1 course from GERM 4500-4990. Prereq: GERM 1200."
+  },
+  {
+    "name": "Global Studies",
+    "total_credits": 18,
+    "required": [
+      { "subject": "GRS", "number": "1500", "title": "Intro to Global Studies", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Core Competency 1 (choose 1)", "options": [
+        { "subject": "ANTH", "number": "1100", "title": "Cultural Anthropology", "credits": 3 },
+        { "subject": "CDAE", "number": "1020", "title": "World Food, Pop & Development", "credits": 3 },
+        { "subject": "ECON", "number": "1130", "title": "Intro to Global Economics", "credits": 3 },
+        { "subject": "GEOG", "number": "1760", "title": "Global Environments & Cultures", "credits": 3 },
+        { "subject": "POLS", "number": "1500", "title": "Intro International Relations", "credits": 3 },
+        { "subject": "POLS", "number": "1700", "title": "Comparative World Politics", "credits": 3 }
+      ]},
+      { "description": "Core Competency 2 (choose 1 different)", "options": [
+        { "subject": "ANTH", "number": "1100", "title": "Cultural Anthropology", "credits": 3 },
+        { "subject": "HST", "number": "1310", "title": "Global History to 1500", "credits": 3 },
+        { "subject": "HST", "number": "1315", "title": "Global History since 1500", "credits": 3 },
+        { "subject": "POLS", "number": "1500", "title": "Intro International Relations", "credits": 3 },
+        { "subject": "REL", "number": "1605", "title": "World Religions", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "9 cr from one concentration at 2000-level+: Political-Economic, Human/Environmental, Humanities, Asian Studies, European Studies, or Latin American/Caribbean"
+  },
+  {
+    "name": "Health and Society",
+    "total_credits": 21,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Intro Health course 1 (choose 1)", "options": [
+        { "subject": "HSCI", "number": "1100", "title": "Introduction to Public Health", "credits": 3 },
+        { "subject": "SOC", "number": "1300", "title": "Health Care in America", "credits": 3 },
+        { "subject": "ANTH", "number": "1190", "title": "Global Health Development & Diversity", "credits": 3 }
+      ]},
+      { "description": "Intro Health course 2 (choose 1 different)", "options": [
+        { "subject": "HSCI", "number": "1100", "title": "Introduction to Public Health", "credits": 3 },
+        { "subject": "SOC", "number": "1300", "title": "Health Care in America", "credits": 3 },
+        { "subject": "ANTH", "number": "1190", "title": "Global Health Development & Diversity", "credits": 3 }
+      ]},
+      { "description": "Intermediate Health course 1 (choose 1)", "options": [
+        { "subject": "ANTH", "number": "2170", "title": "Culture, Health and Healing", "credits": 3 },
+        { "subject": "PSYS", "number": "2500", "title": "Psychopathology", "credits": 3 },
+        { "subject": "SOC", "number": "2300", "title": "Population Health Research", "credits": 3 },
+        { "subject": "ECON", "number": "2850", "title": "Health Economics", "credits": 3 }
+      ]},
+      { "description": "Intermediate Health course 2 (choose 1 different)", "options": [
+        { "subject": "ANTH", "number": "2191", "title": "Foundations of Global Health", "credits": 3 },
+        { "subject": "SOC", "number": "2260", "title": "Criminal Justice & Public Health", "credits": 3 },
+        { "subject": "SOC", "number": "2320", "title": "Sociology of Death & Dying", "credits": 3 }
+      ]},
+      { "description": "Statistics prereq (choose 1)", "options": [
+        { "subject": "STAT", "number": "1110", "title": "Elements of Statistics", "credits": 3 },
+        { "subject": "STAT", "number": "1410", "title": "Basic Statistical Methods 1", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "6 more credits: 1-2 additional courses at 2000-level+ from approved interdisciplinary options. 21 credits total."
+  },
+  {
+    "name": "History",
+    "total_credits": 18,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Geographic area 1 (choose 1 HST course)", "options": [
+        { "subject": "HST", "number": "1200", "title": "History (1000-level)", "credits": 3 }
+      ]},
+      { "description": "Geographic area 2 (choose 1 HST from different region)", "options": [
+        { "subject": "HST", "number": "1300", "title": "History (1000-level)", "credits": 3 }
+      ]},
+      { "description": "Geographic area 3 (choose 1 HST from different region)", "options": [
+        { "subject": "HST", "number": "2200", "title": "History (2000-level)", "credits": 3 }
+      ]},
+      { "description": "Geographic area 4 (choose 1 HST from different region)", "options": [
+        { "subject": "HST", "number": "2300", "title": "History (2000-level)", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "6 additional credits in HST courses at any level. Must span at least 2 of 4 geographic regions."
+  },
+  {
+    "name": "Holocaust Studies",
+    "total_credits": 18,
+    "required": [
+      { "subject": "HST", "number": "1715", "title": "Modern Europe", "credits": 3 },
+      { "subject": "HST", "number": "2760", "title": "Modern Germany", "credits": 3 },
+      { "subject": "HST", "number": "2790", "title": "The Holocaust", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "European Language 1 (choose 1)", "options": [
+        { "subject": "GERM", "number": "1100", "title": "Elementary German I", "credits": 3 },
+        { "subject": "FREN", "number": "1100", "title": "Elementary French I", "credits": 3 }
+      ]},
+      { "description": "European Language 2 (choose 1)", "options": [
+        { "subject": "GERM", "number": "1200", "title": "Elementary German II", "credits": 3 },
+        { "subject": "FREN", "number": "1200", "title": "Elementary French II", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "12 cr: 1 intermediate HST/SOC course at 2000-level+ + 3 open-level electives from WLIT 1150/1155 or related courses"
+  },
+  {
+    "name": "Italian Studies",
+    "total_credits": 18,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Italian 3000-level course 1 (choose 1)", "options": [
+        { "subject": "ITAL", "number": "3100", "title": "Advanced Italian I", "credits": 3 }
+      ]},
+      { "description": "Italian 3000-level course 2 (choose 1)", "options": [
+        { "subject": "ITAL", "number": "3200", "title": "Advanced Italian II", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "18 credits: 6+ cr from ITAL 3100-3990 + supporting courses from Classics, History, Religion, Theatre, WLIT, or ARTH. Prereq: ITAL 1200. Max 6 cr from any single non-Italian prefix."
+  },
+  {
+    "name": "Japanese",
+    "total_credits": 15,
+    "required": [
+      { "subject": "JAPN", "number": "3100", "title": "Advanced Japanese I", "credits": 3 },
+      { "subject": "JAPN", "number": "3200", "title": "Advanced Japanese II", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Japanese 2000-level (choose 1)", "options": [
+        { "subject": "JAPN", "number": "2100", "title": "Intermediate Japanese I", "credits": 3 },
+        { "subject": "JAPN", "number": "2200", "title": "Intermediate Japanese II", "credits": 3 }
+      ]},
+      { "description": "Elective (choose 1)", "options": [
+        { "subject": "JAPN", "number": "3000", "title": "Japanese course (3000+)", "credits": 3 },
+        { "subject": "WLIT", "number": "2350", "title": "Topics in Japanese Lit in Translation", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "15 credits total. Prereq: JAPN 1200."
+  },
+  {
+    "name": "Jewish Studies",
+    "total_credits": 18,
+    "required": [
+      { "subject": "JS", "number": "1500", "title": "Jews and Judaisms", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Intermediate Jewish Studies (choose 1)", "options": [
+        { "subject": "REL", "number": "2245", "title": "Topics in Jewish Traditions", "credits": 3 },
+        { "subject": "HST", "number": "2646", "title": "Jewish History in the US", "credits": 3 },
+        { "subject": "HST", "number": "2790", "title": "The Holocaust", "credits": 3 },
+        { "subject": "HST", "number": "2792", "title": "Jews in Modern Europe", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "12 more credits: 1-2 intermediate courses (6-9 cr) + 2 open-level courses (6 cr) from JS 1000+ offerings"
+  },
+  {
+    "name": "Latin American and Caribbean Studies",
+    "total_credits": 18,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Spanish language 1 (choose 1)", "options": [
+        { "subject": "SPAN", "number": "2200", "title": "Intermediate Spanish II", "credits": 3 },
+        { "subject": "SPAN", "number": "3100", "title": "Spanish Composition & Conversation", "credits": 3 }
+      ]},
+      { "description": "Spanish language 2 (choose 1)", "options": [
+        { "subject": "SPAN", "number": "3102", "title": "Spanish for Heritage Speakers", "credits": 3 },
+        { "subject": "SPAN", "number": "3110", "title": "Business Spanish", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "12 credits from at least 2 disciplines: CDAE 1030, DNCE 1430, ENGL 2244, HST 1472/1475/2472/2545, MU 1175, POLS 2720/3730, SPAN 3665/3670, WLIT 1022. At least 9 cr at 2000+ (or 3000+ for language)."
+  },
+  {
+    "name": "Law and Society",
+    "total_credits": 18,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Foundational course (choose 1)", "options": [
+        { "subject": "POLS", "number": "1300", "title": "US Political System", "credits": 3 },
+        { "subject": "SOC", "number": "1210", "title": "Deviance & Social Control", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "12-15 cr: 4-5 courses from POLS 2315-2379/4310, SOC 2230-3259, and approved interdisciplinary courses (BUS, ECON, PHIL, PSYS, REL, etc.). At least 9 cr at 2000-level+, max 9 cr from any single prefix."
+  },
+  {
+    "name": "Linguistics",
+    "total_credits": 18,
+    "required": [
+      { "subject": "LING", "number": "1500", "title": "Introduction to Linguistics", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Core Elective 1 (choose 1 of 4)", "options": [
+        { "subject": "LING", "number": "2510", "title": "Phonetics", "credits": 3 },
+        { "subject": "LING", "number": "2530", "title": "Phonology", "credits": 3 },
+        { "subject": "LING", "number": "2560", "title": "Syntax", "credits": 3 },
+        { "subject": "LING", "number": "2620", "title": "Pragmatics", "credits": 3 }
+      ]},
+      { "description": "Core Elective 2 (choose 1 different)", "options": [
+        { "subject": "LING", "number": "2510", "title": "Phonetics", "credits": 3 },
+        { "subject": "LING", "number": "2530", "title": "Phonology", "credits": 3 },
+        { "subject": "LING", "number": "2560", "title": "Syntax", "credits": 3 },
+        { "subject": "LING", "number": "2620", "title": "Pragmatics", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "9 more credits: 6 cr from any LING 1010-4995 + 3 cr from LING 2200-4995"
   },
   {
     "name": "Mathematics",
@@ -234,85 +650,435 @@
       { "subject": "MATH", "number": "1248", "title": "Calculus II", "credits": 4 }
     ],
     "choose_one_groups": [
-      {
-        "description": "Calculus III or Foundations (choose 1)",
-        "options": [
-          { "subject": "MATH", "number": "2248", "title": "Calculus III", "credits": 4 },
-          { "subject": "MATH", "number": "2055", "title": "Fundamentals of Mathematics", "credits": 3 }
-        ]
-      }
+      { "description": "Calculus III or Foundations (choose 1)", "options": [
+        { "subject": "MATH", "number": "2248", "title": "Calculus III", "credits": 4 },
+        { "subject": "MATH", "number": "2055", "title": "Fundamentals of Mathematics", "credits": 3 }
+      ]}
     ],
-    "elective_note": "9 additional credits in MATH courses at the 2000-level or above (excluding MATH 2111 and MATH 2180)"
+    "elective_note": "9 additional credits in MATH 2000-level or above (excluding MATH 2111 and MATH 2180)"
   },
   {
-    "name": "Statistics",
+    "name": "Middle East Studies",
+    "total_credits": 15,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "History of Middle East (choose 1)", "options": [
+        { "subject": "HST", "number": "1420", "title": "Topics in Middle East History", "credits": 3 }
+      ]},
+      { "description": "Core course (choose 1)", "options": [
+        { "subject": "JS", "number": "1610", "title": "Contemporary Israel", "credits": 3 },
+        { "subject": "REL", "number": "1230", "title": "Introducing Islam", "credits": 3 },
+        { "subject": "POLS", "number": "2525", "title": "Int'l Politics Middle East", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "9 more credits from HST 4420, REL 2235, POLS 2525/JS 1610/REL 1230 (if not used above), plus Arabic/Hebrew language (up to 6 cr). At least 9 cr at 2000-level+."
+  },
+  {
+    "name": "Music",
     "total_credits": 18,
     "required": [],
     "choose_one_groups": [
-      {
-        "description": "Calculus prerequisite (choose 1)",
-        "options": [
-          { "subject": "MATH", "number": "1212", "title": "Fundamentals of Calculus I", "credits": 3 },
-          { "subject": "MATH", "number": "1234", "title": "Calculus I", "credits": 4 }
-        ]
-      },
-      {
-        "description": "Intro Statistics (choose 1)",
-        "options": [
-          { "subject": "STAT", "number": "1410", "title": "Basic Statistical Methods 1", "credits": 3 },
-          { "subject": "STAT", "number": "2430", "title": "Statistics for Engineering", "credits": 3 }
-        ]
-      },
-      {
-        "description": "Intermediate Statistics (choose 1)",
-        "options": [
-          { "subject": "STAT", "number": "2830", "title": "Basic Statistical Methods 2", "credits": 3 },
-          { "subject": "STAT", "number": "3210", "title": "Advanced Statistical Methods", "credits": 3 }
-        ]
-      },
-      {
-        "description": "Computing/Data Science (choose 1)",
-        "options": [
-          { "subject": "STAT", "number": "2870", "title": "Basics of Data Science", "credits": 3 },
-          { "subject": "STAT", "number": "3010", "title": "Stat Computing & Data Analysis", "credits": 3 },
-          { "subject": "CS", "number": "1210", "title": "Intro to Computing", "credits": 3 }
-        ]
-      }
+      { "description": "Music History 1 (choose 1)", "options": [
+        { "subject": "MU", "number": "1100", "title": "Music History course", "credits": 3 }
+      ]},
+      { "description": "Music History 2 (choose 1)", "options": [
+        { "subject": "MU", "number": "2100", "title": "Music History/Literature (2000-level)", "credits": 3 }
+      ]},
+      { "description": "Music Theory (choose 1)", "options": [
+        { "subject": "MU", "number": "2310", "title": "Harmony and Form I", "credits": 3 },
+        { "subject": "MU", "number": "2320", "title": "Jazz Harmony", "credits": 3 }
+      ]}
     ],
-    "elective_note": "6 additional credits in STAT courses"
+    "elective_note": "9 more credits: 3 cr additional theory/composition (MU 1310/1770/2770/2300-3399) + 6 cr performance (private lessons/ensembles). At least 9 cr at 2000-level+."
   },
   {
-    "name": "Computer Science",
+    "name": "Music Technology and Business",
     "total_credits": 18,
     "required": [
-      { "subject": "CS", "number": "1210", "title": "Intro to Computing", "credits": 3 }
+      { "subject": "MU", "number": "1770", "title": "Intro to Music Technology", "credits": 3 }
     ],
     "choose_one_groups": [
-      {
-        "description": "Intermediate CS (choose 1)",
-        "options": [
-          { "subject": "CS", "number": "2100", "title": "Intermediate Programming", "credits": 3 },
-          { "subject": "CS", "number": "2110", "title": "Intermediate Programming", "credits": 3 }
-        ]
-      }
+      { "description": "Music History (choose 1)", "options": [
+        { "subject": "MU", "number": "1100", "title": "Music History course (1000-level)", "credits": 3 },
+        { "subject": "MU", "number": "2100", "title": "Music History/Literature (2000-level)", "credits": 3 }
+      ]},
+      { "description": "Music Theory (choose 1)", "options": [
+        { "subject": "MU", "number": "1310", "title": "Music Theory Fundamentals", "credits": 3 },
+        { "subject": "MU", "number": "2310", "title": "Harmony and Form I", "credits": 3 }
+      ]},
+      { "description": "Business/Management (choose 1)", "options": [
+        { "subject": "MU", "number": "2782", "title": "Arts Management", "credits": 3 },
+        { "subject": "MU", "number": "2785", "title": "Music Business and Copyright", "credits": 3 }
+      ]}
     ],
-    "elective_note": "12 additional credits in CS courses at the 2000-level or above"
+    "elective_note": "3-6 more credits from MU 1775, 2770, 2771, 2772, 3771, 4770, 4771. At least 9 cr at 2000-level+."
+  },
+  {
+    "name": "Musical Theatre",
+    "total_credits": 20,
+    "required": [
+      { "subject": "THE", "number": "1100", "title": "Intro to Acting", "credits": 3 },
+      { "subject": "DNCE", "number": "1400", "title": "Ballet: Foundations", "credits": 3 },
+      { "subject": "MU", "number": "1310", "title": "Music Theory Fundamentals", "credits": 3 },
+      { "subject": "THE", "number": "2160", "title": "Performing Musical Theatre", "credits": 3 },
+      { "subject": "DNCE", "number": "2450", "title": "Musical Theatre Dance", "credits": 3 },
+      { "subject": "THE", "number": "1500", "title": "Dramatic Analysis", "credits": 3 },
+      { "subject": "THE", "number": "2710", "title": "Theatre Performance Practicum", "credits": 1 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "2 cr from private voice lessons or performing ensemble (MUE 2125, MUE 2300, or MUL 2400). Cannot major in Music or Theatre."
+  },
+  {
+    "name": "Neuroscience",
+    "total_credits": 18,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Intro Neuroscience (choose 1)", "options": [
+        { "subject": "NSCI", "number": "2100", "title": "Exploring Neuroscience w/lab", "credits": 4 },
+        { "subject": "NSCI", "number": "2105", "title": "Exploring Neuroscience", "credits": 3 }
+      ]},
+      { "description": "Research Methods (choose 1)", "options": [
+        { "subject": "PSYS", "number": "2000", "title": "Psych Research Methods w/lab", "credits": 4 },
+        { "subject": "PSYS", "number": "2002", "title": "Psych Research Methods", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "12 credits across Behavioral/Cognitive (PSYS 2100-3299, CSD courses) and Cellular/Molecular (BCOR 2300, NSCI 3000+, PHRM 3010) categories. Prerequisites: PSYS 1400, general chemistry, two biology courses."
   },
   {
     "name": "Philosophy",
     "total_credits": 18,
     "required": [],
     "choose_one_groups": [
-      {
-        "description": "Intro Philosophy course (choose 1)",
-        "options": [
-          { "subject": "PHIL", "number": "1000", "title": "Intro to Philosophy", "credits": 3 },
-          { "subject": "PHIL", "number": "1010", "title": "Critical Thinking", "credits": 3 },
-          { "subject": "PHIL", "number": "1100", "title": "Ethics", "credits": 3 },
-          { "subject": "PHIL", "number": "1200", "title": "Logic", "credits": 3 }
-        ]
-      }
+      { "description": "History of Philosophy (choose 1, PHIL 2700-3799)", "options": [
+        { "subject": "PHIL", "number": "2700", "title": "History of Philosophy course", "credits": 3 }
+      ]},
+      { "description": "Open-level elective 1 (choose 1)", "options": [
+        { "subject": "PHIL", "number": "1010", "title": "Critical Thinking", "credits": 3 },
+        { "subject": "PHIL", "number": "1100", "title": "Ethics", "credits": 3 },
+        { "subject": "PHIL", "number": "1200", "title": "Logic", "credits": 3 },
+        { "subject": "PHIL", "number": "1600", "title": "Moral Problems", "credits": 3 }
+      ]},
+      { "description": "Open-level elective 2 (choose 1)", "options": [
+        { "subject": "PHIL", "number": "1010", "title": "Critical Thinking", "credits": 3 },
+        { "subject": "PHIL", "number": "2200", "title": "Philosophy of Mind", "credits": 3 },
+        { "subject": "PHIL", "number": "2630", "title": "Environmental Ethics", "credits": 3 }
+      ]},
+      { "description": "Open-level elective 3 (choose 1)", "options": [
+        { "subject": "PHIL", "number": "2200", "title": "Philosophy course (2000+)", "credits": 3 }
+      ]},
+      { "description": "Intermediate or above (choose 1, PHIL 2200+)", "options": [
+        { "subject": "PHIL", "number": "2200", "title": "Philosophy course (2000+)", "credits": 3 }
+      ]},
+      { "description": "Advanced level (choose 1, PHIL 3200+)", "options": [
+        { "subject": "PHIL", "number": "3200", "title": "Philosophy course (3000+)", "credits": 3 }
+      ]}
     ],
-    "elective_note": "15 additional credits in PHIL courses including at least 9 credits at or above the 2000-level"
+    "elective_note": "18 credits total: 1 History of Philosophy course + 3 open-level + 1 intermediate + 1 advanced"
+  },
+  {
+    "name": "Political Science",
+    "total_credits": 18,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Intro core course 1 (choose 1)", "options": [
+        { "subject": "POLS", "number": "1200", "title": "Intro to Political Theory", "credits": 3 },
+        { "subject": "POLS", "number": "1300", "title": "US Political System", "credits": 3 },
+        { "subject": "POLS", "number": "1500", "title": "Intro International Relations", "credits": 3 },
+        { "subject": "POLS", "number": "1700", "title": "Comparative World Politics", "credits": 3 }
+      ]},
+      { "description": "Intro core course 2 (choose 1 different)", "options": [
+        { "subject": "POLS", "number": "1200", "title": "Intro to Political Theory", "credits": 3 },
+        { "subject": "POLS", "number": "1300", "title": "US Political System", "credits": 3 },
+        { "subject": "POLS", "number": "1500", "title": "Intro International Relations", "credits": 3 },
+        { "subject": "POLS", "number": "1700", "title": "Comparative World Politics", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "12 additional credits in POLS courses (2200-level or above recommended)"
+  },
+  {
+    "name": "Psychological Science",
+    "total_credits": 18,
+    "required": [
+      { "subject": "PSYS", "number": "1400", "title": "Intro to Psychological Science", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Research Methods (choose 1)", "options": [
+        { "subject": "PSYS", "number": "2000", "title": "Psych Research Methods w/lab", "credits": 4 },
+        { "subject": "PSYS", "number": "2002", "title": "Psych Research Methods", "credits": 3 }
+      ]},
+      { "description": "Content Elective 1 (choose 1)", "options": [
+        { "subject": "PSYS", "number": "2100", "title": "Learning, Cognition & Behavior", "credits": 3 },
+        { "subject": "PSYS", "number": "2200", "title": "Biopsychology", "credits": 3 },
+        { "subject": "PSYS", "number": "2300", "title": "Social Psychology", "credits": 3 },
+        { "subject": "PSYS", "number": "2400", "title": "Developmental Psych: Childhood", "credits": 3 },
+        { "subject": "PSYS", "number": "2500", "title": "Psychopathology", "credits": 3 }
+      ]},
+      { "description": "Content Elective 2 (choose 1 different)", "options": [
+        { "subject": "PSYS", "number": "2100", "title": "Learning, Cognition & Behavior", "credits": 3 },
+        { "subject": "PSYS", "number": "2200", "title": "Biopsychology", "credits": 3 },
+        { "subject": "PSYS", "number": "2300", "title": "Social Psychology", "credits": 3 },
+        { "subject": "PSYS", "number": "2400", "title": "Developmental Psych: Childhood", "credits": 3 },
+        { "subject": "PSYS", "number": "2500", "title": "Psychopathology", "credits": 3 }
+      ]},
+      { "description": "Content Elective 3 (choose 1 different)", "options": [
+        { "subject": "PSYS", "number": "2100", "title": "Learning, Cognition & Behavior", "credits": 3 },
+        { "subject": "PSYS", "number": "2200", "title": "Biopsychology", "credits": 3 },
+        { "subject": "PSYS", "number": "2300", "title": "Social Psychology", "credits": 3 },
+        { "subject": "PSYS", "number": "2400", "title": "Developmental Psych: Childhood", "credits": 3 },
+        { "subject": "PSYS", "number": "2500", "title": "Psychopathology", "credits": 3 }
+      ]},
+      { "description": "Advanced Elective (choose 1, PSYS 3100+)", "options": [
+        { "subject": "PSYS", "number": "3100", "title": "Advanced Psych Elective (3100+)", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "One advanced PSYS course (3100–3990 or 4990)"
+  },
+  {
+    "name": "Public Policy Analysis",
+    "total_credits": 21,
+    "required": [
+      { "subject": "ECON", "number": "1400", "title": "Principles of Macroeconomics", "credits": 3 },
+      { "subject": "ECON", "number": "1450", "title": "Principles of Microeconomics", "credits": 3 },
+      { "subject": "ECON", "number": "2210", "title": "Public Policy", "credits": 3 },
+      { "subject": "POLS", "number": "2301", "title": "Congress", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "US Politics prereq (choose 1)", "options": [
+        { "subject": "POLS", "number": "1300", "title": "US Political System", "credits": 3 },
+        { "subject": "POLS", "number": "1013", "title": "FYS US Political System", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "3-6 cr from POLS policy electives (2315-3490) + 0-3 cr from ECON policy electives (2110-2800). 21 credits total."
+  },
+  {
+    "name": "Religion",
+    "total_credits": 18,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Intro Religion (choose 1, REL 1000-1990)", "options": [
+        { "subject": "REL", "number": "1000", "title": "Religion course (1000-level)", "credits": 3 }
+      ]},
+      { "description": "Theories of Religion (choose 1)", "options": [
+        { "subject": "REL", "number": "2050", "title": "Interpretation of Religion", "credits": 3 },
+        { "subject": "REL", "number": "2060", "title": "Religious Literacy", "credits": 3 }
+      ]},
+      { "description": "Advanced Religion (choose 1, REL 3000+)", "options": [
+        { "subject": "REL", "number": "3000", "title": "Religion course (3000+)", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "6 more credits open-level from REL courses, CAS 1710, or related religious studies offerings"
+  },
+  {
+    "name": "Reporting and Documentary Storytelling",
+    "total_credits": 18,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Core Writing (choose 1)", "options": [
+        { "subject": "ENGL", "number": "1700", "title": "Topics in Introductory Writing", "credits": 3 },
+        { "subject": "ENGL", "number": "1740", "title": "The Art of the Essay", "credits": 3 }
+      ]},
+      { "description": "Media History/Theory (choose 1)", "options": [
+        { "subject": "CDAE", "number": "2230", "title": "Media-Policy-Action", "credits": 3 },
+        { "subject": "FTS", "number": "1400", "title": "History of Television", "credits": 3 },
+        { "subject": "FTS", "number": "1420", "title": "Classical Cinema", "credits": 3 }
+      ]},
+      { "description": "Practice course 1 (choose 1)", "options": [
+        { "subject": "CDAE", "number": "2130", "title": "Activist Journalism", "credits": 3 },
+        { "subject": "CDAE", "number": "2210", "title": "News Writing Across Media", "credits": 3 },
+        { "subject": "ENGL", "number": "2700", "title": "Creative Nonfiction", "credits": 3 }
+      ]},
+      { "description": "Practice course 2 (choose 1)", "options": [
+        { "subject": "FTS", "number": "2600", "title": "Documentary Video Production", "credits": 3 },
+        { "subject": "ARTS", "number": "2640", "title": "Video Art", "credits": 3 }
+      ]},
+      { "description": "Practice course 3 (choose 1)", "options": [
+        { "subject": "ARTS", "number": "2510", "title": "Photography", "credits": 3 },
+        { "subject": "FTS", "number": "3700", "title": "Advanced Screenwriting", "credits": 3 }
+      ]},
+      { "description": "Internship (choose 1)", "options": [
+        { "subject": "CAS", "number": "3922", "title": "Internship: Community News", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "18 credits total: writing + media theory + 3 practice courses + internship"
+  },
+  {
+    "name": "Russian",
+    "total_credits": 20,
+    "required": [
+      { "subject": "RUSS", "number": "2100", "title": "Intermediate Russian I", "credits": 4 },
+      { "subject": "RUSS", "number": "2200", "title": "Intermediate Russian II", "credits": 4 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "12 more credits from RUSS 2100-4996, or WLIT 1250/2250 (up to 3 cr). Prereq: RUSS 1200. 20 credits total."
+  },
+  {
+    "name": "Russian/East European Studies",
+    "total_credits": 15,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Russian Language 1 (choose 1)", "options": [
+        { "subject": "RUSS", "number": "2100", "title": "Intermediate Russian I", "credits": 4 }
+      ]},
+      { "description": "Russian Language 2 (choose 1)", "options": [
+        { "subject": "RUSS", "number": "2200", "title": "Intermediate Russian II", "credits": 4 }
+      ]}
+    ],
+    "elective_note": "9 more credits from HST 2698/2750/2790, POLS 2710/2712/3610, WLIT 1250/2250. At least 9 cr at 2000-level+. Prereq: RUSS 1200."
+  },
+  {
+    "name": "Sexuality and Gender Identity Studies",
+    "total_credits": 18,
+    "required": [
+      { "subject": "GSWS", "number": "2070", "title": "LGBT Politics and History", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Intro GSWS (choose 1)", "options": [
+        { "subject": "GSWS", "number": "1500", "title": "Intro to GSWS", "credits": 3 },
+        { "subject": "GSWS", "number": "1010", "title": "FYS: Gender, Sex & Women's Study", "credits": 3 }
+      ]},
+      { "description": "Senior Seminar (choose 1)", "options": [
+        { "subject": "GSWS", "number": "4050", "title": "Topics In: GSWS Senior Seminar", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "9 more credits: 6-9 cr from GSWS 2600-3660 or cross-listed intermediate courses + up to 3 cr open-level"
+  },
+  {
+    "name": "Sociology",
+    "total_credits": 18,
+    "required": [
+      { "subject": "SOC", "number": "1500", "title": "Introduction to Sociology", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Methods or Theory (choose 1)", "options": [
+        { "subject": "SOC", "number": "2500", "title": "Social Research Methods", "credits": 3 },
+        { "subject": "SOC", "number": "2550", "title": "Social Theory", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "9 additional credits in SOC courses (open, intermediate, and advanced levels)"
+  },
+  {
+    "name": "Spanish",
+    "total_credits": 18,
+    "required": [
+      { "subject": "SPAN", "number": "3610", "title": "Analyzing Hispanic Literatures", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Composition/Conversation (choose 1)", "options": [
+        { "subject": "SPAN", "number": "3100", "title": "Spanish Composition & Conversation", "credits": 3 },
+        { "subject": "SPAN", "number": "3110", "title": "Business Spanish", "credits": 3 }
+      ]},
+      { "description": "Civilization/Society (choose 1)", "options": [
+        { "subject": "SPAN", "number": "3615", "title": "Spanish Civilization & Culture", "credits": 3 },
+        { "subject": "SPAN", "number": "3665", "title": "Latin American Civilization", "credits": 3 }
+      ]},
+      { "description": "Literature/Culture (choose 1)", "options": [
+        { "subject": "SPAN", "number": "3620", "title": "Spanish Literature", "credits": 3 },
+        { "subject": "SPAN", "number": "3670", "title": "Latin American Literature", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "6 cr from SPAN 4100-4990 (upper-level electives). Prereq: SPAN 2100 or equivalent."
+  },
+  {
+    "name": "Statistics",
+    "total_credits": 18,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Calculus prereq (choose 1)", "options": [
+        { "subject": "MATH", "number": "1212", "title": "Fundamentals of Calculus I", "credits": 3 },
+        { "subject": "MATH", "number": "1234", "title": "Calculus I", "credits": 4 }
+      ]},
+      { "description": "Intro Statistics (choose 1)", "options": [
+        { "subject": "STAT", "number": "1410", "title": "Basic Statistical Methods 1", "credits": 3 },
+        { "subject": "STAT", "number": "2430", "title": "Statistics for Engineering", "credits": 3 }
+      ]},
+      { "description": "Intermediate Statistics (choose 1)", "options": [
+        { "subject": "STAT", "number": "2830", "title": "Basic Statistical Methods 2", "credits": 3 },
+        { "subject": "STAT", "number": "3210", "title": "Advanced Statistical Methods", "credits": 3 }
+      ]},
+      { "description": "Computing/Data Science (choose 1)", "options": [
+        { "subject": "STAT", "number": "2870", "title": "Basics of Data Science", "credits": 3 },
+        { "subject": "STAT", "number": "3010", "title": "Stat Computing & Data Analysis", "credits": 3 },
+        { "subject": "CS", "number": "1210", "title": "Intro to Computing", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "6 additional credits in STAT courses"
+  },
+  {
+    "name": "Theatre",
+    "total_credits": 18,
+    "required": [
+      { "subject": "THE", "number": "1500", "title": "Dramatic Analysis", "credits": 3 },
+      { "subject": "THE", "number": "2519", "title": "Theatre History I", "credits": 3 },
+      { "subject": "THE", "number": "2700", "title": "Theatre Program/Performance Practicum", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Performance/Design elective 1 (choose 1)", "options": [
+        { "subject": "THE", "number": "1100", "title": "Intro to Acting", "credits": 3 },
+        { "subject": "THE", "number": "1300", "title": "Fundamentals of Design", "credits": 3 },
+        { "subject": "THE", "number": "1305", "title": "Stagecraft", "credits": 3 }
+      ]},
+      { "description": "Performance/Design elective 2 (choose 1 different)", "options": [
+        { "subject": "THE", "number": "1100", "title": "Intro to Acting", "credits": 3 },
+        { "subject": "THE", "number": "1310", "title": "Stagecraft: Lighting", "credits": 3 },
+        { "subject": "THE", "number": "1330", "title": "Stagecraft: Costumes", "credits": 3 }
+      ]},
+      { "description": "Advanced Theatre (choose 1, THE 2000+)", "options": [
+        { "subject": "THE", "number": "2000", "title": "Theatre course (2000+)", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "18 credits total. Cannot major in Theatre."
+  },
+  {
+    "name": "Writing",
+    "total_credits": 18,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Intro Writing 1 (choose 1, ENGL 1700-1799)", "options": [
+        { "subject": "ENGL", "number": "1700", "title": "Topics in Introductory Writing", "credits": 3 },
+        { "subject": "ENGL", "number": "1730", "title": "Introduction to Fiction Writing", "credits": 3 },
+        { "subject": "ENGL", "number": "1740", "title": "The Art of the Essay", "credits": 3 }
+      ]},
+      { "description": "Intro Writing 2 (choose 1 different, ENGL 1700-1799)", "options": [
+        { "subject": "ENGL", "number": "1700", "title": "Topics in Introductory Writing", "credits": 3 },
+        { "subject": "ENGL", "number": "1730", "title": "Introduction to Fiction Writing", "credits": 3 }
+      ]},
+      { "description": "Intermediate Writing 1 (choose 1, ENGL 2700-2799 or 3700-3799)", "options": [
+        { "subject": "ENGL", "number": "2700", "title": "Creative Nonfiction", "credits": 3 },
+        { "subject": "ENGL", "number": "2730", "title": "Fiction Writing", "credits": 3 }
+      ]},
+      { "description": "Intermediate Writing 2 (choose 1 different)", "options": [
+        { "subject": "ENGL", "number": "2700", "title": "Creative Nonfiction", "credits": 3 },
+        { "subject": "ENGL", "number": "3700", "title": "Advanced Writing course", "credits": 3 }
+      ]},
+      { "description": "Writing & Literature (choose 1, ENGL 2060-3880)", "options": [
+        { "subject": "ENGL", "number": "2060", "title": "ENGL Literature course (2000+)", "credits": 3 }
+      ]},
+      { "description": "Elective (choose 1)", "options": [
+        { "subject": "ENGL", "number": "1700", "title": "Writing elective", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "18 credits: 2 intro writing + 2 intermediate writing + 1 writing & literature + 1 elective"
+  },
+  {
+    "name": "Zoology",
+    "total_credits": 16,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Foundation sequence part 1 (choose 1)", "options": [
+        { "subject": "BCOR", "number": "1400", "title": "Exploring Biology 1", "credits": 4 },
+        { "subject": "BIOL", "number": "1400", "title": "Principles of Biology 1", "credits": 4 }
+      ]},
+      { "description": "Foundation sequence part 2 (choose 1)", "options": [
+        { "subject": "BCOR", "number": "1450", "title": "Exploring Biology 2", "credits": 4 },
+        { "subject": "BIOL", "number": "1450", "title": "Principles of Biology 2", "credits": 4 }
+      ]},
+      { "description": "Core biology course (choose 1)", "options": [
+        { "subject": "BCOR", "number": "2100", "title": "Ecology and Evolution", "credits": 3 },
+        { "subject": "BCOR", "number": "2300", "title": "Genetics", "credits": 3 },
+        { "subject": "BCOR", "number": "2500", "title": "Molecular & Cell Biology w/lab", "credits": 4 },
+        { "subject": "BCOR", "number": "2505", "title": "Molecular & Cell Biology", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "9-12 cr: 2 lecture BIOL courses (2100-3699) + 1 lab BIOL course (4100-4699) + 1 additional BCOR/BIOL course. Focus on animal biology."
   }
 ]
