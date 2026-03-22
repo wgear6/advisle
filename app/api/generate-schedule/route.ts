@@ -308,7 +308,7 @@ CRITICAL RULES:
 6. YEAR-APPROPRIATE COURSES: ${yearContext || "Use judgment based on credits completed."} Do NOT schedule capstone, senior thesis, or courses clearly labeled as senior-only for freshmen or sophomores. Do not schedule 4000+ level courses as a core requirement for freshmen.
 7. CREDIT TARGET: The student wants ${targetCredits} credits in their FINAL schedule. A post-processing step will remove any courses with time conflicts, so you MUST over-select. Aim for AT LEAST ${Math.round(targetCredits * 1.5)} credits in your initial list — this is non-negotiable. For example, if the target is 18, return courses totaling ~27 credits so that even after 2-3 courses are removed for conflicts, the final schedule still hits 18. Count your credits before returning and add more courses if you are under ${Math.round(targetCredits * 1.5)}.
 8. Only include courses that appear in available_sections with a real CRN
-9. Prioritize: Major Core > Major Elective > General Education > Free Elective
+9. Prioritize: Minor > Major Core > Major Elective > General Education > Free Elective
 10. Spread classes across the week — avoid 4+ classes on same day
 11. For "3000+" or level requirements: pick ONE good course from available sections, not multiple
 ${customNotes ? `\nSTUDENT NOTES (read carefully and follow): ${customNotes}` : ""}

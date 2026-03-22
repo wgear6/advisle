@@ -362,10 +362,12 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           remaining_courses: [
-            ...audit.remaining_courses,
             ...Object.values(minorMissingCourses).flat().filter(
-              (mc) => !audit.remaining_courses.some((rc) => rc.subject === mc.subject && rc.number === mc.number)
+              (mc) => !audit.remaining_courses.some(
+                (rc) => rc.subject.toUpperCase() === mc.subject.toUpperCase() && rc.number === mc.number
+              )
             ),
+            ...audit.remaining_courses,
           ],
           completed_courses: audit.completed_courses ?? [],
           in_progress_courses: audit.in_progress_courses ?? [],
