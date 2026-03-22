@@ -126,6 +126,16 @@
     "elective_note": "9-12 credits: 1 lecture BIOL elective (2100-3699), 1 lab BIOL course (4100-4699), plus 2 additional BCOR/BIOL courses"
   },
   {
+    "name": "Business Administration",
+    "total_credits": 15,
+    "required": [
+      { "subject": "BUS", "number": "1101", "title": "Business Savvy", "credits": 3 },
+      { "subject": "BUS", "number": "1610", "title": "Financial Accounting", "credits": 3 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "3 additional BUS courses at 2000-level or above (9 credits). Prerequisites: ECON 1400 and ECON 1450 (not counted toward minor credits)."
+  },
+  {
     "name": "Canadian Studies",
     "total_credits": 15,
     "required": [],
