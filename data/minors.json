@@ -1090,5 +1090,556 @@
       ]}
     ],
     "elective_note": "9-12 cr: 2 lecture BIOL courses (2100-3699) + 1 lab BIOL course (4100-4699) + 1 additional BCOR/BIOL course. Focus on animal biology."
+  },
+  {
+    "name": "Accounting",
+    "total_credits": 15,
+    "required": [
+      { "subject": "BUS", "number": "1610", "title": "Financial Accounting 1", "credits": 3 },
+      { "subject": "BUS", "number": "2620", "title": "Managerial Accounting 1", "credits": 3 },
+      { "subject": "BUS", "number": "3610", "title": "Corporate Financial Reporting 1", "credits": 3 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "6 credits: choose 2 from BUS 2370, 2380, 3611, 3615, 3620, 3640, 3643, 3660, 5615, 5630, 5635, 5641, 5650."
+  },
+  {
+    "name": "Agroecology",
+    "total_credits": 15,
+    "required": [
+      { "subject": "ALE", "number": "1210", "title": "Intro to Agroecology", "credits": 3 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "12 credits: choose 4 from ALE 2000+ courses (pest mgmt, plant health, soil, advanced topics)."
+  },
+  {
+    "name": "Animal Science",
+    "total_credits": 15,
+    "required": [
+      { "subject": "ASCI", "number": "1000", "title": "Introductory Animal Sciences", "credits": 3 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "12 credits: 9 cr from ASCI electives (2000+ recommended) + 3 cr from any ASCI level."
+  },
+  {
+    "name": "Applied Design",
+    "total_credits": 15,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Foundation course (choose 1)", "options": [
+        { "subject": "CDAE", "number": "1150", "title": "Visual Communication", "credits": 3 },
+        { "subject": "CDAE", "number": "1600", "title": "Design Innovation I", "credits": 3 }
+      ]},
+      { "description": "Sequence A course 1 (choose 1 sequence)", "options": [
+        { "subject": "CDAE", "number": "1010", "title": "Drafting Design I", "credits": 3 },
+        { "subject": "CDAE", "number": "1160", "title": "Communication Design I", "credits": 3 },
+        { "subject": "CDAE", "number": "1170", "title": "Digital Illustration", "credits": 3 }
+      ]},
+      { "description": "Sequence A course 2 (choose 1 to match sequence above)", "options": [
+        { "subject": "CDAE", "number": "2010", "title": "Drafting Design II", "credits": 3 },
+        { "subject": "CDAE", "number": "2160", "title": "Communication Design II", "credits": 3 },
+        { "subject": "CDAE", "number": "3310", "title": "Applied Computer Graphics", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "6 credits: choose 2 from CDAE 2000+ electives (media, digital design, community design)."
+  },
+  {
+    "name": "Astronomy",
+    "total_credits": 16,
+    "required": [
+      { "subject": "ASTR", "number": "1400", "title": "Exploring the Cosmos w/lab", "credits": 4 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "12 credits: choose 3 from ASTR 2100, 2120, 2140, 2160 (9 cr) + 3 cr from any ASTR course."
+  },
+  {
+    "name": "Bioinformatics",
+    "total_credits": 19,
+    "required": [
+      { "subject": "MMG", "number": "3310", "title": "Survey Bioinformatic Databases", "credits": 3 },
+      { "subject": "MMG", "number": "3320", "title": "Advanced Bioinformatics", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Genetics foundation (choose 1)", "options": [
+        { "subject": "MMG", "number": "2040", "title": "Intro Molecular Genetics", "credits": 4 },
+        { "subject": "BCOR", "number": "2300", "title": "Genetics", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "9 credits from: MMG 3330, CS 2100, CS 2240, CS 3540, BME 3340, STAT 1870, STAT 2870, STAT 3010."
+  },
+  {
+    "name": "Biosecurity",
+    "total_credits": 17,
+    "required": [
+      { "subject": "MMG", "number": "1020", "title": "Unseen Worlds: Microbes & You", "credits": 3 },
+      { "subject": "ASCI", "number": "1070", "title": "ABCs of Biosecurity", "credits": 3 },
+      { "subject": "CDAE", "number": "1320", "title": "Protect Your Privacy", "credits": 2 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "9 credits from: CS 1060, CDAE 3600, MMG 2010, MMG 3350, NFS 2156, POLS 1500/1700/2510/2525/2720."
+  },
+  {
+    "name": "Community and International Development",
+    "total_credits": 18,
+    "required": [
+      { "subject": "CDAE", "number": "1020", "title": "World Food, Pop & Develop", "credits": 3 },
+      { "subject": "CDAE", "number": "1610", "title": "Principles of Comm Dev Econ", "credits": 3 },
+      { "subject": "CDAE", "number": "2020", "title": "Sustainable Community Dev", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Capstone experience (choose 1)", "options": [
+        { "subject": "CDAE", "number": "3710", "title": "Local Community Initiatives", "credits": 3 },
+        { "subject": "CDAE", "number": "3730", "title": "Project Development & Planning", "credits": 3 },
+        { "subject": "CDAE", "number": "3991", "title": "Internship", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "3 additional credits from approved CDAE courses."
+  },
+  {
+    "name": "Community Entrepreneurship",
+    "total_credits": 16,
+    "required": [
+      { "subject": "CDAE", "number": "1610", "title": "Principles of Comm Dev Econ", "credits": 3 },
+      { "subject": "CDAE", "number": "2660", "title": "Intro to Comm Entrepreneurship", "credits": 3 },
+      { "subject": "CDAE", "number": "2670", "title": "Fin Mgmt: Comm Entrepreneurs", "credits": 4 },
+      { "subject": "CDAE", "number": "2680", "title": "Marketing: Com Entrepreneurs", "credits": 3 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "3 credits from: CDAE 1010, 1660, 2020, 2400, 2570, 2600, 3180, 3660, 3670, 3710, 3730."
+  },
+  {
+    "name": "Consumer and Advertising",
+    "total_credits": 15,
+    "required": [
+      { "subject": "CDAE", "number": "1240", "title": "Fund of Public Communication", "credits": 3 },
+      { "subject": "CDAE", "number": "2200", "title": "Strategic Writing for PCOM", "credits": 3 },
+      { "subject": "CDAE", "number": "2280", "title": "Strategic Communication", "credits": 3 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "6 credits: choose 2 from CDAE 2120, 2270, 2430, 2440, 2570, 2660, 2680, 2780, 3991."
+  },
+  {
+    "name": "Ecological Landscape Horticulture",
+    "total_credits": 15,
+    "required": [
+      { "subject": "ALE", "number": "1100", "title": "Home & Garden Horticulture", "credits": 3 },
+      { "subject": "ALE", "number": "2230", "title": "Garden Flowers", "credits": 3 },
+      { "subject": "ALE", "number": "2250", "title": "Woody Landscape Plants", "credits": 4 },
+      { "subject": "ALE", "number": "2370", "title": "Landscape Design Fundamentals", "credits": 3 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "2 credits: choose 1 from ALE 2060, 2170, 2380, 2560, 2610, 3380."
+  },
+  {
+    "name": "Food Systems",
+    "total_credits": 18,
+    "required": [
+      { "subject": "NFS", "number": "1073", "title": "Farm to Table: Food Systems", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Natural Sciences (choose 1)", "options": [
+        { "subject": "ALE", "number": "1210", "title": "Intro to Agroecology", "credits": 3 },
+        { "subject": "PBIO", "number": "1060", "title": "Plants, Food, and Culture", "credits": 3 },
+        { "subject": "PBIO", "number": "1040", "title": "Intro to Botany", "credits": 3 }
+      ]},
+      { "description": "Social Sciences & Humanities (choose 1)", "options": [
+        { "subject": "ANTH", "number": "1140", "title": "Food and Culture", "credits": 3 },
+        { "subject": "CDAE", "number": "1020", "title": "World Food, Pop & Develop", "credits": 3 },
+        { "subject": "PHIL", "number": "1635", "title": "Ethics of Eating", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "9 credits: 6 cr upper-level electives (2000+) + 3 cr flexible electives (any level) from food, agriculture, policy, or nutrition courses."
+  },
+  {
+    "name": "Forestry",
+    "total_credits": 16,
+    "required": [
+      { "subject": "FOR", "number": "1210", "title": "Dendrology", "credits": 4 },
+      { "subject": "FOR", "number": "2110", "title": "Nat Res Ecol and Assessment 1", "credits": 4 },
+      { "subject": "FOR", "number": "3230", "title": "Multi-Resource Silviculture", "credits": 4 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "4 additional credits in FOR courses (at least 1 credit at 2000-level or above)."
+  },
+  {
+    "name": "Green Building and Community Design",
+    "total_credits": 15,
+    "required": [
+      { "subject": "CDAE", "number": "1010", "title": "Drafting Design I", "credits": 3 },
+      { "subject": "CDAE", "number": "2010", "title": "Drafting Design II", "credits": 3 },
+      { "subject": "CDAE", "number": "3760", "title": "Community Design Studio", "credits": 3 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "6 credits: choose 2 from CDAE 1060, 2020, 2600, 3180, 3600, 3730, NR 2430, ALE 2370, 2560, 3380."
+  },
+  {
+    "name": "Microbiology",
+    "total_credits": 17,
+    "required": [
+      { "subject": "MMG", "number": "2010", "title": "Microbiology & Infectious Disease", "credits": 4 }
+    ],
+    "choose_one_groups": [
+      { "description": "Foundation genetics/cell bio (choose 1)", "options": [
+        { "subject": "BCOR", "number": "2300", "title": "Genetics", "credits": 3 },
+        { "subject": "BCOR", "number": "2500", "title": "Molecular & Cell Biology w/lab", "credits": 4 }
+      ]}
+    ],
+    "elective_note": "9 credits from MMG courses at 2000-level or above (excluding MMG 2994, 2995, 3994, 3995)."
+  },
+  {
+    "name": "Molecular Genetics",
+    "total_credits": 17,
+    "required": [
+      { "subject": "MMG", "number": "2040", "title": "Intro Molecular Genetics", "credits": 4 }
+    ],
+    "choose_one_groups": [
+      { "description": "Cell bio/genetics foundation (choose 1)", "options": [
+        { "subject": "BCOR", "number": "2300", "title": "Genetics", "credits": 3 },
+        { "subject": "BCOR", "number": "2500", "title": "Molecular & Cell Biology w/lab", "credits": 4 }
+      ]}
+    ],
+    "elective_note": "9 credits from MMG courses at 2000-level or above (excluding MMG 2994, 2995, 3994, 3995)."
+  },
+  {
+    "name": "Nutrition and Food Sciences",
+    "total_credits": 15,
+    "required": [
+      { "subject": "NFS", "number": "1043", "title": "Fundamentals of Nutrition", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Foods intro (choose 1)", "options": [
+        { "subject": "NFS", "number": "1053", "title": "Basic Concepts of Foods", "credits": 3 },
+        { "subject": "NFS", "number": "1072", "title": "Kitchen Science", "credits": 3 },
+        { "subject": "NFS", "number": "1073", "title": "Farm to Table: Food Systems", "credits": 3 }
+      ]},
+      { "description": "Applied nutrition (choose 1)", "options": [
+        { "subject": "NFS", "number": "2113", "title": "U.S. Food Policy and Politics", "credits": 3 },
+        { "subject": "NFS", "number": "2143", "title": "Nutrition in the Life Cycle", "credits": 3 },
+        { "subject": "NFS", "number": "2153", "title": "Principles of Food Technology", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "6 credits: choose 2 from NFS 2000+ courses."
+  },
+  {
+    "name": "Parks, Recreation, and Tourism",
+    "total_credits": 15,
+    "required": [],
+    "choose_one_groups": [
+      { "description": "Core course 1 (choose 1)", "options": [
+        { "subject": "PRT", "number": "1100", "title": "Int Sustainable Rec & Tourism", "credits": 3 },
+        { "subject": "PRT", "number": "1500", "title": "Tourism Planning", "credits": 3 },
+        { "subject": "PRT", "number": "1700", "title": "Parks & Protected Areas", "credits": 3 }
+      ]},
+      { "description": "Core course 2 (choose 1)", "options": [
+        { "subject": "PRT", "number": "2570", "title": "Ski Area Management 1", "credits": 3 },
+        { "subject": "PRT", "number": "2580", "title": "Resort Mgmt & Marketing", "credits": 3 }
+      ]},
+      { "description": "Core course 3 (choose 1)", "options": [
+        { "subject": "PRT", "number": "1100", "title": "Int Sustainable Rec & Tourism", "credits": 3 },
+        { "subject": "PRT", "number": "1500", "title": "Tourism Planning", "credits": 3 },
+        { "subject": "PRT", "number": "1700", "title": "Parks & Protected Areas", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "6 credits: choose 2 from PRT 3300, 3580, 4350, 4550."
+  },
+  {
+    "name": "Physics",
+    "total_credits": 15,
+    "required": [
+      { "subject": "PHYS", "number": "2500", "title": "Waves and Quanta", "credits": 4 }
+    ],
+    "choose_one_groups": [
+      { "description": "Foundation sequence (choose 1 option)", "options": [
+        { "subject": "PHYS", "number": "1600", "title": "Fundamentals of Physics I", "credits": 4 },
+        { "subject": "PHYS", "number": "1500", "title": "Physics for Engineers I", "credits": 4 }
+      ]},
+      { "description": "Foundation sequence part 2 (choose 1 to match above)", "options": [
+        { "subject": "PHYS", "number": "1650", "title": "Fundamentals of Physics II", "credits": 4 },
+        { "subject": "PHYS", "number": "1550", "title": "Physics for Engineers II", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "3 credits from any PHYS 2000–4989 course."
+  },
+  {
+    "name": "Plant Biology",
+    "total_credits": 15,
+    "required": [],
+    "choose_one_groups": [],
+    "elective_note": "15 credits: 12 cr in PBIO at 2000-level or above + 3 cr in PBIO or BCOR at 2000-level or above. Prereq: one intro biology course."
+  },
+  {
+    "name": "Public Communication",
+    "total_credits": 15,
+    "required": [
+      { "subject": "CDAE", "number": "1240", "title": "Fund of Public Communication", "credits": 3 },
+      { "subject": "CDAE", "number": "2200", "title": "Strategic Writing for PCOM", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Media/strategy course (choose 1)", "options": [
+        { "subject": "CDAE", "number": "2240", "title": "Public Communication Media", "credits": 3 },
+        { "subject": "CDAE", "number": "2230", "title": "Media-Policy-Action", "credits": 3 },
+        { "subject": "CDAE", "number": "2280", "title": "Strategic Communication", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "6 credits: choose 2 from an approved list of CDAE, PA, and POLS courses."
+  },
+  {
+    "name": "Soil Science",
+    "total_credits": 17,
+    "required": [
+      { "subject": "ALE", "number": "2610", "title": "Fundamentals of Soil Science", "credits": 4 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "13 credits: choose 4 from ALE 2540, 2620, 3610, 3640, 3680, 3690, with 1 optional substitution from GEOL 3410 or SEP 3880."
+  },
+  {
+    "name": "Sports Management",
+    "total_credits": 18,
+    "required": [
+      { "subject": "EDPE", "number": "2010", "title": "Intro to Sports Management", "credits": 3 },
+      { "subject": "EDPE", "number": "3200", "title": "Sport in Society", "credits": 3 },
+      { "subject": "PRT", "number": "4350", "title": "Outdoor Recreation Planning", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Management course (choose 1)", "options": [
+        { "subject": "BUS", "number": "2300", "title": "Leadership & Org Behavior", "credits": 3 },
+        { "subject": "EDPE", "number": "2190", "title": "Careers in College Athletics", "credits": 3 },
+        { "subject": "EDPE", "number": "3300", "title": "Philosophy of Coaching", "credits": 3 }
+      ]},
+      { "description": "Marketing/Communications course (choose 1)", "options": [
+        { "subject": "BUS", "number": "2500", "title": "Marketing Management", "credits": 3 },
+        { "subject": "CDAE", "number": "2430", "title": "Sports Media", "credits": 3 },
+        { "subject": "PRT", "number": "2580", "title": "Resort Mgmt & Marketing", "credits": 3 }
+      ]},
+      { "description": "Entrepreneurship course (choose 1)", "options": [
+        { "subject": "BUS", "number": "3545", "title": "Name, Image & Likeness", "credits": 3 },
+        { "subject": "CDAE", "number": "2660", "title": "Intro to Comm Entrepreneurship", "credits": 3 },
+        { "subject": "PRT", "number": "3580", "title": "Entrepreneurship Rec & Tourism", "credits": 3 }
+      ]}
+    ],
+    "elective_note": ""
+  },
+  {
+    "name": "Wildlife Biology",
+    "total_credits": 15,
+    "required": [
+      { "subject": "WFB", "number": "1740", "title": "Wildlife Conservation", "credits": 3 },
+      { "subject": "WFB", "number": "2740", "title": "Prin of Wildlife Management", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Ornithology/ichthyology (choose 1)", "options": [
+        { "subject": "WFB", "number": "2300", "title": "Ornithology", "credits": 3 },
+        { "subject": "WFB", "number": "4320", "title": "Ichthyology", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "6 credits from WFB electives (max 3 cr from internship/independent study): WFB 3100, 3240, 3990, 4750, 4830."
+  },
+  {
+    "name": "American Sign Language",
+    "total_credits": 20,
+    "required": [
+      { "subject": "ASL", "number": "2100", "title": "American Sign Language III", "credits": 4 },
+      { "subject": "ASL", "number": "2200", "title": "American Sign Language IV", "credits": 4 },
+      { "subject": "ASL", "number": "3100", "title": "American Sign Language V", "credits": 3 },
+      { "subject": "ASL", "number": "3200", "title": "American Sign Language VI", "credits": 3 },
+      { "subject": "ASL", "number": "2300", "title": "Understanding Deaf Culture", "credits": 3 },
+      { "subject": "ASL", "number": "3300", "title": "ASL Literature", "credits": 3 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": ""
+  },
+  {
+    "name": "Childhood Studies",
+    "total_credits": 18,
+    "required": [
+      { "subject": "EDEC", "number": "1070", "title": "Movie Night: Critical Childhood", "credits": 3 },
+      { "subject": "EDEC", "number": "3070", "title": "Advocacy in Action", "credits": 6 }
+    ],
+    "choose_one_groups": [
+      { "description": "Child development (choose 1)", "options": [
+        { "subject": "EDEC", "number": "1630", "title": "Child Development", "credits": 3 },
+        { "subject": "HDF", "number": "1050", "title": "Human Development", "credits": 3 },
+        { "subject": "PSYS", "number": "2400", "title": "Developmental Psychology: Childhood", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "6 credits: EDEC electives + interdisciplinary electives from ANTH, HDF, PSYS, SOC, and others."
+  },
+  {
+    "name": "Coaching",
+    "total_credits": 15,
+    "required": [
+      { "subject": "EDPE", "number": "3000", "title": "Contemporary Issues in Coaching", "credits": 3 },
+      { "subject": "EDPE", "number": "3300", "title": "Philosophy of Coaching", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Sport training science (choose 1)", "options": [
+        { "subject": "EDPE", "number": "3650", "title": "Exercise & Sport Science", "credits": 3 },
+        { "subject": "EDPE", "number": "3670", "title": "Sci Strength Training & Condtng", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "6 credits: choose 2 coaching pedagogy courses from EDPE special topics."
+  },
+  {
+    "name": "Communication Sciences and Disorders",
+    "total_credits": 18,
+    "required": [
+      { "subject": "CSD", "number": "1940", "title": "Dev of Spoken Language", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Linguistics foundation (choose 1)", "options": [
+        { "subject": "CSD", "number": "1230", "title": "Linguistics for Clinicians", "credits": 3 },
+        { "subject": "LING", "number": "1500", "title": "Introduction to Linguistics", "credits": 3 }
+      ]},
+      { "description": "Intro to disorders (choose 1)", "options": [
+        { "subject": "CSD", "number": "1200", "title": "Intro to Disordered Communication", "credits": 3 },
+        { "subject": "CSD", "number": "1250", "title": "Comm Diff & Dis in Media", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "9 credits from CSD courses at 2000-level or above (excluding CSD 2210 and CSD 3620)."
+  },
+  {
+    "name": "Computer Science Education",
+    "total_credits": 19,
+    "required": [
+      { "subject": "CS", "number": "1080", "title": "Intro to Web Site Dev", "credits": 3 },
+      { "subject": "CS", "number": "1210", "title": "Computer Programming I", "credits": 3 },
+      { "subject": "CS", "number": "1870", "title": "Intro to Data Science", "credits": 3 },
+      { "subject": "CS", "number": "2100", "title": "Intermediate Programming", "credits": 4 },
+      { "subject": "CS", "number": "2210", "title": "Computer Organization", "credits": 3 },
+      { "subject": "EDSC", "number": "3990", "title": "Methods of Teaching Computer Science", "credits": 3 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": ""
+  },
+  {
+    "name": "Education for Cultural and Linguistic Diversity",
+    "total_credits": 18,
+    "required": [
+      { "subject": "ECLD", "number": "1560", "title": "Lang Policy Issues, Race & School", "credits": 3 },
+      { "subject": "ECLD", "number": "2020", "title": "Bilingual Education & Policy", "credits": 3 },
+      { "subject": "ECLD", "number": "3050", "title": "Fmly School & Cmty Collaboration", "credits": 3 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "9 credits: choose 3 from ECLD, CSD, EDFS, LING, SWSS, and related courses (min 1 at 2000-level+)."
+  },
+  {
+    "name": "Education Studies",
+    "total_credits": 15,
+    "required": [
+      { "subject": "EDFS", "number": "1010", "title": "Race and Racism in the U.S.", "credits": 3 },
+      { "subject": "EDFS", "number": "1020", "title": "School and Society", "credits": 3 },
+      { "subject": "EDFS", "number": "3030", "title": "Soc, Hst & Phil Found of Educ", "credits": 3 },
+      { "subject": "EDML", "number": "3220", "title": "Social Justice Education", "credits": 3 },
+      { "subject": "EDSP", "number": "3250", "title": "Culture of Disability", "credits": 3 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": ""
+  },
+  {
+    "name": "Emergency Medical Services",
+    "total_credits": 18,
+    "required": [
+      { "subject": "HLTH", "number": "1030", "title": "Medical Terminology", "credits": 2 },
+      { "subject": "HLTH", "number": "2530", "title": "Emergency Medical Technician", "credits": 6 },
+      { "subject": "HLTH", "number": "2531", "title": "EMT Skills Competency", "credits": 1 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "9 credits from: EMED 3000/3010/3200, HLTH 1510, 2450, 2510, 2950, 3000, 3570, 3940."
+  },
+  {
+    "name": "Global Public Health",
+    "total_credits": 18,
+    "required": [
+      { "subject": "HSCI", "number": "2100", "title": "Fndns of Global Health", "credits": 3 },
+      { "subject": "HSCI", "number": "2190", "title": "Global Public Health Practice", "credits": 3 },
+      { "subject": "HSCI", "number": "3200", "title": "Pressing Issues in Global PH", "credits": 3 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "9 credits: 3 cr applied learning (travel/experiential) + 6 cr from ANTH, CDAE, GEOG, POLS, SOC, or other approved courses."
+  },
+  {
+    "name": "Human Development and Family Science",
+    "total_credits": 18,
+    "required": [
+      { "subject": "HDF", "number": "1050", "title": "Human Development", "credits": 3 },
+      { "subject": "HDF", "number": "1600", "title": "Family Context of Development", "credits": 3 }
+    ],
+    "choose_one_groups": [
+      { "description": "Development elective (choose 1)", "options": [
+        { "subject": "HDF", "number": "1200", "title": "Aging: Change & Adaptation", "credits": 3 },
+        { "subject": "HDF", "number": "1650", "title": "Human Relationships & Sexuality", "credits": 3 }
+      ]}
+    ],
+    "elective_note": "9 credits: HDF 2610 required + 2 additional HDF 2000+ courses (Track A) or HDF 2610 + HDF 2890 + 1 HDF 3000+ seminar (Track B)."
+  },
+  {
+    "name": "Integrative Health",
+    "total_credits": 15,
+    "required": [
+      { "subject": "HLTH", "number": "2010", "title": "Intro to Integrative Health", "credits": 3 },
+      { "subject": "HLTH", "number": "3010", "title": "Sci & Evidence Integrative Health", "credits": 3 },
+      { "subject": "HLTH", "number": "2070", "title": "Human Health & the Environment", "credits": 3 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "6 credits from at least 2 different areas: Mindfulness/Mind & Body, Behavior Change, Travel/Global Health, Inclusion/Diversity, Yoga/Movement, or Integrative Nutrition."
+  },
+  {
+    "name": "Integrative Health and Wellness Coaching",
+    "total_credits": 15,
+    "required": [
+      { "subject": "HLTH", "number": "3859", "title": "Health & Wellness Coaching", "credits": 4 },
+      { "subject": "HLTH", "number": "3860", "title": "Health & Well Coaching Advanced", "credits": 4 },
+      { "subject": "HLTH", "number": "3910", "title": "Professional Prep for the HWC", "credits": 1 },
+      { "subject": "HLTH", "number": "3920", "title": "Health Wellness Coach Practicum", "credits": 3 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "3 credits from specialty track options including HLTH 2010, 3010, CSD 3899."
+  },
+  {
+    "name": "Medical Diagnostics",
+    "total_credits": 18,
+    "required": [
+      { "subject": "MLS", "number": "2010", "title": "Medical Diagnostic Techniques", "credits": 3 },
+      { "subject": "MLS", "number": "3000", "title": "Applied Medical Diagnostics", "credits": 3 },
+      { "subject": "BHSC", "number": "3810", "title": "Applied Molecular Biology", "credits": 3 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "9 credits from: MLS 3100, 3110, 3200, 3300, BHSC 3420, HLTH 2350."
+  },
+  {
+    "name": "Military Leadership",
+    "total_credits": 18,
+    "required": [
+      { "subject": "MS", "number": "1110", "title": "Intro to ROTC & US Army", "credits": 1 },
+      { "subject": "MS", "number": "1120", "title": "Intro Mil Skills & Followership", "credits": 1 },
+      { "subject": "MS", "number": "1210", "title": "Leadership & Team Development", "credits": 2 },
+      { "subject": "MS", "number": "1220", "title": "Individual & Team Leading", "credits": 2 },
+      { "subject": "MS", "number": "2131", "title": "Lead & Train Small Organizations", "credits": 3 },
+      { "subject": "MS", "number": "2132", "title": "Lead & Manage Small Organization", "credits": 3 },
+      { "subject": "MS", "number": "3241", "title": "Ldrshp Challenges & Goal Setting", "credits": 3 },
+      { "subject": "MS", "number": "3242", "title": "Lead Org Ethically & Competently", "credits": 3 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "Requires ROTC contract by senior year."
+  },
+  {
+    "name": "Public Health Equity and Advocacy",
+    "total_credits": 18,
+    "required": [
+      { "subject": "HSCI", "number": "1100", "title": "Introduction to Public Health", "credits": 3 },
+      { "subject": "HSCI", "number": "1900", "title": "Foundations of Health Equity", "credits": 3 },
+      { "subject": "HSCI", "number": "2600", "title": "Racism and Health Disparities", "credits": 3 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "9 credits: 3 cr Ethical Leadership for Health course + 6 cr from approved electives (HSCI, SOC, CDAE, POLS, SWSS, HLTH, and others)."
+  },
+  {
+    "name": "Special Education",
+    "total_credits": 18,
+    "required": [
+      { "subject": "EDSP", "number": "1050", "title": "Iss Aff Persons W/Disabil 1", "credits": 3 },
+      { "subject": "EDSP", "number": "2170", "title": "Behavior Management", "credits": 3 }
+    ],
+    "choose_one_groups": [],
+    "elective_note": "12 credits: 6 cr from EDSP/ECSP core electives + 6 cr from core list or supplementary (ASL, CSD, HDF, LING, PSYS). Application required."
   }
 ]
