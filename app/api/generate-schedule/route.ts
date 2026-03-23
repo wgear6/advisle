@@ -355,12 +355,9 @@ function buildSchedule(
   inProgressCourses: SimpleCourse[],
   completedCourses: SimpleCourse[],
   targetCredits: number,
-  crnEnrollmentMap: Map<string, { maxEnrollment: number; currentEnrollment: number; seatsAvailable: number; isFull: boolean }>
+  crnEnrollmentMap: Map<string, { maxEnrollment: number; currentEnrollment: number; seatsAvailable: number; isFull: boolean }>,
+  alreadyScheduled: CourseSection[] = []
 ): { schedule: (CourseSection & { requirement_category: string })[]; totalCredits: number } {
-  const doneKeys = new Set([
-    ...completedCourses.map((c) => `${c.subject.toUpperCase()} ${c.number}`),
-    ...inProgressCourses.map((c) => `${c.subject.toUpperCase()} ${c.number}`),
-  ]);
 
   // Map remaining courses for metadata lookup
   const courseMetaMap = new Map<string, RemainingCourse>();
@@ -369,7 +366,8 @@ function buildSchedule(
   }
 
   const scheduled: (CourseSection & { requirement_category: string })[] = [];
-  const scheduledSectionsForConflict: CourseSection[] = [];
+  // Seed conflict tracker with any courses already on the schedule (e.g. from first pass)
+  const scheduledSectionsForConflict: CourseSection[] = [...alreadyScheduled];
   const scheduledKeys = new Set<string>();
   let totalCredits = 0;
 
@@ -397,7 +395,7 @@ function buildSchedule(
       scheduledSectionsForConflict,
       inProgressCourses,
       completedCourses
-    ).filter((s) => prereqsSatisfied(s.prereqs, doneKeys));
+    );
 
     if (candidates.length === 0) continue;
 
@@ -546,7 +544,8 @@ export async function POST(req: NextRequest) {
           in_progress_courses,
           completed_courses,
           effective_target - finalCredits,
-          crnEnrollmentMap
+          crnEnrollmentMap,
+          finalSchedule  // avoid conflicts with first-pass courses
         );
         finalSchedule = [...finalSchedule, ...extra];
         finalCredits += extraCredits;
