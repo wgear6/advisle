@@ -213,7 +213,17 @@ export function findAvailableSections(
   completedCourses: SimpleCourse[]
 ): CourseSection[] {
   const allDone = [...inProgressCourses, ...completedCourses];
-  const allDoneKeys = new Set(allDone.map((d) => `${d.subject.toUpperCase()} ${d.number}`));
+  const rawDoneKeys = new Set(allDone.map((d) => `${d.subject.toUpperCase()} ${d.number}`));
+
+  // Treat UVM cross-listed pairs as the same course (3xxx ↔ 5xxx with matching last 3 digits)
+  const allDoneKeys = new Set(rawDoneKeys);
+  for (const key of rawDoneKeys) {
+    const spaceIdx = key.indexOf(" ");
+    const subj = key.slice(0, spaceIdx);
+    const num = key.slice(spaceIdx + 1);
+    if (num.length === 4 && num[0] === "3") allDoneKeys.add(`${subj} 5${num.slice(1)}`);
+    if (num.length === 4 && num[0] === "5") allDoneKeys.add(`${subj} 3${num.slice(1)}`);
+  }
 
   return allSections.filter((s) => {
     if (course.subject === "GEN_ED") {
@@ -363,8 +373,11 @@ function buildSchedule(
   const scheduledKeys = new Set<string>();
   let totalCredits = 0;
 
+  const MAX_CREDITS = 19;
+
   for (const pick of prioritizedCourses) {
     if (totalCredits >= targetCredits) break;
+    if (totalCredits >= MAX_CREDITS) break;
 
     const key = `${pick.subject.toUpperCase()} ${pick.number}`;
     if (scheduledKeys.has(key)) continue;
@@ -392,6 +405,9 @@ function buildSchedule(
     const open = candidates.filter((s) => !s.isFull);
     const pool = open.length > 0 ? open : candidates;
     const best = pool.sort((a, b) => b.seatsAvailable - a.seatsAvailable)[0];
+
+    // Hard cap: never exceed 19 credits (overload requires extra tuition)
+    if (totalCredits + best.credits > MAX_CREDITS) continue;
 
     const enrollment = crnEnrollmentMap.get(best.crn);
     const entry = {
@@ -438,6 +454,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No remaining courses provided" }, { status: 400 });
     }
 
+    // Hard cap at 19 — anything above requires a paid overload at UVM
+    const effective_target = Math.min(target_credits, 19);
+
     const allSections = loadCourses();
 
     // Build CRN → enrollment lookup
@@ -478,7 +497,7 @@ export async function POST(req: NextRequest) {
       availableCourseKeys,
       completed_courses,
       in_progress_courses,
-      target_credits,
+      effective_target,
       credits_completed,
       major,
       custom_notes
@@ -492,7 +511,7 @@ export async function POST(req: NextRequest) {
       blocked_times,
       in_progress_courses,
       completed_courses,
-      target_credits,
+      effective_target,
       crnEnrollmentMap
     );
 
@@ -500,7 +519,7 @@ export async function POST(req: NextRequest) {
     let finalSchedule = schedule;
     let finalCredits = totalCredits;
 
-    if (finalCredits < target_credits) {
+    if (finalCredits < effective_target) {
       const scheduledKeys = new Set(finalSchedule.map((c) => `${c.subject.toUpperCase()} ${c.number}`));
       const aiPickedKeys = new Set(aiSelection.prioritized_courses.map((p) => `${p.subject.toUpperCase()} ${p.number}`));
 
@@ -520,7 +539,7 @@ export async function POST(req: NextRequest) {
           blocked_times,
           in_progress_courses,
           completed_courses,
-          target_credits - finalCredits,
+          effective_target - finalCredits,
           crnEnrollmentMap
         );
         finalSchedule = [...finalSchedule, ...extra];
