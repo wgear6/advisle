@@ -72,11 +72,22 @@ export interface SimpleCourse {
   credits?: number;
 }
 
+interface AICoursePick {
+  subject: string;
+  number: string;
+  requirement_category: string;
+}
+
+interface AISelection {
+  prioritized_courses: AICoursePick[];
+  notes: string;
+  skipped_courses: string[];
+}
+
 // ─── Day Parsing ──────────────────────────────────────────────────────────────
 
 function parseDays(daysStr: string): string[] {
   if (!daysStr || daysStr.trim() === "") return [];
-  // New CSV: "M W F" or "T R" — space separated
   const parts = daysStr.trim().split(/\s+/);
   const valid = ["M", "T", "W", "R", "F", "S"];
   return parts.filter((d) => valid.includes(d));
@@ -86,8 +97,6 @@ function parseCredits(s: string): number {
   if (!s || s.trim() === "") return 3;
   if (s.includes("to")) return parseInt(s.split("to")[0].trim()) || 3;
   const n = parseFloat(s.trim());
-  // If parsed value is 0 or 1 for a non-seminar course, default to 3
-  // (scraper bug where section count was used instead of credits)
   return isNaN(n) || n === 0 ? 3 : n;
 }
 
@@ -187,11 +196,9 @@ export function prereqsSatisfied(prereqs: string, doneKeys: Set<string>): boolea
     (m) => `${m[1]} ${m[2]}`
   );
   if (codes.length === 0) return true;
-  // OR logic: at least one option must be satisfied
   if (prereqs.toLowerCase().includes(" or ")) {
     return codes.some((c) => doneKeys.has(c));
   }
-  // AND logic: all must be satisfied
   return codes.every((c) => doneKeys.has(c));
 }
 
@@ -209,64 +216,66 @@ export function findAvailableSections(
   const allDoneKeys = new Set(allDone.map((d) => `${d.subject.toUpperCase()} ${d.number}`));
 
   return allSections.filter((s) => {
-    // Subject must match (handle GEN_ED separately)
     if (course.subject === "GEN_ED") {
-      // Match by attribute
-      const attrNeeded = course.number; // e.g. "AH1", "N2_LAB"
-      const attrCode = attrNeeded.replace("_LAB", "");
+      const attrCode = course.number.replace("_LAB", "");
       if (!s.attributes.some((a) => a === attrCode)) return false;
     } else {
       if (s.subject !== course.subject.toUpperCase()) return false;
 
-      // Handle wildcard number like "3000+" or "3@"
       if (course.number.endsWith("+") || course.number.includes("@")) {
         const minLevel = parseInt(course.number.replace("+", "").replace("@", "")) *
           (course.number.includes("@") ? 1000 : 1);
         if (parseInt(s.number) < minLevel) return false;
       } else if (course.number === "TBD") {
-        // Can't match TBD courses
         return false;
       } else {
         if (s.number !== course.number) return false;
       }
     }
 
-    // Only schedule lectures
     if (s.type !== "LEC") return false;
-
-    // Skip TBA times
     if (!s.startTime || s.startTime === "TBA") return false;
-
-    // Skip courses already in-progress or completed
     if (allDoneKeys.has(`${s.subject.toUpperCase()} ${s.number}`)) return false;
-
-    // No blocked time conflict
     if (hasTimeConflict(s, blocked)) return false;
-
-    // No conflict with already scheduled courses
     if (hasScheduleConflict(s, scheduled)) return false;
 
     return true;
   });
 }
 
-// ─── AI Schedule Generator ────────────────────────────────────────────────────
+// ─── AI: Select Which Courses To Take ────────────────────────────────────────
+// AI is only responsible for WHICH courses to prioritize.
+// It never picks CRNs, times, or sections — the algorithm handles that.
 
-async function generateScheduleWithAI(
+async function selectCoursesWithAI(
   remainingCourses: RemainingCourse[],
-  availableSectionsMap: Record<string, CourseSection[]>,
-  blockedTimes: BlockedTime[],
+  availableCourseKeys: Set<string>,
   completedCourses: SimpleCourse[],
   inProgressCourses: SimpleCourse[],
-  targetCredits: number = 15,
-  creditsCompleted: number | null = null,
-  major: string | null = null,
-  customNotes: string = ""
-): Promise<string> {
+  targetCredits: number,
+  creditsCompleted: number | null,
+  major: string | null,
+  customNotes: string
+): Promise<AISelection> {
+  const yearContext = creditsCompleted !== null
+    ? creditsCompleted < 30 ? "FRESHMAN (under 30 credits)"
+    : creditsCompleted < 60 ? "SOPHOMORE (30–59 credits)"
+    : creditsCompleted < 90 ? "JUNIOR (60–89 credits)"
+    : "SENIOR (90+ credits)"
+    : null;
+
+  // Annotate each remaining course with whether it has real sections available
+  const annotatedCourses = remainingCourses.map((c) => ({
+    subject: c.subject,
+    number: c.number,
+    title: c.title,
+    credits: c.credits,
+    requirement_category: c.requirement_category,
+    has_sections: availableCourseKeys.has(`${c.subject.toUpperCase()} ${c.number}`),
+  }));
+
   const context = {
-    remaining_courses: remainingCourses,
-    available_sections: availableSectionsMap,
-    blocked_times: blockedTimes,
+    remaining_courses: annotatedCourses,
     completed_courses: completedCourses,
     in_progress_courses: inProgressCourses,
     target_credits: targetCredits,
@@ -275,68 +284,37 @@ async function generateScheduleWithAI(
     custom_notes: customNotes || undefined,
   };
 
-  const yearContext = creditsCompleted !== null
-    ? creditsCompleted < 30
-      ? "The student is a FRESHMAN (fewer than 30 credits completed)."
-      : creditsCompleted < 60
-        ? "The student is a SOPHOMORE (30–59 credits completed)."
-        : creditsCompleted < 90
-          ? "The student is a JUNIOR (60–89 credits completed)."
-          : "The student is a SENIOR (90+ credits completed)."
-    : "";
-
   const response = await openai.chat.completions.create({
     model: "gpt-4o",
-    max_tokens: 3000,
+    max_tokens: 1500,
     messages: [
       {
         role: "system",
-        content: `You are a UVM academic advisor helping students build their Fall 2026 semester schedule.
+        content: `You are a UVM academic advisor selecting courses for a student's Fall 2026 semester.
 
-Given a list of courses a student still needs and the available sections, recommend the BEST schedule targeting ${targetCredits} credits (typically ${Math.ceil(targetCredits / 3)}-${Math.ceil((targetCredits + 4) / 3)} courses depending on credit values).
+Your ONLY job is to return a PRIORITIZED LIST of courses the student should take — do NOT pick sections, times, or CRNs. A separate algorithm will find real conflict-free sections automatically.
+
+TARGET: ${targetCredits} credits. Include courses totaling ~${Math.round(targetCredits * 1.4)} credits worth so the algorithm has enough to work with after filtering.
+
+RULES:
+1. Only include courses where has_sections=true — others have no available sections
+2. NEVER include courses from completed_courses or in_progress_courses
+3. in_progress_courses count as satisfied prerequisites for next semester
+4. Do NOT include courses whose prereqs aren't yet met (check completed + in_progress)
+5. Do NOT include capstone/senior-only courses for freshmen or sophomores
+6. Prioritize: Minor > Major Core > Major Elective > General Education > Free Elective
+7. For GEN_ED requirements, include them as-is (subject: "GEN_ED", number: "AH1" etc.) — the algorithm picks the actual course
 ${yearContext ? `\nSTUDENT YEAR: ${yearContext}` : ""}${major ? `\nSTUDENT MAJOR: ${major}` : ""}
+${customNotes ? `\nSTUDENT NOTES (follow carefully): ${customNotes}` : ""}
 
-CRITICAL RULES:
-1. NEVER schedule a course that appears in in_progress_courses — these are already being taken this semester
-2. NEVER schedule a course that appears in completed_courses — already done
-3. NEVER schedule two courses that share any day AND have overlapping times. Before returning your answer, go through every pair of courses and verify they don't conflict. Here is how to check: if Course A is on days ["T","R"] from 8:30-9:45, then NO other course can be on T or R between 8:30-9:45. Check every single pair. If you find a conflict, remove the lower priority course and replace it with a different section or different course that fits.
-4. For OR alternatives (e.g. "MATH 2522 or 2544" listed as one entry): pick ONE section only, never both
-5. PREREQUISITE CHECK: Use your knowledge of UVM prereqs AND the completed_courses list. IMPORTANT: courses in in_progress_courses are being taken RIGHT NOW and count as satisfied prerequisites for next semester — treat them exactly like completed_courses when checking prereqs.
-   - If a course requires a prereq that is still in remaining_courses AND not in in_progress_courses, DO NOT schedule it
-   - Example: MATH 2522 requires MATH 1248. If MATH 1248 is in remaining_courses but NOT in in_progress_courses, skip MATH 2522. But if MATH 1248 IS in in_progress_courses, MATH 2522 is fine to schedule.
-   - Be lenient with transfer credits — if unsure, include the course
-6. YEAR-APPROPRIATE COURSES: ${yearContext || "Use judgment based on credits completed."} Do NOT schedule capstone, senior thesis, or courses clearly labeled as senior-only for freshmen or sophomores. Do not schedule 4000+ level courses as a core requirement for freshmen.
-7. CREDIT TARGET: The student wants ${targetCredits} credits in their FINAL schedule. A post-processing step will remove any courses with time conflicts, so you MUST over-select. Aim for AT LEAST ${Math.round(targetCredits * 1.5)} credits in your initial list — this is non-negotiable. For example, if the target is 18, return courses totaling ~27 credits so that even after 2-3 courses are removed for conflicts, the final schedule still hits 18. Count your credits before returning and add more courses if you are under ${Math.round(targetCredits * 1.5)}.
-8. Only include courses that appear in available_sections with a real CRN
-9. Prioritize: Minor > Major Core > Major Elective > General Education > Free Elective
-10. Spread classes across the week — avoid 4+ classes on same day
-11. For "3000+" or level requirements: pick ONE good course from available sections, not multiple
-${customNotes ? `\nSTUDENT NOTES (read carefully and follow): ${customNotes}` : ""}
-
-IMPORTANT: When you select a real course from available_sections to satisfy a GEN_ED requirement, use that course's actual subject and number in the output — NOT "GEN_ED" or "AH1" etc. For example if ARTH 1010 satisfies an AH1 requirement, output subject: "ARTH", number: "1010", not subject: "GEN_ED", number: "AH1".
-
-Return ONLY valid JSON, no markdown:
+Return ONLY valid JSON:
 {
-  "recommended_schedule": [
-    {
-      "subject": "MATH",
-      "number": "1248",
-      "title": "Calculus II",
-      "crn": "92906",
-      "section": "A",
-      "days": ["M", "W", "F"],
-      "startTime": "08:30",
-      "endTime": "09:20",
-      "instructor": "D. Hathaway",
-      "credits": 4,
-      "building": "",
-      "room": "",
-      "requirement_category": "Major Core"
-    }
+  "prioritized_courses": [
+    { "subject": "CS", "number": "2240", "requirement_category": "Major Core" },
+    { "subject": "GEN_ED", "number": "AH1", "requirement_category": "General Education" }
   ],
-  "total_credits": 15,
-  "notes": "Brief explanation of choices",
-  "unscheduled_courses": ["MATH 2522 - prereq MATH 1248 not yet completed"]
+  "notes": "Brief explanation of choices and any important considerations",
+  "skipped_courses": ["CS 3081 - prereq CS 2240 not yet satisfied"]
 }`,
       },
       {
@@ -346,7 +324,89 @@ Return ONLY valid JSON, no markdown:
     ],
   });
 
-  return response.choices[0].message.content ?? "{}";
+  const raw = response.choices[0].message.content ?? "{}";
+  const cleaned = raw.replace(/```json|```/g, "").trim();
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    return { prioritized_courses: [], notes: "AI response parse error", skipped_courses: [] };
+  }
+}
+
+// ─── Algorithm: Build Conflict-Free Schedule ─────────────────────────────────
+// Deterministic greedy scheduler. For each AI-picked course in priority order,
+// finds the best available real section that fits without conflicts.
+
+function buildSchedule(
+  prioritizedCourses: AICoursePick[],
+  remainingCourses: RemainingCourse[],
+  allSections: CourseSection[],
+  blockedTimes: BlockedTime[],
+  inProgressCourses: SimpleCourse[],
+  completedCourses: SimpleCourse[],
+  targetCredits: number,
+  crnEnrollmentMap: Map<string, { maxEnrollment: number; currentEnrollment: number; seatsAvailable: number; isFull: boolean }>
+): { schedule: (CourseSection & { requirement_category: string })[]; totalCredits: number } {
+  const doneKeys = new Set([
+    ...completedCourses.map((c) => `${c.subject.toUpperCase()} ${c.number}`),
+    ...inProgressCourses.map((c) => `${c.subject.toUpperCase()} ${c.number}`),
+  ]);
+
+  // Map remaining courses for metadata lookup
+  const courseMetaMap = new Map<string, RemainingCourse>();
+  for (const c of remainingCourses) {
+    courseMetaMap.set(`${c.subject.toUpperCase()} ${c.number}`, c);
+  }
+
+  const scheduled: (CourseSection & { requirement_category: string })[] = [];
+  const scheduledSectionsForConflict: CourseSection[] = [];
+  const scheduledKeys = new Set<string>();
+  let totalCredits = 0;
+
+  for (const pick of prioritizedCourses) {
+    if (totalCredits >= targetCredits) break;
+
+    const key = `${pick.subject.toUpperCase()} ${pick.number}`;
+    if (scheduledKeys.has(key)) continue;
+
+    const meta = courseMetaMap.get(key) ?? {
+      subject: pick.subject,
+      number: pick.number,
+      title: "",
+      credits: 3,
+      requirement_category: pick.requirement_category,
+    };
+
+    const candidates = findAvailableSections(
+      meta,
+      allSections,
+      blockedTimes,
+      scheduledSectionsForConflict,
+      inProgressCourses,
+      completedCourses
+    ).filter((s) => prereqsSatisfied(s.prereqs, doneKeys));
+
+    if (candidates.length === 0) continue;
+
+    // Prefer open seats; among those, prefer more seats available (less likely to fill)
+    const open = candidates.filter((s) => !s.isFull);
+    const pool = open.length > 0 ? open : candidates;
+    const best = pool.sort((a, b) => b.seatsAvailable - a.seatsAvailable)[0];
+
+    const enrollment = crnEnrollmentMap.get(best.crn);
+    const entry = {
+      ...best,
+      requirement_category: pick.requirement_category,
+      ...(enrollment ?? {}),
+    };
+
+    scheduled.push(entry);
+    scheduledSectionsForConflict.push(best);
+    scheduledKeys.add(key);
+    totalCredits += best.credits;
+  }
+
+  return { schedule: scheduled, totalCredits };
 }
 
 // ─── Main Route ───────────────────────────────────────────────────────────────
@@ -363,7 +423,7 @@ export async function POST(req: NextRequest) {
       credits_completed = null,
       major = null,
       custom_notes = "",
-}: {
+    }: {
       remaining_courses: RemainingCourse[];
       completed_courses: SimpleCourse[];
       in_progress_courses: SimpleCourse[];
@@ -372,47 +432,15 @@ export async function POST(req: NextRequest) {
       credits_completed?: number | null;
       major?: string | null;
       custom_notes?: string;
-} = body;
+    } = body;
 
     if (!remaining_courses || remaining_courses.length === 0) {
       return NextResponse.json({ error: "No remaining courses provided" }, { status: 400 });
     }
 
     const allSections = loadCourses();
-    const scheduled: CourseSection[] = [];
-    const availableSectionsMap: Record<string, CourseSection[]> = {};
 
-    for (const course of remaining_courses) {
-      const key = `${course.subject} ${course.number}`;
-      const available = findAvailableSections(
-        course,
-        allSections,
-        blocked_times,
-        scheduled,
-        in_progress_courses,
-        completed_courses
-      );
-      if (available.length > 0) {
-        availableSectionsMap[key] = available;
-      }
-    }
-
-    const rawResponse = await generateScheduleWithAI(
-      remaining_courses,
-      availableSectionsMap,
-      blocked_times,
-      completed_courses,
-      in_progress_courses,
-      target_credits,
-      credits_completed,
-      major,
-      custom_notes
-    );
-
-    const cleaned = rawResponse.replace(/```json|```/g, "").trim();
-    const schedule = JSON.parse(cleaned);
-
-    // Build a CRN → enrollment lookup from real CSV data
+    // Build CRN → enrollment lookup
     const crnEnrollmentMap = new Map<string, { maxEnrollment: number; currentEnrollment: number; seatsAvailable: number; isFull: boolean }>();
     for (const s of allSections) {
       crnEnrollmentMap.set(s.crn, {
@@ -423,71 +451,93 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Post-process: remove any conflicting courses GPT snuck in
-const validSchedule: typeof schedule.recommended_schedule = [];
-for (const course of schedule.recommended_schedule) {
-  const days: string[] = Array.isArray(course.days)
-    ? course.days
-    : (course.days ?? "").split("").filter((d: string) => ["M","T","W","R","F"].includes(d));
-  const startMin = timeToMin(course.startTime);
-  const endMin = timeToMin(course.endTime);
+    // Determine which courses actually have real sections available
+    // (done without blocked_times/conflicts since we just need a rough availability flag for AI)
+    const doneKeys = new Set([
+      ...completed_courses.map((c) => `${c.subject.toUpperCase()} ${c.number}`),
+      ...in_progress_courses.map((c) => `${c.subject.toUpperCase()} ${c.number}`),
+    ]);
 
-  const hasConflict = validSchedule.some((existing: typeof course) => {
-    const existingDays: string[] = Array.isArray(existing.days)
-      ? existing.days
-      : (existing.days ?? "").split("").filter((d: string) => ["M","T","W","R","F"].includes(d));
-    const sharedDay = existingDays.some((d: string) => days.includes(d));
-    if (!sharedDay) return false;
-    const eStart = timeToMin(existing.startTime);
-    const eEnd = timeToMin(existing.endTime);
-    return !(endMin <= eStart || startMin >= eEnd);
-  });
+    const availableCourseKeys = new Set<string>();
+    for (const course of remaining_courses) {
+      const key = `${course.subject.toUpperCase()} ${course.number}`;
+      const hasSection = findAvailableSections(
+        course,
+        allSections,
+        [], // no blocked times for availability check
+        [], // no scheduled courses yet
+        in_progress_courses,
+        completed_courses
+      ).some((s) => prereqsSatisfied(s.prereqs, doneKeys));
+      if (hasSection) availableCourseKeys.add(key);
+    }
 
-  if (!hasConflict) {
-    const enrollment = crnEnrollmentMap.get(course.crn);
-    validSchedule.push(enrollment ? { ...course, ...enrollment } : course);
-  }
-}
-schedule.recommended_schedule = validSchedule;
-schedule.total_credits = validSchedule.reduce((sum: number, c: {credits: number}) => sum + (c.credits || 0), 0);
+    // Step 1: AI picks which courses to take (priority order, no times/CRNs)
+    const aiSelection = await selectCoursesWithAI(
+      remaining_courses,
+      availableCourseKeys,
+      completed_courses,
+      in_progress_courses,
+      target_credits,
+      credits_completed,
+      major,
+      custom_notes
+    );
 
-    // Top-up: if still under target, greedily add more courses
-    if (schedule.total_credits < target_credits) {
-      const scheduledKeys = new Set(
-        validSchedule.map((c: { subject: string; number: string }) => `${c.subject.toUpperCase()} ${c.number}`)
-      );
-      const doneKeys = new Set([
-        ...completed_courses.map((c) => `${c.subject.toUpperCase()} ${c.number}`),
-        ...in_progress_courses.map((c) => `${c.subject.toUpperCase()} ${c.number}`),
-      ]);
-      for (const course of remaining_courses) {
-        if (schedule.total_credits >= target_credits) break;
-        const key = `${course.subject.toUpperCase()} ${course.number}`;
-        if (scheduledKeys.has(key)) continue;
-        const candidates = findAvailableSections(
-          course, allSections, blocked_times,
-          validSchedule as CourseSection[],
-          in_progress_courses, completed_courses
-        ).filter((s) => prereqsSatisfied(s.prereqs, doneKeys));
-        if (candidates.length > 0) {
-          const best = candidates.find((s) => !s.isFull) ?? candidates[0];
-          const enrollment = crnEnrollmentMap.get(best.crn);
-          validSchedule.push({ ...best, requirement_category: course.requirement_category, ...(enrollment ?? {}) });
-          scheduledKeys.add(key);
-          schedule.total_credits += best.credits;
-        }
+    // Step 2: Algorithm builds the actual conflict-free schedule
+    const { schedule, totalCredits } = buildSchedule(
+      aiSelection.prioritized_courses,
+      remaining_courses,
+      allSections,
+      blocked_times,
+      in_progress_courses,
+      completed_courses,
+      target_credits,
+      crnEnrollmentMap
+    );
+
+    // If algorithm came up short (AI didn't pick enough courses), top up from remaining
+    let finalSchedule = schedule;
+    let finalCredits = totalCredits;
+
+    if (finalCredits < target_credits) {
+      const scheduledKeys = new Set(finalSchedule.map((c) => `${c.subject.toUpperCase()} ${c.number}`));
+      const aiPickedKeys = new Set(aiSelection.prioritized_courses.map((p) => `${p.subject.toUpperCase()} ${p.number}`));
+
+      // Try remaining courses not already picked by AI, in their original order
+      const leftovers: AICoursePick[] = remaining_courses
+        .filter((c) => {
+          const key = `${c.subject.toUpperCase()} ${c.number}`;
+          return !aiPickedKeys.has(key) && !scheduledKeys.has(key) && availableCourseKeys.has(key);
+        })
+        .map((c) => ({ subject: c.subject, number: c.number, requirement_category: c.requirement_category }));
+
+      if (leftovers.length > 0) {
+        const { schedule: extra, totalCredits: extraCredits } = buildSchedule(
+          leftovers,
+          remaining_courses,
+          allSections,
+          blocked_times,
+          in_progress_courses,
+          completed_courses,
+          target_credits - finalCredits,
+          crnEnrollmentMap
+        );
+        finalSchedule = [...finalSchedule, ...extra];
+        finalCredits += extraCredits;
       }
-      schedule.recommended_schedule = validSchedule;
-      schedule.total_credits = validSchedule.reduce((sum: number, c: { credits: number }) => sum + (c.credits || 0), 0);
     }
 
     return NextResponse.json({
-      ...schedule,
-      available_sections_found: Object.keys(availableSectionsMap).length,
+      recommended_schedule: finalSchedule,
+      total_credits: finalCredits,
+      notes: aiSelection.notes,
+      unscheduled_courses: aiSelection.skipped_courses,
+      available_sections_found: availableCourseKeys.size,
       total_courses_needed: remaining_courses.length,
-      });
-      } catch (err) {
-      console.error("generate-schedule error:", err);
-      return NextResponse.json({ error: "Failed to generate schedule" }, { status: 500 });
+    });
+  } catch (err) {
+    console.error("generate-schedule error:", err);
+    return NextResponse.json({ error: "Failed to generate schedule" }, { status: 500 });
   }
 }

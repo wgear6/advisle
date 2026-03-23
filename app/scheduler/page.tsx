@@ -257,6 +257,12 @@ export default function Home() {
   const [minorMissingCourses, setMinorMissingCourses] = useState<Record<string, RemainingCourse[]>>({});
   const [showAllMinors, setShowAllMinors] = useState(false);
 
+  // Report bad schedule
+  const [showReportForm, setShowReportForm] = useState(false);
+  const [reportFeedback, setReportFeedback] = useState("");
+  const [reportSubmitted, setReportSubmitted] = useState(false);
+  const [reportLoading, setReportLoading] = useState(false);
+
   // Blocked time form state
   const [blockDay, setBlockDay] = useState("M");
   const [blockStart, setBlockStart] = useState("09:00");
@@ -510,6 +516,45 @@ export default function Home() {
       // silently fail — course was already removed
     } finally {
       setReplacingCourse(false);
+    }
+  };
+
+  const submitReport = async () => {
+    if (!schedule || !audit) return;
+    setReportLoading(true);
+    try {
+      await fetch("/api/report-schedule", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          feedback: reportFeedback,
+          inputs: {
+            target_credits: targetCredits,
+            major: audit.major,
+            credits_completed: audit.credits_completed,
+            custom_notes: customNotes,
+            blocked_times: blockedTimes,
+            remaining_courses: audit.remaining_courses,
+            in_progress_courses: audit.in_progress_courses,
+          },
+          outputs: {
+            total_credits: schedule.total_credits,
+            recommended_schedule: schedule.recommended_schedule,
+            notes: schedule.notes,
+            unscheduled_courses: schedule.unscheduled_courses,
+          },
+          audit_info: {
+            student_name: audit.student_name,
+            major: audit.major,
+          },
+        }),
+      });
+      setReportSubmitted(true);
+      setShowReportForm(false);
+    } catch {
+      // silently fail
+    } finally {
+      setReportLoading(false);
     }
   };
 
@@ -994,6 +1039,45 @@ export default function Home() {
               <div><div style={{ fontSize: 24, fontWeight: 800 }}>{schedule.recommended_schedule.length}</div><div style={{ fontSize: 12, opacity: 0.7 }}>Courses</div></div>
               {blockedTimes.length > 0 && <div><div style={{ fontSize: 24, fontWeight: 800 }}>{blockedTimes.length}</div><div style={{ fontSize: 12, opacity: 0.7 }}>Time Blocks Applied</div></div>}
             </div>
+
+            {/* Report bad schedule */}
+            {reportSubmitted ? (
+              <div style={{ textAlign: "center", fontSize: 14, color: "#059669", padding: "12px 0" }}>
+                Report submitted — thanks for the feedback!
+              </div>
+            ) : showReportForm ? (
+              <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 20, display: "flex", flexDirection: "column", gap: 12 }}>
+                <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: "#111827" }}>What went wrong with this schedule?</p>
+                <textarea
+                  value={reportFeedback}
+                  onChange={(e) => setReportFeedback(e.target.value)}
+                  placeholder="e.g. Wrong credits, conflict with a class I need, missing required courses..."
+                  rows={3}
+                  style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #d1d5db", fontSize: 14, resize: "vertical", boxSizing: "border-box", fontFamily: "inherit" }}
+                />
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button
+                    onClick={submitReport}
+                    disabled={reportLoading}
+                    style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#dc2626", color: "#fff", fontSize: 13, fontWeight: 600, cursor: reportLoading ? "not-allowed" : "pointer", opacity: reportLoading ? 0.7 : 1 }}>
+                    {reportLoading ? "Sending..." : "Send Report"}
+                  </button>
+                  <button
+                    onClick={() => setShowReportForm(false)}
+                    style={{ padding: "8px 18px", borderRadius: 8, border: "1px solid #e5e7eb", background: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", color: "#6b7280" }}>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div style={{ textAlign: "center" }}>
+                <button
+                  onClick={() => setShowReportForm(true)}
+                  style={{ padding: "7px 16px", borderRadius: 8, border: "1px solid #fca5a5", background: "#fff", color: "#dc2626", fontSize: 13, fontWeight: 500, cursor: "pointer" }}>
+                  Report bad schedule
+                </button>
+              </div>
+            )}
           </div>
         )}
         </main>
