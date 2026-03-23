@@ -14,18 +14,20 @@ const OUTPUT_FILE = "data/curr_enroll_202609.csv";
 const DELAY_MS = 400;
 
 const SUBJECTS = [
-  "ABIO","ACCT","AGED","AGRI","AGROEC","ANFS","ANTH","AREC","ARIA","ARTH",
-  "ARTS","ASTR","BCOR","BIOL","BIOS","BSAD","BUS","CDAE","CE","CED","CEMS",
-  "CHEM","CHIN","CIS","CIVL","CJ","CLA","CMPE","CNSC","COCE","COGS",
-  "COMM","CS","CSYS","CTLN","DANC","DCIM","ECON","EDCO","EDEC","EDEL",
-  "EDFI","EDFS","EDHI","EDML","EDSC","EDSP","EDSS","EDST","EE","ELED",
-  "ENGL","ENGS","ENSC","ENVS","FIND","FINN","FREN","GEOG","GEOL","GERM","GREE",
-  "GSWS","HEAL","HCOL","HIST","HST","HLTH","HORT","HPSC","HSCI","HUMN","IEGT",
-  "INNO","INTL","ITAL","JAPN","JRNL","LASC","LAT","LING","LSP","MATH",
-  "MBIO","MCRS","ME","MMG","MPA","MSBA","MUS","NFS","NEUR","NR",
-  "NRSC","NS","NURS","PA","PBIO","PHED","PHIL","PHYS","PLS","POLS",
-  "PORT","PSYC","RADI","RELI","RUSS","SA","SCIE","SOC","SOWK","SPAN",
-  "SPED","SPCH","SS","STAT","THEA","TRC","TS","UEC","WFB","WLPS"
+  "ABIO","ALE","ANPS","ANTH","ARTH","ARTS","ASCI","ASL","ASTR","BCOR",
+  "BHSC","BIOC","BIOE","BIOL","BME","BUS","CALS","CAS","CDAE","CEE",
+  "CEMS","CHEM","CHIN","CIS","CLAS","CLBI","CMPE","CNCR","CNSL","COMU",
+  "CRES","CS","CSCS","CSD","CSYS","CTS","DNCE","DPT","ECLD","ECON",
+  "ECSP","EDCI","EDEC","EDEL","EDFS","EDHE","EDHI","EDLI","EDLP","EDLT",
+  "EDML","EDPE","EDRM","EDSC","EDSP","EDTE","EE","EMED","EMGT","ENGL",
+  "ENGR","ENSC","ENVS","EXSC","FOR","FREN","FS","FTS","GEOG","GEOL",
+  "GERM","GNRL","GRAD","GRK","GRNS","GRS","GSWS","GU","HCOL","HDF",
+  "HEBR","HLTH","HP","HSCI","HSOC","HST","IHS","ITAL","JAPN","JS",
+  "LAT","LING","MATH","MATS","MBA","ME","MED","MLS","MMG","MPBP",
+  "MS","MU","MUE","MUL","NFS","NH","NR","NSCI","NURS","OBGY",
+  "ORTH","OSSP","OT","PA","PATH","PBIO","PEAC","PH","PHIL","PHRM",
+  "PHYS","POLS","PRNU","PRT","PSYS","RADT","REL","RMS","RUSS","SEP",
+  "SOA","SOC","SPAN","SPCH","STAT","SURG","SWSS","THE","WFB","WLIT"
 ];
 
 // ── HTTP ──────────────────────────────────────────────────────────────────────
