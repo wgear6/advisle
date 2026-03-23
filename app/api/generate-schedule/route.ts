@@ -243,7 +243,7 @@ export function findAvailableSections(
       }
     }
 
-    if (s.type !== "LEC") return false;
+    if (s.type !== "LEC" && s.type !== "LAB") return false;
     if (!s.startTime || s.startTime === "TBA") return false;
     if (allDoneKeys.has(`${s.subject.toUpperCase()} ${s.number}`)) return false;
     if (hasTimeConflict(s, blocked)) return false;
@@ -399,10 +399,14 @@ function buildSchedule(
 
     if (candidates.length === 0) continue;
 
-    // Prefer open seats; among those, prefer more seats available (less likely to fill)
+    // Prefer open seats; prefer LEC over LAB; tiebreak by most seats available
     const open = candidates.filter((s) => !s.isFull);
     const pool = open.length > 0 ? open : candidates;
-    const best = pool.sort((a, b) => b.seatsAvailable - a.seatsAvailable)[0];
+    const best = pool.sort((a, b) => {
+      if (a.type === "LEC" && b.type !== "LEC") return -1;
+      if (b.type === "LEC" && a.type !== "LEC") return 1;
+      return b.seatsAvailable - a.seatsAvailable;
+    })[0];
 
     // Hard cap: never exceed 19 credits (overload requires extra tuition)
     if (totalCredits + best.credits > MAX_CREDITS) continue;
