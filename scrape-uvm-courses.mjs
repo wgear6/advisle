@@ -15,11 +15,11 @@ const DELAY_MS = 400;
 
 const SUBJECTS = [
   "ABIO","ACCT","AGED","AGRI","AGROEC","ANFS","ANTH","AREC","ARIA","ARTH",
-  "ARTS","ASTR","BCOR","BIOS","BSAD","BUS","CDAE","CE","CED","CEMS",
+  "ARTS","ASTR","BCOR","BIOL","BIOS","BSAD","BUS","CDAE","CE","CED","CEMS",
   "CHEM","CHIN","CIS","CIVL","CJ","CLA","CMPE","CNSC","COCE","COGS",
   "COMM","CS","CSYS","CTLN","DANC","DCIM","ECON","EDCO","EDEC","EDEL",
   "EDFI","EDFS","EDHI","EDML","EDSC","EDSP","EDSS","EDST","EE","ELED",
-  "ENGS","ENSC","ENVS","FIND","FINN","FREN","GEOG","GEOL","GERM","GREE",
+  "ENGL","ENGS","ENSC","ENVS","FIND","FINN","FREN","GEOG","GEOL","GERM","GREE",
   "GSWS","HEAL","HCOL","HIST","HLTH","HORT","HPSC","HSCI","HUMN","IEGT",
   "INNO","INTL","ITAL","JAPN","JRNL","LASC","LAT","LING","LSP","MATH",
   "MBIO","MCRS","ME","MMG","MPA","MSBA","MUS","NFS","NEUR","NR",
@@ -159,6 +159,9 @@ async function scrapeSubject(subject) {
         const { days, startTime, endTime } = parseMeetingTimes(sec.meetingTimes);
         const [subj, num] = (sec.code || code).split(" ");
 
+        const maxEnroll = parseInt(sec.cap || sec.seats || "0") || 0;
+        const curEnroll = parseInt(sec.enrol || sec.act || "0") || 0;
+
         rows.push([
           csv(subj || subject),
           csv(num || ""),
@@ -173,8 +176,8 @@ async function scrapeSubject(subject) {
           csv(""), // building (not in API)
           csv(""), // room
           csv(sec.instr || ""),
-          csv(0),
-          csv(parseInt(sec.enrol || "0")),
+          csv(maxEnroll),
+          csv(curEnroll),
           csv(attributes),
           csv(prereqs),
         ].join(","));
