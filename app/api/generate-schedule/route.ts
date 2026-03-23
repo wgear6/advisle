@@ -477,18 +477,24 @@ export async function POST(req: NextRequest) {
       ...in_progress_courses.map((c) => `${c.subject.toUpperCase()} ${c.number}`),
     ]);
 
+    // Build set of courses that have real sections in the CSV.
+    // We intentionally skip the prereq check here — the AI just needs to know
+    // if a course exists this semester. The algorithm enforces prereqs when
+    // actually building the schedule. Checking prereqs here caused false
+    // negatives when the student's calc course didn't match the exact strings
+    // in the prereq field (e.g., took MATH 1310 but prereq says MATH 1248).
     const availableCourseKeys = new Set<string>();
     for (const course of remaining_courses) {
       const key = `${course.subject.toUpperCase()} ${course.number}`;
-      const hasSection = findAvailableSections(
+      const hasSections = findAvailableSections(
         course,
         allSections,
-        [], // no blocked times for availability check
-        [], // no scheduled courses yet
+        [],
+        [],
         in_progress_courses,
         completed_courses
-      ).some((s) => prereqsSatisfied(s.prereqs, doneKeys));
-      if (hasSection) availableCourseKeys.add(key);
+      ).length > 0;
+      if (hasSections) availableCourseKeys.add(key);
     }
 
     // Step 1: AI picks which courses to take (priority order, no times/CRNs)
@@ -547,11 +553,18 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Courses with zero sections in the CSV are not offered this semester —
+    // surface them separately so the message is accurate.
+    const scheduledKeys = new Set(finalSchedule.map((c) => `${c.subject.toUpperCase()} ${c.number}`));
+    const notOffered = remaining_courses
+      .filter((c) => !availableCourseKeys.has(`${c.subject.toUpperCase()} ${c.number}`))
+      .map((c) => `${c.subject} ${c.number} (not offered Fall 2026)`);
+
     return NextResponse.json({
       recommended_schedule: finalSchedule,
       total_credits: finalCredits,
       notes: aiSelection.notes,
-      unscheduled_courses: aiSelection.skipped_courses,
+      unscheduled_courses: notOffered,
       available_sections_found: availableCourseKeys.size,
       total_courses_needed: remaining_courses.length,
     });

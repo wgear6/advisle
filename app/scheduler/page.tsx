@@ -1027,8 +1027,8 @@ export default function Home() {
 
               {schedule.unscheduled_courses?.length > 0 && (
                 <div style={{ marginTop: 12, padding: "12px 16px", background: "#fff7ed", borderRadius: 8, border: "1px solid #fed7aa", fontSize: 14, color: "#9a3412" }}>
-                  <strong>⚠️ Could not schedule:</strong> {schedule.unscheduled_courses.join(", ")}
-                  <p style={{ margin: "4px 0 0", fontSize: 13 }}>These courses may have no available sections that fit your blocked times, or may not be offered this semester.</p>
+                  <strong>⚠️ Not offered Fall 2026:</strong> {schedule.unscheduled_courses.join(", ")}
+                  <p style={{ margin: "4px 0 0", fontSize: 13 }}>These courses have no sections in the Fall 2026 schedule. Check back closer to registration or ask your advisor about alternatives.</p>
                 </div>
               )}
             </div>
