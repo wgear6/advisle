@@ -886,6 +886,12 @@ export default function Home() {
                     Export to Calendar
                   </button>
                   <button
+                    onClick={() => { setReportSubmitted(false); setShowReportForm(false); generateSchedule(); }}
+                    disabled={loading}
+                    style={{ padding: "8px 14px", borderRadius: 8, border: "none", background: "#2563eb", color: "#fff", fontSize: 13, fontWeight: 600, cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1 }}>
+                    ↺ Regenerate
+                  </button>
+                  <button
                     onClick={() => { setStep(2); setSchedule(null); setScheduleId(null); }}
                     style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #d1d5db", background: "#fff", fontSize: 13, cursor: "pointer" }}>
                     ← Adjust
@@ -938,7 +944,10 @@ export default function Home() {
                         </div>
                         <div style={{ display: "flex", gap: 16, flexWrap: "wrap", fontSize: 13, color: "#4b5563" }}>
                           <span>📅 {c.days.map((d) => DAY_LABELS[d]?.slice(0, 3)).join(", ")} · {formatTime(c.startTime)} – {formatTime(c.endTime)}</span>
-                          <span>📍 {c.building} {c.room}</span>
+                          {c.section?.startsWith("OL") || c.type === "X"
+                            ? <span style={{ padding: "1px 8px", borderRadius: 99, fontSize: 12, fontWeight: 600, background: "#eff6ff", color: "#2563eb" }}>Online</span>
+                            : <span>📍 {c.building} {c.room}</span>
+                          }
                           <span>👤 {c.instructor || "TBA"}
                             {rmpRatings[c.instructor] && (
                               <span style={{ marginLeft: 8, display: "inline-flex", gap: 6, alignItems: "center" }}>
