@@ -1,0 +1,35 @@
+name: Weekly SOC Rescrape
+
+on:
+  schedule:
+    - cron: "17 7 * * 0"  # Sundays 3:17am ET (UTC-4)
+  workflow_dispatch:       # allow manual trigger from GitHub UI
+
+jobs:
+  rescrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Scrape UVM SOC
+        run: node scrape-uvm-courses.mjs
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet data/curr_enroll_202609.csv; then
+            echo "No changes in SOC data"
+          else
+            SECTIONS=$(grep -c '"LEC"' data/curr_enroll_202609.csv || true)
+            git add data/curr_enroll_202609.csv
+            git commit -m "auto-rescrape: $(date +%Y-%m-%d) — ${SECTIONS} LEC sections"
+            git push
+          fi
