@@ -48,6 +48,79 @@ export default function LandingPage() {
         </svg>
       </div>
 
+      {/* Example Schedule Preview */}
+      <section style={{ padding: "72px 24px 64px", maxWidth: 760, margin: "0 auto" }}>
+        <p style={{ textAlign: "center", margin: "0 0 8px", fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#f8b400" }}>
+          Example Output
+        </p>
+        <h2 style={{ textAlign: "center", margin: "0 0 32px", fontSize: 24, fontWeight: 800, color: "#1e3a5f", letterSpacing: "-0.4px" }}>
+          Here's what your schedule looks like
+        </h2>
+
+        <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+          <div style={{ marginBottom: 20 }}>
+            <h3 style={{ margin: "0 0 4px", fontSize: 18, fontWeight: 700, color: "#111827" }}>Your Recommended Schedule</h3>
+            <p style={{ margin: 0, fontSize: 14, color: "#6b7280" }}>15 credits · Fall 2026</p>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {[
+              { subj: "STAT", num: "3310", title: "Applied Regression Analysis", cat: "Major Core", catColor: "#2563eb", days: "Mon, Wed, Fri", time: "10:50 – 11:40 AM", loc: "Innovation E210", instructor: "S. Ramler", rating: 4.4, diff: 3.1, numRatings: 58, seats: 12 },
+              { subj: "STAT", num: "2430", title: "Applied Probability", cat: "Major Core", catColor: "#2563eb", days: "Tue, Thu", time: "11:40 AM – 1:00 PM", loc: "Kalkin 325", instructor: "J. Watts", rating: 4.2, diff: 3.4, numRatings: 41, seats: 20 },
+              { subj: "CS",   num: "2100", title: "Computing with Data Structures", cat: "Major Elective", catColor: "#7c3aed", days: "Tue, Thu", time: "2:50 – 4:05 PM", loc: "Votey 254", instructor: "C. Vaccaro", rating: 4.1, diff: 3.6, numRatings: 33, seats: 8 },
+              { subj: "ENGS", num: "1570", title: "Written Expression", cat: "General Education", catColor: "#059669", days: "Mon, Wed, Fri", time: "1:15 – 2:05 PM", loc: "Wheeler 301", instructor: "M. Chen", rating: 4.6, diff: 2.2, numRatings: 27, seats: 14 },
+              { subj: "MATH", num: "2500", title: "Calculus III", cat: "General Education", catColor: "#059669", days: "Mon, Wed, Fri", time: "8:30 – 9:20 AM", loc: "Lord House 100", instructor: "T. Demir", rating: 3.9, diff: 3.8, numRatings: 62, seats: 5 },
+            ].map((c) => (
+              <div key={c.num} style={{ borderRadius: 10, border: `1px solid ${c.catColor}30`, overflow: "hidden" }}>
+                <div style={{ display: "flex", alignItems: "stretch" }}>
+                  <div style={{ width: 4, background: c.catColor, flexShrink: 0 }} />
+                  <div style={{ padding: "14px 16px", flex: 1 }}>
+                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 6 }}>
+                      <div>
+                        <span style={{ fontWeight: 700, color: "#1e3a5f", fontSize: 15 }}>{c.subj} {c.num}</span>
+                        <span style={{ fontSize: 15, marginLeft: 8, color: "#1f2937" }}>{c.title}</span>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, marginLeft: 12 }}>
+                        <span style={{ fontSize: 12, padding: "2px 8px", borderRadius: 99, background: `${c.catColor}15`, color: c.catColor, fontWeight: 600 }}>{c.cat}</span>
+                        <span style={{ fontSize: 13, color: "#6b7280" }}>3 cr</span>
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: 16, flexWrap: "wrap", fontSize: 13, color: "#4b5563" }}>
+                      <span>📅 {c.days} · {c.time}</span>
+                      <span>📍 {c.loc}</span>
+                      <span>👤 {c.instructor}
+                        <span style={{ marginLeft: 8, display: "inline-flex", gap: 6, alignItems: "center" }}>
+                          <span style={{ background: c.rating >= 4 ? "#dcfce7" : "#fef9c3", color: c.rating >= 4 ? "#166534" : "#854d0e", padding: "1px 6px", borderRadius: 99, fontSize: 12, fontWeight: 700 }}>
+                            ⭐ {c.rating.toFixed(1)}
+                          </span>
+                          <span style={{ color: "#9ca3af", fontSize: 12 }}>😅 {c.diff.toFixed(1)} · {c.numRatings} ratings</span>
+                        </span>
+                      </span>
+                      <span style={{ color: c.seats <= 5 ? "#dc2626" : "#6b7280" }}>
+                        {c.seats <= 5 ? `⚠️ ${c.seats} seats left` : `✓ ${c.seats} seats open`}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Summary bar */}
+          <div style={{ marginTop: 20, background: "#1e3a5f", color: "#fff", borderRadius: 10, padding: "14px 20px", display: "flex", gap: 32 }}>
+            <div><div style={{ fontSize: 22, fontWeight: 800 }}>15</div><div style={{ fontSize: 12, opacity: 0.7 }}>Total Credits</div></div>
+            <div><div style={{ fontSize: 22, fontWeight: 800 }}>5</div><div style={{ fontSize: 12, opacity: 0.7 }}>Courses</div></div>
+            <div><div style={{ fontSize: 22, fontWeight: 800 }}>0</div><div style={{ fontSize: 12, opacity: 0.7 }}>Time Conflicts</div></div>
+          </div>
+        </div>
+
+        <div style={{ textAlign: "center", marginTop: 28 }}>
+          <a href="/scheduler" style={{ display: "inline-block", padding: "14px 32px", background: "#f8b400", color: "#1e3a5f", borderRadius: 10, fontWeight: 800, fontSize: 15, textDecoration: "none" }}>
+            Build My Schedule →
+          </a>
+        </div>
+      </section>
+
       {/* How it works */}
       <section style={{ padding: "80px 24px", maxWidth: 900, margin: "0 auto" }}>
         <h2 style={{ textAlign: "center", margin: "0 0 56px", fontSize: 26, fontWeight: 800, color: "#1e3a5f", letterSpacing: "-0.5px" }}>
