@@ -378,10 +378,13 @@ function buildSchedule(
   let totalCredits = 0;
 
   const MAX_CREDITS = 19;
+  // When topping up a partial schedule, account for credits already locked in
+  const alreadyScheduledCredits = alreadyScheduled.reduce((sum, c) => sum + c.credits, 0);
+  const effectiveMaxCredits = MAX_CREDITS - alreadyScheduledCredits;
 
   for (const pick of prioritizedCourses) {
     if (totalCredits >= targetCredits) break;
-    if (totalCredits >= MAX_CREDITS) break;
+    if (totalCredits >= effectiveMaxCredits) break;
 
     const key = `${pick.subject.toUpperCase()} ${pick.number}`;
     if (scheduledKeys.has(key)) continue;
@@ -415,7 +418,7 @@ function buildSchedule(
     })[0];
 
     // Hard cap: never exceed 19 credits (overload requires extra tuition)
-    if (totalCredits + best.credits > MAX_CREDITS) continue;
+    if (totalCredits + best.credits > effectiveMaxCredits) continue;
 
     const enrollment = crnEnrollmentMap.get(best.crn);
     const entry = {

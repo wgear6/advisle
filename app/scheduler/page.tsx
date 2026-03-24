@@ -565,13 +565,15 @@ export default function Home() {
 
       {/* Header */}
       <header style={{ background: "#1e3a5f", color: "#fff", padding: "20px 32px", display: "flex", alignItems: "center", gap: 16 }}>
-        <div style={{ width: 36, height: 36, background: "#f8b400", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 18, color: "#1e3a5f" }}>
-          A
-        </div>
-        <div>
-          <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, letterSpacing: "-0.3px" }}>Advisle</h1>
-          <p style={{ margin: 0, fontSize: 12, opacity: 0.7 }}>AI-powered course scheduling for University of Vermont students</p>
-        </div>
+        <a href="/" style={{ display: "flex", alignItems: "center", gap: 16, textDecoration: "none", color: "inherit" }}>
+          <div style={{ width: 36, height: 36, background: "#f8b400", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 18, color: "#1e3a5f" }}>
+            A
+          </div>
+          <div>
+            <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, letterSpacing: "-0.3px" }}>Advisle</h1>
+            <p style={{ margin: 0, fontSize: 12, opacity: 0.7 }}>AI-powered course scheduling for University of Vermont students</p>
+          </div>
+        </a>
         <a href="https://www.instagram.com/advisle?igsh=MWZoc3Z1bTU0d2kydw==" target="_blank" rel="noopener noreferrer" style={{ marginLeft: "auto", color: "#fff", opacity: 0.85, display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 500, textDecoration: "none" }}
           onMouseEnter={e => (e.currentTarget.style.opacity = "1")}
           onMouseLeave={e => (e.currentTarget.style.opacity = "0.85")}>
