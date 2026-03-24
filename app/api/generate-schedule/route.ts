@@ -648,27 +648,25 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Courses with zero sections in the CSV are not offered this semester —
-    // surface them separately so the message is accurate.
     const scheduledKeys = new Set(finalSchedule.map((c) => `${c.subject.toUpperCase()} ${c.number}`));
-    const notOffered = normalizedRemaining
-      .filter((c) => !availableCourseKeys.has(`${c.subject.toUpperCase()} ${c.number}`))
-      .map((c) => `${c.subject} ${c.number} (not offered Fall 2026)`);
+    const eligibleKeys = new Set(eligibleCourses.map((c) => `${c.subject.toUpperCase()} ${c.number}`));
+
+    const unscheduled = normalizedRemaining
+      .filter((c) => !scheduledKeys.has(`${c.subject.toUpperCase()} ${c.number}`))
+      .map((c) => {
+        const key = `${c.subject.toUpperCase()} ${c.number}`;
+        if (!eligibleKeys.has(key)) return `${c.subject} ${c.number} (prereq not yet satisfied)`;
+        if (!availableCourseKeys.has(key)) return `${c.subject} ${c.number} (not offered Fall 2026)`;
+        return `${c.subject} ${c.number} (could not fit in schedule)`;
+      });
 
     return NextResponse.json({
       recommended_schedule: finalSchedule,
       total_credits: finalCredits,
       notes: aiSelection.notes,
-      unscheduled_courses: notOffered,
+      unscheduled_courses: unscheduled,
       available_sections_found: availableCourseKeys.size,
       total_courses_needed: normalizedRemaining.length,
-      _debug: {
-        remaining_courses: normalizedRemaining.map((c) => `${c.subject} ${c.number} (${c.requirement_category})`),
-        eligible_after_prereq_filter: eligibleCourses.map((c) => `${c.subject} ${c.number}`),
-        ai_picked: aiSelection.prioritized_courses.map((c) => `${c.subject} ${c.number}`),
-        ai_notes: aiSelection.notes,
-        ai_skipped: aiSelection.skipped_courses ?? [],
-      },
     });
   } catch (err) {
     console.error("generate-schedule error:", err);
