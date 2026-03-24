@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
 
     // Step 2: Send extracted text to GPT-4o for structured parsing
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: process.env.OPENAI_MODEL ?? "gpt-4o",
       messages: [
         {
           role: "system",
