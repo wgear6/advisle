@@ -80,6 +80,7 @@ interface AICoursePick {
 
 interface AISelection {
   prioritized_courses: AICoursePick[];
+  excluded_courses: AICoursePick[];
   notes: string;
   skipped_courses: string[];
 }
@@ -312,16 +313,21 @@ RULES:
 3. in_progress_courses count as satisfied prerequisites for next semester
 4. Do NOT include courses whose prereqs aren't yet met (check completed + in_progress)
 5. Do NOT include capstone/senior-only courses for freshmen or sophomores
-6. Prioritize: Minor > Major Core > Major Elective > General Education > Free Elective
+6. Prioritize strictly: Minor > Major Core > Major Elective > General Education > Free Elective
+   — always fill with major courses first. Only add General Education if credits remain after major courses.
 7. For GEN_ED requirements, include them as-is (subject: "GEN_ED", number: "AH1" etc.) — the algorithm picks the actual course
+8. STUDENT NOTES override everything — if the student says do not take a course, put it in excluded_courses and NEVER include it in prioritized_courses
 ${yearContext ? `\nSTUDENT YEAR: ${yearContext}` : ""}${major ? `\nSTUDENT MAJOR: ${major}` : ""}
-${customNotes ? `\nSTUDENT NOTES (follow carefully): ${customNotes}` : ""}
+${customNotes ? `\nSTUDENT NOTES (follow carefully — these override all other rules): ${customNotes}` : ""}
 
 Return ONLY valid JSON:
 {
   "prioritized_courses": [
     { "subject": "CS", "number": "2240", "requirement_category": "Major Core" },
     { "subject": "GEN_ED", "number": "AH1", "requirement_category": "General Education" }
+  ],
+  "excluded_courses": [
+    { "subject": "CS", "number": "3081", "requirement_category": "Major Elective" }
   ],
   "notes": "Brief explanation of choices and any important considerations",
   "skipped_courses": ["CS 3081 - prereq CS 2240 not yet satisfied"]
@@ -339,7 +345,7 @@ Return ONLY valid JSON:
   try {
     return JSON.parse(cleaned);
   } catch {
-    return { prioritized_courses: [], notes: "AI response parse error", skipped_courses: [] };
+    return { prioritized_courses: [], excluded_courses: [], notes: "AI response parse error", skipped_courses: [] };
   }
 }
 
@@ -531,11 +537,16 @@ export async function POST(req: NextRequest) {
       const scheduledKeys = new Set(finalSchedule.map((c) => `${c.subject.toUpperCase()} ${c.number}`));
       const aiPickedKeys = new Set(aiSelection.prioritized_courses.map((p) => `${p.subject.toUpperCase()} ${p.number}`));
 
-      // Try remaining courses not already picked by AI, in their original order
+      // Courses the AI explicitly excluded (e.g. student said "don't take X")
+      const excludedKeys = new Set((aiSelection.excluded_courses ?? []).map(
+        (p) => `${p.subject.toUpperCase()} ${p.number}`
+      ));
+
+      // Try remaining courses not already picked or excluded by AI, in their original order
       const leftovers: AICoursePick[] = remaining_courses
         .filter((c) => {
           const key = `${c.subject.toUpperCase()} ${c.number}`;
-          return !aiPickedKeys.has(key) && !scheduledKeys.has(key) && availableCourseKeys.has(key);
+          return !aiPickedKeys.has(key) && !scheduledKeys.has(key) && !excludedKeys.has(key) && availableCourseKeys.has(key);
         })
         .map((c) => ({ subject: c.subject, number: c.number, requirement_category: c.requirement_category }));
 
