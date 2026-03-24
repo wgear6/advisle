@@ -38,7 +38,7 @@ A gen-ed section is DONE if it says "Requirement is complete" OR "When the in-pr
 For each NOT COMPLETE gen-ed section:
 - Look at how many credits are listed as "Still needed:" — use that as the credits value (default 3)
 - Determine which attribute codes are still unsatisfied. If only one course has been completed under the section but the section has multiple codes (e.g. AH1, AH2, AH3), the student likely still needs one more.
-- Create ONE GEN_ED entry per missing attribute code. Use subject "GEN_ED", number = the attribute code (e.g. "AH2"), title = requirement name.
+- Create ONE GEN_ED entry per missing attribute code. subject MUST be the literal string "GEN_ED" (not the attribute code). number = the attribute code (e.g. "N2", "AH2"). Example: { subject: "GEN_ED", number: "N2", title: "Natural Sciences 2", credits: 3, requirement_category: "General Education" }
 - For OR requirements like "WIL2 OR OC": create one entry using the first code, title should reflect both options e.g. "Writing & Info Literacy 2 (or OC)"
 
 Known UVM gen-ed attribute codes: AH1, AH2, AH3, S1, S2, N1, N2, MA, QD, WIL1, WIL2, OC, SU, GC1, GC2, D1, D2

@@ -540,7 +540,20 @@ export async function POST(req: NextRequest) {
 
     // Hard prereq filter: deterministically remove courses whose prereqs aren't met.
     // Uses the prereq string from the CSV — not the AI — so it can't be hallucinated away.
-    const eligibleCourses = remaining_courses.filter((c) => {
+    // Normalize gen-ed entries: the parser sometimes outputs subject="N2" number="N2"
+    // instead of subject="GEN_ED" number="N2". Fix any course whose subject matches a
+    // known gen-ed attribute code.
+    const GEN_ED_CODES = new Set([
+      "AH1","AH2","AH3","S1","S2","N1","N2","MA","QD","QR",
+      "WIL1","WIL2","OC","SU","GC1","GC2","D1","D2","FW","CL","SL",
+    ]);
+    const normalizedRemaining = remaining_courses.map((c) =>
+      GEN_ED_CODES.has(c.subject.toUpperCase())
+        ? { ...c, subject: "GEN_ED", number: c.subject.toUpperCase() }
+        : c
+    );
+
+    const eligibleCourses = normalizedRemaining.filter((c) => {
       const prereqStr = prereqMap.get(`${c.subject.toUpperCase()} ${c.number}`) ?? "";
       return prereqsSatisfied(prereqStr, satisfiedKeys);
     });
@@ -587,7 +600,7 @@ export async function POST(req: NextRequest) {
     // Step 2: Algorithm builds the actual conflict-free schedule
     const { schedule, totalCredits } = buildSchedule(
       aiSelection.prioritized_courses,
-      remaining_courses,
+      normalizedRemaining,
       allSections,
       blocked_times,
       effective_in_progress,
@@ -611,7 +624,7 @@ export async function POST(req: NextRequest) {
       ));
 
       // Try remaining courses not already picked or excluded by AI, in their original order
-      const leftovers: AICoursePick[] = remaining_courses
+      const leftovers: AICoursePick[] = normalizedRemaining
         .filter((c) => {
           const key = `${c.subject.toUpperCase()} ${c.number}`;
           return !aiPickedKeys.has(key) && !scheduledKeys.has(key) && !excludedKeys.has(key) && availableCourseKeys.has(key);
@@ -621,7 +634,7 @@ export async function POST(req: NextRequest) {
       if (leftovers.length > 0) {
         const { schedule: extra, totalCredits: extraCredits } = buildSchedule(
           leftovers,
-          remaining_courses,
+          normalizedRemaining,
           allSections,
           blocked_times,
           effective_in_progress,
@@ -638,7 +651,7 @@ export async function POST(req: NextRequest) {
     // Courses with zero sections in the CSV are not offered this semester —
     // surface them separately so the message is accurate.
     const scheduledKeys = new Set(finalSchedule.map((c) => `${c.subject.toUpperCase()} ${c.number}`));
-    const notOffered = remaining_courses
+    const notOffered = normalizedRemaining
       .filter((c) => !availableCourseKeys.has(`${c.subject.toUpperCase()} ${c.number}`))
       .map((c) => `${c.subject} ${c.number} (not offered Fall 2026)`);
 
@@ -648,9 +661,9 @@ export async function POST(req: NextRequest) {
       notes: aiSelection.notes,
       unscheduled_courses: notOffered,
       available_sections_found: availableCourseKeys.size,
-      total_courses_needed: remaining_courses.length,
+      total_courses_needed: normalizedRemaining.length,
       _debug: {
-        remaining_courses: remaining_courses.map((c) => `${c.subject} ${c.number} (${c.requirement_category})`),
+        remaining_courses: normalizedRemaining.map((c) => `${c.subject} ${c.number} (${c.requirement_category})`),
         eligible_after_prereq_filter: eligibleCourses.map((c) => `${c.subject} ${c.number}`),
         ai_picked: aiSelection.prioritized_courses.map((c) => `${c.subject} ${c.number}`),
         ai_notes: aiSelection.notes,
