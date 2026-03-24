@@ -311,7 +311,7 @@ RULES:
 1. Only include courses where has_sections=true — others have no available sections
 2. NEVER include courses from completed_courses or in_progress_courses
 3. in_progress_courses count as satisfied prerequisites for next semester
-4. Do NOT include courses whose prereqs aren't yet met (check completed + in_progress)
+4. Do NOT include courses whose prereqs aren't yet met. A prerequisite is only satisfied if it appears in completed_courses or in_progress_courses. If a prerequisite appears in remaining_courses, that means the student has NOT taken it yet — do NOT schedule the dependent course in the same semester. Example: if MATH 1248 is in remaining_courses, do NOT include MATH 2522 (which requires MATH 1248).
 5. Do NOT include capstone/senior-only courses for freshmen or sophomores
 6. Prioritize strictly: Minor > Major Core > Major Elective > General Education > Free Elective
    — always fill with major courses first. Only add General Education if credits remain after major courses.
