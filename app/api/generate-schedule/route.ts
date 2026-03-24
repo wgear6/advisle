@@ -649,6 +649,13 @@ export async function POST(req: NextRequest) {
       unscheduled_courses: notOffered,
       available_sections_found: availableCourseKeys.size,
       total_courses_needed: remaining_courses.length,
+      _debug: {
+        remaining_courses: remaining_courses.map((c) => `${c.subject} ${c.number} (${c.requirement_category})`),
+        eligible_after_prereq_filter: eligibleCourses.map((c) => `${c.subject} ${c.number}`),
+        ai_picked: aiSelection.prioritized_courses.map((c) => `${c.subject} ${c.number}`),
+        ai_notes: aiSelection.notes,
+        ai_skipped: aiSelection.skipped_courses ?? [],
+      },
     });
   } catch (err) {
     console.error("generate-schedule error:", err);
