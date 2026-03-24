@@ -525,12 +525,21 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Build satisfied-course set (completed + in-progress)
+    const satisfiedKeys = new Set([
+      ...completed_courses.map((c) => `${c.subject.toUpperCase()} ${c.number}`),
+      ...effective_in_progress.map((c) => `${c.subject.toUpperCase()} ${c.number}`),
+    ]);
+
+    // Hard prereq filter: deterministically remove courses whose prereqs aren't met.
+    // Uses the prereq string from the CSV — not the AI — so it can't be hallucinated away.
+    const eligibleCourses = remaining_courses.filter((c) => {
+      const prereqStr = prereqMap.get(`${c.subject.toUpperCase()} ${c.number}`) ?? "";
+      return prereqsSatisfied(prereqStr, satisfiedKeys);
+    });
+
     // Determine which courses actually have real sections available
     // (done without blocked_times/conflicts since we just need a rough availability flag for AI)
-    const doneKeys = new Set([
-      ...completed_courses.map((c) => `${c.subject.toUpperCase()} ${c.number}`),
-      ...in_progress_courses.map((c) => `${c.subject.toUpperCase()} ${c.number}`),
-    ]);
 
     // Build set of courses that have real sections in the CSV.
     // We intentionally skip the prereq check here — the AI just needs to know
@@ -539,7 +548,7 @@ export async function POST(req: NextRequest) {
     // negatives when the student's calc course didn't match the exact strings
     // in the prereq field (e.g., took MATH 1310 but prereq says MATH 1248).
     const availableCourseKeys = new Set<string>();
-    for (const course of remaining_courses) {
+    for (const course of eligibleCourses) {
       const key = `${course.subject.toUpperCase()} ${course.number}`;
       const hasSections = findAvailableSections(
         course,
@@ -557,7 +566,7 @@ export async function POST(req: NextRequest) {
 
     // Step 1: AI picks which courses to take (priority order, no times/CRNs)
     const aiSelection = await selectCoursesWithAI(
-      remaining_courses,
+      eligibleCourses,
       availableCourseKeys,
       prereqMap,
       completed_courses,
