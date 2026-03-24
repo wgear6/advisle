@@ -450,6 +450,7 @@ export async function POST(req: NextRequest) {
       credits_completed = null,
       major = null,
       custom_notes = "",
+      pinned_crns = [],
     }: {
       remaining_courses: RemainingCourse[];
       completed_courses: SimpleCourse[];
@@ -459,6 +460,7 @@ export async function POST(req: NextRequest) {
       credits_completed?: number | null;
       major?: string | null;
       custom_notes?: string;
+      pinned_crns?: string[];
     } = body;
 
     if (!remaining_courses || remaining_courses.length === 0) {
@@ -469,6 +471,21 @@ export async function POST(req: NextRequest) {
     const effective_target = Math.min(target_credits, 19);
 
     const allSections = loadCourses();
+
+    // Resolve pinned CRNs to actual sections and lock them into the schedule
+    const pinnedSections: (CourseSection & { requirement_category: string })[] = (pinned_crns as string[])
+      .map((crn) => allSections.find((s) => s.crn === crn))
+      .filter((s): s is CourseSection => s !== undefined)
+      .map((s) => ({ ...s, requirement_category: "Pinned" }));
+
+    const pinnedCredits = pinnedSections.reduce((sum, s) => sum + s.credits, 0);
+
+    // Treat pinned sections as in-progress so the AI doesn't re-pick them
+    // and the algorithm avoids their time slots
+    const effective_in_progress: SimpleCourse[] = [
+      ...in_progress_courses,
+      ...pinnedSections.map((s) => ({ subject: s.subject, number: s.number, title: s.title, credits: s.credits })),
+    ];
 
     // Build CRN → enrollment lookup
     const crnEnrollmentMap = new Map<string, { maxEnrollment: number; currentEnrollment: number; seatsAvailable: number; isFull: boolean }>();
@@ -508,13 +525,16 @@ export async function POST(req: NextRequest) {
       if (hasSections) availableCourseKeys.add(key);
     }
 
+    // Target for AI/algorithm excludes credits already locked via pinned sections
+    const scheduling_target = Math.max(0, effective_target - pinnedCredits);
+
     // Step 1: AI picks which courses to take (priority order, no times/CRNs)
     const aiSelection = await selectCoursesWithAI(
       remaining_courses,
       availableCourseKeys,
       completed_courses,
-      in_progress_courses,
-      effective_target,
+      effective_in_progress,
+      scheduling_target,
       credits_completed,
       major,
       custom_notes
@@ -526,15 +546,16 @@ export async function POST(req: NextRequest) {
       remaining_courses,
       allSections,
       blocked_times,
-      in_progress_courses,
+      effective_in_progress,
       completed_courses,
-      effective_target,
-      crnEnrollmentMap
+      scheduling_target,
+      crnEnrollmentMap,
+      pinnedSections  // locked-in sections seed conflict tracking
     );
 
-    // If algorithm came up short (AI didn't pick enough courses), top up from remaining
-    let finalSchedule = schedule;
-    let finalCredits = totalCredits;
+    // Prepend pinned sections to the schedule
+    let finalSchedule = [...pinnedSections, ...schedule];
+    let finalCredits = pinnedCredits + totalCredits;
 
     if (finalCredits < effective_target) {
       const scheduledKeys = new Set(finalSchedule.map((c) => `${c.subject.toUpperCase()} ${c.number}`));
@@ -559,11 +580,11 @@ export async function POST(req: NextRequest) {
           remaining_courses,
           allSections,
           blocked_times,
-          in_progress_courses,
+          effective_in_progress,
           completed_courses,
           effective_target - finalCredits,
           crnEnrollmentMap,
-          finalSchedule  // avoid conflicts with first-pass courses
+          finalSchedule  // avoid conflicts with first-pass + pinned courses
         );
         finalSchedule = [...finalSchedule, ...extra];
         finalCredits += extraCredits;

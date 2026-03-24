@@ -268,6 +268,10 @@ export default function Home() {
   const [blockStart, setBlockStart] = useState("09:00");
   const [blockEnd, setBlockEnd] = useState("17:00");
 
+  // Pinned CRNs
+  const [pinnedCrns, setPinnedCrns] = useState<string[]>([]);
+  const [pinnedCrnInput, setPinnedCrnInput] = useState("");
+
   // ── Step 1: Upload & Parse ──
 
   const handleFile = useCallback((f: File) => {
@@ -334,6 +338,17 @@ export default function Home() {
     setBlockedTimes((prev) => prev.filter((_, idx) => idx !== i));
   };
 
+  const addPinnedCrn = () => {
+    const crn = pinnedCrnInput.trim();
+    if (!crn || pinnedCrns.includes(crn)) return;
+    setPinnedCrns((prev) => [...prev, crn]);
+    setPinnedCrnInput("");
+  };
+
+  const removePinnedCrn = (crn: string) => {
+    setPinnedCrns((prev) => prev.filter((c) => c !== crn));
+  };
+
   const removeCourse = (i: number) => {
     if (!audit) return;
     setAudit({ ...audit, remaining_courses: audit.remaining_courses.filter((_, idx) => idx !== i) });
@@ -381,6 +396,7 @@ export default function Home() {
           completed_courses: audit.completed_courses ?? [],
           in_progress_courses: audit.in_progress_courses ?? [],
           blocked_times: blockedTimes,
+          pinned_crns: pinnedCrns,
           target_credits: targetCredits,
           credits_completed: audit.credits_completed ?? null,
           major: audit.major ?? null,
@@ -825,6 +841,45 @@ export default function Home() {
 
               {blockedTimes.length === 0 && (
                 <p style={{ fontSize: 13, color: "#9ca3af", fontStyle: "italic" }}>No blocked times added — all time slots are open.</p>
+              )}
+            </div>
+
+            {/* Pinned CRNs */}
+            <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+              <h2 style={{ margin: "0 0 4px", fontSize: 18, fontWeight: 700 }}>Pin Specific Sections <span style={{ fontSize: 13, fontWeight: 400, color: "#9ca3af" }}>— optional</span></h2>
+              <p style={{ margin: "0 0 20px", fontSize: 14, color: "#6b7280" }}>
+                Have a section you absolutely need? Enter its CRN and the schedule will be built around it.
+              </p>
+              <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+                <input
+                  type="text"
+                  value={pinnedCrnInput}
+                  onChange={(e) => setPinnedCrnInput(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") addPinnedCrn(); }}
+                  placeholder="e.g. 92964"
+                  maxLength={6}
+                  style={{ padding: "8px 12px", borderRadius: 8, border: "1px solid #d1d5db", fontSize: 14, flex: 1 }}
+                />
+                <button onClick={addPinnedCrn}
+                  style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#2563eb", color: "#fff", fontWeight: 600, fontSize: 14, cursor: "pointer" }}>
+                  + Pin Section
+                </button>
+              </div>
+              {pinnedCrns.length > 0 && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  {pinnedCrns.map((crn) => (
+                    <div key={crn} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", background: "#f0fdf4", borderRadius: 8, border: "1px solid #bbf7d0" }}>
+                      <span style={{ fontSize: 14, flex: 1, color: "#1f2937" }}>
+                        📌 CRN <strong>{crn}</strong>
+                      </span>
+                      <button onClick={() => removePinnedCrn(crn)}
+                        style={{ background: "none", border: "none", cursor: "pointer", color: "#16a34a", fontSize: 16, padding: "0 4px" }}>×</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {pinnedCrns.length === 0 && (
+                <p style={{ fontSize: 13, color: "#9ca3af", fontStyle: "italic" }}>No sections pinned — the AI will choose all sections for you.</p>
               )}
             </div>
 
