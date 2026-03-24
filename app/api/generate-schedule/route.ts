@@ -193,14 +193,21 @@ export function hasScheduleConflict(s: CourseSection, scheduled: CourseSection[]
 
 export function prereqsSatisfied(prereqs: string, doneKeys: Set<string>): boolean {
   if (!prereqs || prereqs.trim() === "") return true;
-  const codes = [...prereqs.matchAll(/\b([A-Z]{2,5})\s+(\d{3,4})\b/g)].map(
-    (m) => `${m[1]} ${m[2]}`
-  );
-  if (codes.length === 0) return true;
-  if (prereqs.toLowerCase().includes(" or ")) {
-    return codes.some((c) => doneKeys.has(c));
-  }
-  return codes.every((c) => doneKeys.has(c));
+  // Split on semicolons to get AND groups, then within each group check OR logic.
+  // e.g. "CS 1210 ; STAT 3880 or CS 3540 ; STAT 2870 or CS 2870"
+  //   → group1: "CS 1210" (AND), group2: "STAT 3880 or CS 3540" (OR), group3: "STAT 2870 or CS 2870" (OR)
+  const andGroups = prereqs.split(";").map((g) => g.trim()).filter(Boolean);
+  return andGroups.every((group) => {
+    const codes = [...group.matchAll(/\b([A-Z]{2,5})\s+(\d{3,4})\b/g)].map(
+      (m) => `${m[1]} ${m[2]}`
+    );
+    if (codes.length === 0) return true; // text-only clause (e.g. "minimum Sophomore standing")
+    // Within a group, any " or " means at least one must be satisfied; otherwise all must be
+    if (group.toLowerCase().includes(" or ")) {
+      return codes.some((c) => doneKeys.has(c));
+    }
+    return codes.every((c) => doneKeys.has(c));
+  });
 }
 
 // ─── Find Available Sections ──────────────────────────────────────────────────
