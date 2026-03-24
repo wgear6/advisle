@@ -296,7 +296,7 @@ async function selectCoursesWithAI(
   };
 
   const response = await openai.chat.completions.create({
-    model: "gpt-4.5-preview",
+    model: "gpt-5.4",
     max_tokens: 1500,
     messages: [
       {
