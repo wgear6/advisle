@@ -261,6 +261,7 @@ export function findAvailableSections(
 async function selectCoursesWithAI(
   remainingCourses: RemainingCourse[],
   availableCourseKeys: Set<string>,
+  prereqMap: Map<string, string>,
   completedCourses: SimpleCourse[],
   inProgressCourses: SimpleCourse[],
   targetCredits: number,
@@ -275,15 +276,20 @@ async function selectCoursesWithAI(
     : "SENIOR (90+ credits)"
     : null;
 
-  // Annotate each remaining course with whether it has real sections available
-  const annotatedCourses = remainingCourses.map((c) => ({
-    subject: c.subject,
-    number: c.number,
-    title: c.title,
-    credits: c.credits,
-    requirement_category: c.requirement_category,
-    has_sections: availableCourseKeys.has(`${c.subject.toUpperCase()} ${c.number}`),
-  }));
+  // Annotate each remaining course with availability and prereq strings from CSV
+  const annotatedCourses = remainingCourses.map((c) => {
+    const key = `${c.subject.toUpperCase()} ${c.number}`;
+    const prereqs = prereqMap.get(key) ?? "";
+    return {
+      subject: c.subject,
+      number: c.number,
+      title: c.title,
+      credits: c.credits,
+      requirement_category: c.requirement_category,
+      has_sections: availableCourseKeys.has(key),
+      ...(prereqs ? { prereqs } : {}),
+    };
+  });
 
   const context = {
     remaining_courses: annotatedCourses,
@@ -311,7 +317,7 @@ RULES:
 1. Only include courses where has_sections=true — others have no available sections
 2. NEVER include courses from completed_courses or in_progress_courses
 3. in_progress_courses count as satisfied prerequisites for next semester
-4. Do NOT include courses whose prereqs aren't yet met. A prerequisite is only satisfied if it appears in completed_courses or in_progress_courses. If a prerequisite appears in remaining_courses, that means the student has NOT taken it yet — do NOT schedule the dependent course in the same semester. Example: if MATH 1248 is in remaining_courses, do NOT include MATH 2522 (which requires MATH 1248).
+4. Each course in remaining_courses may have a "prereqs" field showing its actual prerequisite string from the registrar. Use this to check prereq satisfaction. A prereq course is satisfied only if it appears in completed_courses or in_progress_courses. If the prereq course is in remaining_courses (not yet taken), do NOT include the dependent course. For OR prereqs (e.g. "MATH 1248 or MATH 1242"), at least one option must be satisfied.
 5. Do NOT include capstone/senior-only courses for freshmen or sophomores
 6. Prioritize strictly: Minor > Major Core > Major Elective > General Education > Free Elective
    — always fill with major courses first. Only add General Education if credits remain after major courses.
@@ -511,6 +517,14 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Build prereq map: "SUBJ NUMBER" → prereq string from CSV
+    const prereqMap = new Map<string, string>();
+    for (const s of allSections) {
+      if (s.prereqs) {
+        prereqMap.set(`${s.subject.toUpperCase()} ${s.number}`, s.prereqs);
+      }
+    }
+
     // Determine which courses actually have real sections available
     // (done without blocked_times/conflicts since we just need a rough availability flag for AI)
     const doneKeys = new Set([
@@ -545,6 +559,7 @@ export async function POST(req: NextRequest) {
     const aiSelection = await selectCoursesWithAI(
       remaining_courses,
       availableCourseKeys,
+      prereqMap,
       completed_courses,
       effective_in_progress,
       scheduling_target,
