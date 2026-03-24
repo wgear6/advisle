@@ -328,7 +328,7 @@ RULES:
 5. Do NOT include capstone/senior-only courses for freshmen or sophomores
 6. Prioritize strictly: Minor > Major Core > Major Elective > General Education > Free Elective
    — always fill with major courses first. Only add General Education if credits remain after major courses.
-   — include AT MOST 2 General Education courses total, even if more credits remain
+
 7. For GEN_ED requirements, include them as-is (subject: "GEN_ED", number: "AH1" etc.) — the algorithm picks the actual course
 8. STUDENT NOTES override everything — if the student says do not take a course, put it in excluded_courses and NEVER include it in prioritized_courses
 ${yearContext ? `\nSTUDENT YEAR: ${yearContext}` : ""}${major ? `\nSTUDENT MAJOR: ${major}` : ""}
@@ -403,8 +403,6 @@ function buildSchedule(
   const scheduledSectionsForConflict: CourseSection[] = [...alreadyScheduled];
   const scheduledKeys = new Set<string>();
   let totalCredits = 0;
-  let genEdCount = alreadyScheduled.filter((s) => (s as { requirement_category?: string }).requirement_category === "General Education").length;
-  const MAX_GEN_ED = 2;
 
   const MAX_CREDITS = 19;
   // When topping up a partial schedule, account for credits already locked in
@@ -417,7 +415,6 @@ function buildSchedule(
 
     const key = `${pick.subject.toUpperCase()} ${pick.number}`;
     if (scheduledKeys.has(key)) continue;
-    if (pick.requirement_category === "General Education" && genEdCount >= MAX_GEN_ED) continue;
 
     const meta = courseMetaMap.get(key) ?? {
       subject: pick.subject,
@@ -461,7 +458,6 @@ function buildSchedule(
     scheduledSectionsForConflict.push(best);
     scheduledKeys.add(key);
     totalCredits += best.credits;
-    if (pick.requirement_category === "General Education") genEdCount++;
   }
 
   return { schedule: scheduled, totalCredits };
