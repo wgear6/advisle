@@ -34,6 +34,7 @@ interface ScheduledCourse {
   title: string;
   crn: string;
   section: string;
+  type: string;
   days: string[];
   startTime: string;
   endTime: string;
@@ -62,6 +63,7 @@ interface SectionOption {
   title: string;
   crn: string;
   section: string;
+  type: string;
   days: string[];
   startTime: string;
   endTime: string;

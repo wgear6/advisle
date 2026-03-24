@@ -342,11 +342,24 @@ Return ONLY valid JSON:
 
   const raw = response.choices[0].message.content ?? "{}";
   const cleaned = raw.replace(/```json|```/g, "").trim();
+  let parsed: AISelection;
   try {
-    return JSON.parse(cleaned);
+    parsed = JSON.parse(cleaned);
   } catch {
     return { prioritized_courses: [], excluded_courses: [], notes: "AI response parse error", skipped_courses: [] };
   }
+
+  // Guard: only keep courses that actually came from the student's remaining_courses list.
+  // This prevents the AI from hallucinating courses (especially GEN_ED entries) that
+  // weren't extracted from the degree audit.
+  const validKeys = new Set(
+    remainingCourses.map((c) => `${c.subject.toUpperCase()} ${c.number}`)
+  );
+  parsed.prioritized_courses = (parsed.prioritized_courses ?? []).filter(
+    (c) => validKeys.has(`${c.subject.toUpperCase()} ${c.number}`)
+  );
+
+  return parsed;
 }
 
 // ─── Algorithm: Build Conflict-Free Schedule ─────────────────────────────────

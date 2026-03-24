@@ -19,14 +19,29 @@ Extract three lists of courses from the audit:
 3. completed_courses: courses already finished (have a letter grade A/B/C/D/F or marked TR)
 
 RULES for remaining_courses:
-- ONLY include courses where you see "Still needed: 1 Class in SUBJ NNNN"
+- Include courses where you see "Still needed: 1 Class in SUBJ NNNN"
 - SKIP anything with a letter grade, TR, or IP
 - For OR choices like "MATH 2522 or 2544": create ONE entry using the first option's number, title should say "Linear Algebra (MATH 2522 or 2544)"
 - For level requirements like "3 Credits in STAT 3@ or 4@ or 5@": use number "3000+", title "Statistics Elective (3000-level or above)", credits 3
-- For vague requirements with no course number: use subject "GEN_ED", number based on attribute (e.g. "AH1", "N2_LAB"), title from requirement text
 - For "Statistics for Engineering" with no specific course number: SKIP it (cannot match to a specific course)
 - For "CEMS 1500": include it
 - Credits: always include the actual credit value (1, 2, 3, 4). If unknown, use 3.
+
+RULES for General Education (Liberal Arts) remaining requirements:
+UVM gen-ed requirements appear as named sections with attribute codes in parentheses, like:
+  "Arts & Humanities (AH1, AH2, AH3) Not complete"
+  "Writing & Information Literacy 2 (WIL2) OR Oral Communication (OC) Not complete"
+
+A gen-ed section is STILL NEEDED if it says "Not complete" or has a "Still needed:" line beneath it.
+A gen-ed section is DONE if it says "Requirement is complete" OR "When the in-progress classes are completed this requirement should be complete" — SKIP both.
+
+For each NOT COMPLETE gen-ed section:
+- Look at how many credits are listed as "Still needed:" — use that as the credits value (default 3)
+- Determine which attribute codes are still unsatisfied. If only one course has been completed under the section but the section has multiple codes (e.g. AH1, AH2, AH3), the student likely still needs one more.
+- Create ONE GEN_ED entry per missing attribute code. Use subject "GEN_ED", number = the attribute code (e.g. "AH2"), title = requirement name.
+- For OR requirements like "WIL2 OR OC": create one entry using the first code, title should reflect both options e.g. "Writing & Info Literacy 2 (or OC)"
+
+Known UVM gen-ed attribute codes: AH1, AH2, AH3, S1, S2, N1, N2, MA, QD, WIL1, WIL2, OC, SU, GC1, GC2, D1, D2
 
 RULES for in_progress_courses:
 - Include ALL courses marked "IP" — these are being taken RIGHT NOW and should NOT be scheduled again
