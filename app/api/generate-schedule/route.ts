@@ -108,7 +108,7 @@ let courseCache: CourseSection[] | null = null;
 export function loadCourses(): CourseSection[] {
   if (courseCache) return courseCache;
 
-  const csvPath = path.join(process.cwd(), "data", "curr_enroll_202609.csv");
+  const csvPath = path.join(process.cwd(), "data", "curr_enroll_fall.csv");
   const raw = fs.readFileSync(csvPath, "utf-8");
 
   const records: RawCourse[] = parse(raw, {

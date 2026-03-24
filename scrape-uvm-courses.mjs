@@ -10,7 +10,7 @@ import fs from "fs";
 import https from "https";
 
 const TERM = "202609";
-const OUTPUT_FILE = "data/curr_enroll_202609.csv";
+const OUTPUT_FILE = "data/curr_enroll_fall.csv";
 const DELAY_MS = 400;
 
 const SUBJECTS = [
