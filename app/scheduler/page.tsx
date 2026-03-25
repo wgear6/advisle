@@ -201,7 +201,9 @@ function downloadICS(schedule: GeneratedSchedule) {
   const a = document.createElement("a");
   a.href = url;
   a.download = "advisle-fall2026.ics";
+  document.body.appendChild(a);
   a.click();
+  document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
 
@@ -639,9 +641,27 @@ export default function Home() {
         {step === 1 && (
           <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 32 }}>
             <h2 style={{ margin: "0 0 8px", fontSize: 18, fontWeight: 700, color: "#111827" }}>Upload Your Degree Audit</h2>
-            <p style={{ margin: "0 0 24px", color: "#6b7280", fontSize: 14 }}>
-              Log into myUVM → Student Records → Degree Audit. On the audit page, click the <strong>🖨️ print icon</strong> in the top right corner → Save as PDF. Then upload that file here.
+            <p style={{ margin: "0 0 12px", color: "#6b7280", fontSize: 14 }}>
+              On the audit page, click the <strong>🖨️ print icon</strong> in the top right corner → Save as PDF. Then upload that file here.
             </p>
+            <a
+              href="https://dw-prod.uvm.edu:8444/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-block",
+                marginBottom: 24,
+                padding: "10px 18px",
+                background: "#2563eb",
+                color: "#fff",
+                borderRadius: 8,
+                fontWeight: 600,
+                fontSize: 14,
+                textDecoration: "none",
+              }}
+            >
+              Open UVM Degree Audit →
+            </a>
 
             <div
               onDrop={handleDrop}

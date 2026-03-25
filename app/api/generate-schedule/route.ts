@@ -390,7 +390,7 @@ function buildSchedule(
   targetCredits: number,
   crnEnrollmentMap: Map<string, { maxEnrollment: number; currentEnrollment: number; seatsAvailable: number; isFull: boolean }>,
   alreadyScheduled: CourseSection[] = []
-): { schedule: (CourseSection & { requirement_category: string })[]; totalCredits: number } {
+): { schedule: (CourseSection & { requirement_category: string })[]; totalCredits: number; satisfiedRequirementKeys: Set<string> } {
 
   // Map remaining courses for metadata lookup
   const courseMetaMap = new Map<string, RemainingCourse>();
@@ -402,6 +402,7 @@ function buildSchedule(
   // Seed conflict tracker with any courses already on the schedule (e.g. from first pass)
   const scheduledSectionsForConflict: CourseSection[] = [...alreadyScheduled];
   const scheduledKeys = new Set<string>();
+  const satisfiedRequirementKeys = new Set<string>();
   let totalCredits = 0;
 
   const MAX_CREDITS = 19;
@@ -457,10 +458,11 @@ function buildSchedule(
     scheduled.push(entry);
     scheduledSectionsForConflict.push(best);
     scheduledKeys.add(key);
+    satisfiedRequirementKeys.add(key);
     totalCredits += best.credits;
   }
 
-  return { schedule: scheduled, totalCredits };
+  return { schedule: scheduled, totalCredits, satisfiedRequirementKeys };
 }
 
 // ─── Main Route ───────────────────────────────────────────────────────────────
@@ -599,7 +601,7 @@ export async function POST(req: NextRequest) {
     );
 
     // Step 2: Algorithm builds the actual conflict-free schedule
-    const { schedule, totalCredits } = buildSchedule(
+    const { schedule, totalCredits, satisfiedRequirementKeys } = buildSchedule(
       aiSelection.prioritized_courses,
       normalizedRemaining,
       allSections,
@@ -616,7 +618,7 @@ export async function POST(req: NextRequest) {
     let finalCredits = pinnedCredits + totalCredits;
 
     if (finalCredits < effective_target) {
-      const scheduledKeys = new Set(finalSchedule.map((c) => `${c.subject.toUpperCase()} ${c.number}`));
+      const firstPassSectionKeys = new Set(finalSchedule.map((c) => `${c.subject.toUpperCase()} ${c.number}`));
       const aiPickedKeys = new Set(aiSelection.prioritized_courses.map((p) => `${p.subject.toUpperCase()} ${p.number}`));
 
       // Courses the AI explicitly excluded (e.g. student said "don't take X")
@@ -628,12 +630,12 @@ export async function POST(req: NextRequest) {
       const leftovers: AICoursePick[] = normalizedRemaining
         .filter((c) => {
           const key = `${c.subject.toUpperCase()} ${c.number}`;
-          return !aiPickedKeys.has(key) && !scheduledKeys.has(key) && !excludedKeys.has(key) && availableCourseKeys.has(key);
+          return !aiPickedKeys.has(key) && !firstPassSectionKeys.has(key) && !excludedKeys.has(key) && availableCourseKeys.has(key);
         })
         .map((c) => ({ subject: c.subject, number: c.number, requirement_category: c.requirement_category }));
 
       if (leftovers.length > 0) {
-        const { schedule: extra, totalCredits: extraCredits } = buildSchedule(
+        const { schedule: extra, totalCredits: extraCredits, satisfiedRequirementKeys: extraKeys } = buildSchedule(
           leftovers,
           normalizedRemaining,
           allSections,
@@ -646,14 +648,51 @@ export async function POST(req: NextRequest) {
         );
         finalSchedule = [...finalSchedule, ...extra];
         finalCredits += extraCredits;
+        for (const k of extraKeys) satisfiedRequirementKeys.add(k);
       }
     }
 
-    const scheduledKeys = new Set(finalSchedule.map((c) => `${c.subject.toUpperCase()} ${c.number}`));
+    // Third pass: fill remaining credits with free electives when required courses are exhausted
+    if (finalCredits < effective_target) {
+      const scheduledSectionKeys = new Set(finalSchedule.map((s) => `${s.subject.toUpperCase()} ${s.number}`));
+      const fillerCandidates = allSections.filter((s) => {
+        if (s.type !== "LEC") return false;
+        if (!s.startTime || s.startTime === "TBA") return false;
+        const sKey = `${s.subject.toUpperCase()} ${s.number}`;
+        if (scheduledSectionKeys.has(sKey)) return false;
+        if (satisfiedKeys.has(sKey)) return false;
+        if (parseInt(s.number) >= 5000) return false; // no grad courses
+        if (s.credits > effective_target - finalCredits) return false;
+        if (!prereqsSatisfied(s.prereqs, satisfiedKeys)) return false;
+        if (hasTimeConflict(s, blocked_times)) return false;
+        if (hasScheduleConflict(s, finalSchedule)) return false;
+        return true;
+      }).sort((a, b) => {
+        if (!a.isFull && b.isFull) return -1;
+        if (a.isFull && !b.isFull) return 1;
+        return parseInt(a.number) - parseInt(b.number);
+      });
+
+      for (const s of fillerCandidates) {
+        if (finalCredits >= effective_target) break;
+        if (finalCredits + s.credits > effective_target) continue;
+        const sKey = `${s.subject.toUpperCase()} ${s.number}`;
+        if (hasScheduleConflict(s, finalSchedule)) continue;
+        const enrollment = crnEnrollmentMap.get(s.crn);
+        finalSchedule.push({ ...s, requirement_category: "Free Elective", ...(enrollment ?? {}) });
+        finalCredits += s.credits;
+        scheduledSectionKeys.add(sKey);
+      }
+    }
+
     const eligibleKeys = new Set(eligibleCourses.map((c) => `${c.subject.toUpperCase()} ${c.number}`));
+    const finalSectionKeys = new Set(finalSchedule.map((c) => `${c.subject.toUpperCase()} ${c.number}`));
 
     const unscheduled = normalizedRemaining
-      .filter((c) => !scheduledKeys.has(`${c.subject.toUpperCase()} ${c.number}`))
+      .filter((c) => {
+        const key = `${c.subject.toUpperCase()} ${c.number}`;
+        return !finalSectionKeys.has(key) && !satisfiedRequirementKeys.has(key);
+      })
       .map((c) => {
         const key = `${c.subject.toUpperCase()} ${c.number}`;
         if (!eligibleKeys.has(key)) return `${c.subject} ${c.number} (prereq not yet satisfied)`;
