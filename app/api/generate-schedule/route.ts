@@ -655,13 +655,27 @@ export async function POST(req: NextRequest) {
     // Third pass: fill remaining credits with free electives when required courses are exhausted
     if (finalCredits < effective_target) {
       const scheduledSectionKeys = new Set(finalSchedule.map((s) => `${s.subject.toUpperCase()} ${s.number}`));
+
+      // Determine minimum course level appropriate for the student's year.
+      // Juniors/seniors shouldn't be padded with 1000-level intro courses as filler.
+      const fillerMinLevel = credits_completed !== null && credits_completed >= 60 ? 1500 : 1000;
+      // Preferred level tier for sort: juniors/seniors prefer 2000+, sophomores prefer 1500+
+      const fillerPreferredLevel = credits_completed !== null
+        ? credits_completed >= 90 ? 3000
+        : credits_completed >= 60 ? 2000
+        : credits_completed >= 30 ? 1500
+        : 1000
+        : 1000;
+
       const fillerCandidates = allSections.filter((s) => {
         if (s.type !== "LEC") return false;
         if (!s.startTime || s.startTime === "TBA") return false;
         const sKey = `${s.subject.toUpperCase()} ${s.number}`;
         if (scheduledSectionKeys.has(sKey)) return false;
         if (satisfiedKeys.has(sKey)) return false;
-        if (parseInt(s.number) >= 5000) return false; // no grad courses
+        const courseNum = parseInt(s.number);
+        if (courseNum >= 5000) return false; // no grad courses
+        if (courseNum < fillerMinLevel) return false; // skip intro courses for upper-year students
         if (s.credits > effective_target - finalCredits) return false;
         if (!prereqsSatisfied(s.prereqs, satisfiedKeys)) return false;
         if (hasTimeConflict(s, blocked_times)) return false;
@@ -670,18 +684,54 @@ export async function POST(req: NextRequest) {
       }).sort((a, b) => {
         if (!a.isFull && b.isFull) return -1;
         if (a.isFull && !b.isFull) return 1;
-        return parseInt(a.number) - parseInt(b.number);
+        const aNum = parseInt(a.number);
+        const bNum = parseInt(b.number);
+        // Prefer courses at the student's expected level
+        const aPreferred = aNum >= fillerPreferredLevel;
+        const bPreferred = bNum >= fillerPreferredLevel;
+        if (aPreferred && !bPreferred) return -1;
+        if (bPreferred && !aPreferred) return 1;
+        return aNum - bNum;
       });
 
-      for (const s of fillerCandidates) {
-        if (finalCredits >= effective_target) break;
-        if (finalCredits + s.credits > effective_target) continue;
-        const sKey = `${s.subject.toUpperCase()} ${s.number}`;
-        if (hasScheduleConflict(s, finalSchedule)) continue;
-        const enrollment = crnEnrollmentMap.get(s.crn);
-        finalSchedule.push({ ...s, requirement_category: "Free Elective", ...(enrollment ?? {}) });
-        finalCredits += s.credits;
-        scheduledSectionKeys.add(sKey);
+      const addFillerCourses = (pool: typeof fillerCandidates) => {
+        for (const s of pool) {
+          if (finalCredits >= effective_target) break;
+          if (finalCredits + s.credits > effective_target) continue;
+          const sKey = `${s.subject.toUpperCase()} ${s.number}`;
+          if (scheduledSectionKeys.has(sKey)) continue;
+          if (hasScheduleConflict(s, finalSchedule)) continue;
+          const enrollment = crnEnrollmentMap.get(s.crn);
+          finalSchedule.push({ ...s, requirement_category: "Free Elective", ...(enrollment ?? {}) });
+          finalCredits += s.credits;
+          scheduledSectionKeys.add(sKey);
+        }
+      };
+
+      addFillerCourses(fillerCandidates);
+
+      // Fallback: if still under target and level floor filtered too aggressively,
+      // retry with all levels (allows intro courses as last resort)
+      if (finalCredits < effective_target && fillerMinLevel > 1000) {
+        const fallbackPool = allSections.filter((s) => {
+          if (s.type !== "LEC") return false;
+          if (!s.startTime || s.startTime === "TBA") return false;
+          const sKey = `${s.subject.toUpperCase()} ${s.number}`;
+          if (scheduledSectionKeys.has(sKey)) return false;
+          if (satisfiedKeys.has(sKey)) return false;
+          const courseNum = parseInt(s.number);
+          if (courseNum >= 5000 || courseNum >= fillerMinLevel) return false;
+          if (s.credits > effective_target - finalCredits) return false;
+          if (!prereqsSatisfied(s.prereqs, satisfiedKeys)) return false;
+          if (hasTimeConflict(s, blocked_times)) return false;
+          if (hasScheduleConflict(s, finalSchedule)) return false;
+          return true;
+        }).sort((a, b) => {
+          if (!a.isFull && b.isFull) return -1;
+          if (a.isFull && !b.isFull) return 1;
+          return parseInt(b.number) - parseInt(a.number); // highest available first
+        });
+        addFillerCourses(fallbackPool);
       }
     }
 
