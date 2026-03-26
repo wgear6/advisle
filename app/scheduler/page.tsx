@@ -251,6 +251,9 @@ export default function Home() {
   // Custom notes
   const [customNotes, setCustomNotes] = useState("");
 
+  // Graduate course option
+  const [includeGradCourses, setIncludeGradCourses] = useState(false);
+
   // Course removal / replacement
   const [excludedCourses, setExcludedCourses] = useState<{ subject: string; number: string }[]>([]);
   const [replacingCourse, setReplacingCourse] = useState(false);
@@ -404,6 +407,7 @@ export default function Home() {
           target_credits: targetCredits,
           credits_completed: audit.credits_completed ?? null,
           major: audit.major ?? null,
+          include_grad_courses: includeGradCourses,
           custom_notes: [
             customNotes,
             selectedMinors.length > 0
@@ -920,6 +924,31 @@ export default function Home() {
             </div>
           </div>
             
+            <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+              <h2 style={{ margin: "0 0 4px", fontSize: 18, fontWeight: 700 }}>Graduate Courses</h2>
+              <p style={{ margin: "0 0 16px", fontSize: 14, color: "#6b7280" }}>
+                Enable this if you are in grad school or have permission to take 5000-level courses as an undergrad (e.g. seniors with 90+ credits in some programs).
+              </p>
+              <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
+                <div
+                  onClick={() => setIncludeGradCourses(!includeGradCourses)}
+                  style={{
+                    width: 44, height: 24, borderRadius: 12, background: includeGradCourses ? "#2563eb" : "#d1d5db",
+                    position: "relative", transition: "background 0.2s", cursor: "pointer", flexShrink: 0,
+                  }}
+                >
+                  <div style={{
+                    position: "absolute", top: 3, left: includeGradCourses ? 23 : 3,
+                    width: 18, height: 18, borderRadius: "50%", background: "#fff",
+                    transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+                  }} />
+                </div>
+                <span style={{ fontSize: 14, fontWeight: 600, color: "#111827" }}>
+                  Include graduate-level (5000+) courses
+                </span>
+              </label>
+            </div>
+
             <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
               <h2 style={{ margin: "0 0 4px", fontSize: 18, fontWeight: 700 }}>Anything else to know?</h2>
               <p style={{ margin: "0 0 12px", fontSize: 14, color: "#6b7280" }}>

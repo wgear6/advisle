@@ -286,7 +286,8 @@ async function selectCoursesWithAI(
   targetCredits: number,
   creditsCompleted: number | null,
   major: string | null,
-  customNotes: string
+  customNotes: string,
+  includeGradCourses: boolean
 ): Promise<AISelection> {
   const yearContext = creditsCompleted !== null
     ? creditsCompleted < 30 ? "FRESHMAN (under 30 credits)"
@@ -344,6 +345,7 @@ RULES:
 7. For GEN_ED requirements, include them as-is (subject: "GEN_ED", number: "AH1" etc.) — the algorithm picks the actual course
 8. STUDENT NOTES override everything — if the student says do not take a course, put it in excluded_courses and NEVER include it in prioritized_courses
 ${yearContext ? `\nSTUDENT YEAR: ${yearContext}` : ""}${major ? `\nSTUDENT MAJOR: ${major}` : ""}
+${includeGradCourses ? `\nGRAD COURSES ENABLED: This student is eligible to take graduate-level (5000+) courses. You may include them if they are relevant to the student's major or degree progress.` : ""}
 ${customNotes ? `\nSTUDENT NOTES (follow carefully — these override all other rules): ${customNotes}` : ""}
 
 Return ONLY valid JSON:
@@ -492,6 +494,7 @@ export async function POST(req: NextRequest) {
       major = null,
       custom_notes = "",
       pinned_crns = [],
+      include_grad_courses = false,
     }: {
       remaining_courses: RemainingCourse[];
       completed_courses: SimpleCourse[];
@@ -502,6 +505,7 @@ export async function POST(req: NextRequest) {
       major?: string | null;
       custom_notes?: string;
       pinned_crns?: string[];
+      include_grad_courses?: boolean;
     } = body;
 
     if (!remaining_courses || remaining_courses.length === 0) {
@@ -621,7 +625,8 @@ export async function POST(req: NextRequest) {
       scheduling_target,
       credits_completed,
       major,
-      custom_notes
+      custom_notes,
+      include_grad_courses
     );
 
     // Step 2: Algorithm builds the actual conflict-free schedule
@@ -698,7 +703,7 @@ export async function POST(req: NextRequest) {
         if (scheduledSectionKeys.has(sKey)) return false;
         if (satisfiedKeys.has(sKey)) return false;
         const courseNum = parseInt(s.number);
-        if (courseNum >= 5000) return false; // no grad courses
+        if (!include_grad_courses && courseNum >= 5000) return false; // no grad courses unless opted in
         if (courseNum < fillerMinLevel) return false; // skip intro courses for upper-year students
         if (s.credits > effective_target - finalCredits) return false;
         if (!prereqsSatisfied(s.prereqs, satisfiedKeys)) return false;
@@ -744,7 +749,7 @@ export async function POST(req: NextRequest) {
           if (scheduledSectionKeys.has(sKey)) return false;
           if (satisfiedKeys.has(sKey)) return false;
           const courseNum = parseInt(s.number);
-          if (courseNum >= 5000 || courseNum >= fillerMinLevel) return false;
+          if ((!include_grad_courses && courseNum >= 5000) || courseNum >= fillerMinLevel) return false;
           if (s.credits > effective_target - finalCredits) return false;
           if (!prereqsSatisfied(s.prereqs, satisfiedKeys)) return false;
           if (hasTimeConflict(s, blocked_times)) return false;
