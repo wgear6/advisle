@@ -104,52 +104,64 @@ function parseCredits(s: string): number {
 // ─── Load CSV ─────────────────────────────────────────────────────────────────
 
 let courseCache: CourseSection[] | null = null;
+let crnMapCache: Map<string, CourseSection> | null = null;
+
+function parseRawRecord(r: RawCourse): CourseSection {
+  const credits = parseCredits(r.Credits ?? "");
+  const maxEnrollment = parseInt(r["Max Enrollment"] ?? "0") || 0;
+  const currentEnrollment = parseInt(r["Current Enrollment"] ?? "0") || 0;
+  const seatsAvailable = Math.max(0, maxEnrollment - currentEnrollment);
+  return {
+    subject: r.Subj?.trim() ?? "",
+    number: r["#"]?.trim() ?? "",
+    title: r.Title?.trim() ?? "",
+    crn: r["Comp Numb"]?.trim() ?? "",
+    section: r.Sec?.trim() ?? "",
+    type: r["Lec Lab"]?.trim() ?? "",
+    startTime: r["Start Time"]?.trim() ?? "",
+    endTime: r["End Time"]?.trim() ?? "",
+    days: parseDays(r.Days ?? ""),
+    credits,
+    building: r.Bldg?.trim() ?? "",
+    room: r.Room?.trim() ?? "",
+    instructor: r.Instructor?.trim() ?? "",
+    isFull: maxEnrollment > 0 && seatsAvailable === 0,
+    maxEnrollment,
+    currentEnrollment,
+    seatsAvailable,
+    attributes: (r.Attr ?? "").split("|").map((a) => a.trim()).filter(Boolean),
+    prereqs: r.Prerequisites?.trim() ?? "",
+  };
+}
+
+function loadRawRecords(): RawCourse[] {
+  const csvPath = path.join(process.cwd(), "data", "curr_enroll_fall.csv");
+  const raw = fs.readFileSync(csvPath, "utf-8");
+  return parse(raw, { columns: true, skip_empty_lines: true, trim: true, relax_column_count: true });
+}
+
+// Full CRN → section map (no type filter) — used for resolving pinned CRNs
+export function loadCrnMap(): Map<string, CourseSection> {
+  if (crnMapCache) return crnMapCache;
+  crnMapCache = new Map();
+  for (const r of loadRawRecords()) {
+    const crn = r["Comp Numb"]?.trim();
+    if (crn) crnMapCache.set(crn, parseRawRecord(r));
+  }
+  return crnMapCache;
+}
 
 export function loadCourses(): CourseSection[] {
   if (courseCache) return courseCache;
 
-  const csvPath = path.join(process.cwd(), "data", "curr_enroll_fall.csv");
-  const raw = fs.readFileSync(csvPath, "utf-8");
-
-  const records: RawCourse[] = parse(raw, {
-    columns: true,
-    skip_empty_lines: true,
-    trim: true,
-    relax_column_count: true,
-  });
+  const records = loadRawRecords();
 
   courseCache = records
     .filter((r) => {
       const type = r["Lec Lab"]?.trim();
-      return type === "LEC" || type === "LAB" || type === "DIS";
+      return type === "LEC" || type === "LAB" || type === "DIS" || type === "SEM";
     })
-    .map((r): CourseSection => {
-      const credits = parseCredits(r.Credits ?? "");
-      const maxEnrollment = parseInt(r["Max Enrollment"] ?? "0") || 0;
-      const currentEnrollment = parseInt(r["Current Enrollment"] ?? "0") || 0;
-      const seatsAvailable = Math.max(0, maxEnrollment - currentEnrollment);
-      return {
-        subject: r.Subj?.trim() ?? "",
-        number: r["#"]?.trim() ?? "",
-        title: r.Title?.trim() ?? "",
-        crn: r["Comp Numb"]?.trim() ?? "",
-        section: r.Sec?.trim() ?? "",
-        type: r["Lec Lab"]?.trim() ?? "",
-        startTime: r["Start Time"]?.trim() ?? "",
-        endTime: r["End Time"]?.trim() ?? "",
-        days: parseDays(r.Days ?? ""),
-        credits,
-        building: r.Bldg?.trim() ?? "",
-        room: r.Room?.trim() ?? "",
-        instructor: r.Instructor?.trim() ?? "",
-        isFull: maxEnrollment > 0 && seatsAvailable === 0,
-        maxEnrollment,
-        currentEnrollment,
-        seatsAvailable,
-        attributes: (r.Attr ?? "").split("|").map((a) => a.trim()).filter(Boolean),
-        prereqs: r.Prerequisites?.trim() ?? "",
-      };
-    });
+    .map((r): CourseSection => parseRawRecord(r));
 
   return courseCache;
 }
@@ -251,7 +263,7 @@ export function findAvailableSections(
       }
     }
 
-    if (s.type !== "LEC" && s.type !== "LAB") return false;
+    if (s.type !== "LEC" && s.type !== "LAB" && s.type !== "SEM") return false;
     if (!s.startTime || s.startTime === "TBA") return false;
     if (allDoneKeys.has(`${s.subject.toUpperCase()} ${s.number}`)) return false;
     if (hasTimeConflict(s, blocked)) return false;
@@ -500,10 +512,12 @@ export async function POST(req: NextRequest) {
     const effective_target = Math.min(target_credits, 19);
 
     const allSections = loadCourses();
+    // Use the unfiltered CRN map for pinned lookups so any section type (studio, seminar, etc.) works
+    const crnMap = loadCrnMap();
 
     // Resolve pinned CRNs to actual sections and lock them into the schedule
     const pinnedSections: (CourseSection & { requirement_category: string })[] = (pinned_crns as string[])
-      .map((crn) => allSections.find((s) => s.crn === crn))
+      .map((crn) => crnMap.get(crn))
       .filter((s): s is CourseSection => s !== undefined)
       .map((s) => ({ ...s, requirement_category: "Pinned" }));
 
@@ -543,18 +557,28 @@ export async function POST(req: NextRequest) {
 
     // Hard prereq filter: deterministically remove courses whose prereqs aren't met.
     // Uses the prereq string from the CSV — not the AI — so it can't be hallucinated away.
-    // Normalize gen-ed entries: the parser sometimes outputs subject="N2" number="N2"
-    // instead of subject="GEN_ED" number="N2". Fix any course whose subject matches a
-    // known gen-ed attribute code.
+    // Normalize gen-ed entries: the audit parser can output gen-ed requirements in several forms:
+    //   - subject="N1" number="N1"  (subject is the code)
+    //   - subject="NATURAL SCIENCES" number="N1"  (subject is descriptive, number is the code)
+    // Fix all of these to subject="GEN_ED" number=<code>.
+    // Also fix known subject name mismatches between audit output and CSV subject codes.
     const GEN_ED_CODES = new Set([
       "AH1","AH2","AH3","S1","S2","N1","N2","MA","QD","QR",
       "WIL1","WIL2","OC","SU","GC1","GC2","D1","D2","FW","CL","SL",
     ]);
-    const normalizedRemaining = remaining_courses.map((c) =>
-      GEN_ED_CODES.has(c.subject.toUpperCase())
-        ? { ...c, subject: "GEN_ED", number: c.subject.toUpperCase() }
-        : c
-    );
+    // Known audit → CSV subject code mismatches
+    const SUBJECT_ALIASES: Record<string, string> = {
+      "THEATRE": "THE",
+    };
+    const normalizedRemaining = remaining_courses.map((c) => {
+      if (GEN_ED_CODES.has(c.subject.toUpperCase()))
+        return { ...c, subject: "GEN_ED", number: c.subject.toUpperCase() };
+      if (GEN_ED_CODES.has(c.number.toUpperCase()))
+        return { ...c, subject: "GEN_ED", number: c.number.toUpperCase() };
+      const aliasedSubject = SUBJECT_ALIASES[c.subject.toUpperCase()];
+      if (aliasedSubject) return { ...c, subject: aliasedSubject };
+      return c;
+    });
 
     const eligibleCourses = normalizedRemaining.filter((c) => {
       const prereqStr = prereqMap.get(`${c.subject.toUpperCase()} ${c.number}`) ?? "";
@@ -668,7 +692,7 @@ export async function POST(req: NextRequest) {
         : 1000;
 
       const fillerCandidates = allSections.filter((s) => {
-        if (s.type !== "LEC") return false;
+        if (s.type !== "LEC" && s.type !== "SEM") return false;
         if (!s.startTime || s.startTime === "TBA") return false;
         const sKey = `${s.subject.toUpperCase()} ${s.number}`;
         if (scheduledSectionKeys.has(sKey)) return false;
@@ -714,7 +738,7 @@ export async function POST(req: NextRequest) {
       // retry with all levels (allows intro courses as last resort)
       if (finalCredits < effective_target && fillerMinLevel > 1000) {
         const fallbackPool = allSections.filter((s) => {
-          if (s.type !== "LEC") return false;
+          if (s.type !== "LEC" && s.type !== "SEM") return false;
           if (!s.startTime || s.startTime === "TBA") return false;
           const sKey = `${s.subject.toUpperCase()} ${s.number}`;
           if (scheduledSectionKeys.has(sKey)) return false;
