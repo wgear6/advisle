@@ -352,6 +352,63 @@ export default function Home() {
     setPinnedCrnInput("");
   };
 
+  // Step 3 inline CRN pinning — adds CRN and immediately regenerates
+  const [step3CrnInput, setStep3CrnInput] = useState("");
+  const addCrnAndRegenerate = () => {
+    const crn = step3CrnInput.trim();
+    if (!crn || pinnedCrns.includes(crn)) return;
+    setPinnedCrns((prev) => {
+      const updated = [...prev, crn];
+      // generateSchedule reads pinnedCrns from state which hasn't updated yet,
+      // so call it after the state update via a callback pattern
+      return updated;
+    });
+    setStep3CrnInput("");
+    // Small timeout to let state flush before regenerating
+    setTimeout(() => generateScheduleWithExtraCrn(crn), 0);
+  };
+
+  const generateScheduleWithExtraCrn = (extraCrn: string) => {
+    if (!audit) return;
+    setLoading(true);
+    setError(null);
+    const allPinned = [...pinnedCrns, extraCrn];
+    fetch("/api/generate-schedule", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        remaining_courses: [
+          ...Object.values(minorMissingCourses).flat().filter(
+            (mc) => !audit.remaining_courses.some(
+              (rc) => rc.subject.toUpperCase() === mc.subject.toUpperCase() && rc.number === mc.number
+            )
+          ),
+          ...audit.remaining_courses,
+        ].filter((c) => !excludedCourses.some(
+          (e) => e.subject.toUpperCase() === c.subject.toUpperCase() && e.number === c.number
+        )),
+        completed_courses: audit.completed_courses ?? [],
+        in_progress_courses: audit.in_progress_courses ?? [],
+        blocked_times: blockedTimes,
+        pinned_crns: allPinned,
+        target_credits: targetCredits,
+        credits_completed: audit.credits_completed ?? null,
+        major: audit.major ?? null,
+        include_grad_courses: includeGradCourses,
+        custom_notes: [
+          customNotes,
+          selectedMinors.length > 0
+            ? `Student wants to pursue the following minor(s): ${selectedMinors.join(", ")}. Prioritize scheduling their missing required courses.`
+            : "",
+        ].filter(Boolean).join(" "),
+      }),
+    })
+      .then((r) => r.json())
+      .then((data) => { setSchedule(data); setStep(3); })
+      .catch(() => setError("Failed to regenerate schedule"))
+      .finally(() => setLoading(false));
+  };
+
   const removePinnedCrn = (crn: string) => {
     setPinnedCrns((prev) => prev.filter((c) => c !== crn));
   };
@@ -399,7 +456,9 @@ export default function Home() {
               )
             ),
             ...audit.remaining_courses,
-          ],
+          ].filter((c) => !excludedCourses.some(
+            (e) => e.subject.toUpperCase() === c.subject.toUpperCase() && e.number === c.number
+          )),
           completed_courses: audit.completed_courses ?? [],
           in_progress_courses: audit.in_progress_courses ?? [],
           blocked_times: blockedTimes,
@@ -1006,6 +1065,35 @@ export default function Home() {
                   </button>
                 </div>
               </div>
+              {/* Pin a CRN directly from the schedule view */}
+              <div style={{ marginBottom: 8, display: "flex", gap: 8, alignItems: "center" }}>
+                <input
+                  type="text"
+                  value={step3CrnInput}
+                  onChange={(e) => setStep3CrnInput(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") addCrnAndRegenerate(); }}
+                  placeholder="Pin a CRN (e.g. 92964)"
+                  maxLength={6}
+                  style={{ padding: "8px 12px", borderRadius: 8, border: "1px solid #d1d5db", fontSize: 14, width: 200 }}
+                />
+                <button
+                  onClick={addCrnAndRegenerate}
+                  disabled={!step3CrnInput.trim() || loading}
+                  style={{ padding: "8px 14px", borderRadius: 8, border: "none", background: "#059669", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", opacity: !step3CrnInput.trim() || loading ? 0.5 : 1 }}>
+                  + Pin & Rebuild
+                </button>
+                {pinnedCrns.length > 0 && (
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                    {pinnedCrns.map((crn) => (
+                      <span key={crn} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "4px 10px", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 20, fontSize: 12, color: "#166534", fontWeight: 600 }}>
+                        📌 {crn}
+                        <button onClick={() => { removePinnedCrn(crn); }} style={{ background: "none", border: "none", cursor: "pointer", color: "#16a34a", fontSize: 14, padding: 0, lineHeight: 1 }}>×</button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               {schedule.total_credits < targetCredits && (
                 <div style={{ marginBottom: 16, padding: "10px 14px", background: "#fff7ed", borderRadius: 8, border: "1px solid #fed7aa", fontSize: 13, color: "#c2410c" }}>
                   <strong>Heads up:</strong> We could only find {schedule.total_credits} credits of non-conflicting courses — {targetCredits - schedule.total_credits} cr short of your {targetCredits}-credit goal. This usually means limited section availability for your remaining requirements. Try removing some blocked times or use the notes field to give the AI more flexibility.
