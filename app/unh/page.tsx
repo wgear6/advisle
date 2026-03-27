@@ -449,7 +449,7 @@ export default function UnhScheduler() {
               In Degree Works, click the <strong>🖨️ print icon</strong> in the top right → Save as PDF. Then upload that file here.
             </p>
             <a
-              href="https://webcat.unh.edu/"
+              href="https://my.usnh.edu/"
               target="_blank"
               rel="noopener noreferrer"
               style={{
