@@ -115,7 +115,7 @@ async function callModel(
     model,
     temperature: 0,
     response_format: { type: "json_object" },
-    max_tokens: 3000,
+    max_completion_tokens: 3000,
     messages: [
       { role: "system", content: SYSTEM_PROMPT },
       { role: "user", content: pdfText },

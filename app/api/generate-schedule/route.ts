@@ -323,7 +323,7 @@ async function selectCoursesWithAI(
 
   const response = await openai.chat.completions.create({
     model: process.env.OPENAI_MODEL ?? "gpt-4o",
-    max_tokens: 1500,
+    max_completion_tokens: 1500,
     messages: [
       {
         role: "system",
