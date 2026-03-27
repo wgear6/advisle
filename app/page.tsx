@@ -25,20 +25,39 @@ export default function LandingPage() {
       {/* Hero */}
       <section style={{ background: "#1e3a5f", color: "#fff", padding: "96px 24px 112px", textAlign: "center" }}>
         <p style={{ margin: "0 0 16px", fontSize: 13, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "#f8b400", opacity: 0.9 }}>
-          Built for UVM students
+          Free AI schedule builder
         </p>
         <h1 style={{ margin: "0 0 20px", fontSize: "clamp(32px, 5vw, 52px)", fontWeight: 800, letterSpacing: "-1px", lineHeight: 1.1, maxWidth: 700, marginLeft: "auto", marginRight: "auto" }}>
           Stop stressing about your schedule.
         </h1>
-        <p style={{ margin: "0 auto 40px", fontSize: "clamp(15px, 2vw, 18px)", opacity: 0.75, maxWidth: 520, lineHeight: 1.65 }}>
+        <p style={{ margin: "0 auto 48px", fontSize: "clamp(15px, 2vw, 18px)", opacity: 0.75, maxWidth: 520, lineHeight: 1.65 }}>
           Advisle reads your degree audit and builds a conflict-free semester schedule in seconds — completely free, no account needed.
         </p>
-        <a
-          href="/scheduler"
-          style={{ display: "inline-block", padding: "16px 36px", background: "#f8b400", color: "#1e3a5f", borderRadius: 10, fontWeight: 800, fontSize: 16, textDecoration: "none", letterSpacing: "-0.2px" }}
-        >
-          Build My Schedule →
-        </a>
+
+        {/* School selector */}
+        <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
+          <a href="/scheduler" style={{ textDecoration: "none" }}>
+            <div style={{ background: "rgba(255,255,255,0.1)", border: "2px solid rgba(255,255,255,0.25)", borderRadius: 14, padding: "24px 36px", cursor: "pointer", transition: "all 0.15s", minWidth: 200 }}>
+              <div style={{ fontSize: 32, marginBottom: 8 }}>🟢</div>
+              <div style={{ fontWeight: 800, fontSize: 18, color: "#fff", marginBottom: 4 }}>UVM</div>
+              <div style={{ fontSize: 13, opacity: 0.75, color: "#fff" }}>University of Vermont</div>
+              <div style={{ marginTop: 16, display: "inline-block", padding: "8px 20px", background: "#f8b400", color: "#1e3a5f", borderRadius: 8, fontWeight: 700, fontSize: 14 }}>
+                Build My Schedule →
+              </div>
+            </div>
+          </a>
+
+          <a href="/unh" style={{ textDecoration: "none" }}>
+            <div style={{ background: "rgba(255,255,255,0.1)", border: "2px solid rgba(255,255,255,0.25)", borderRadius: 14, padding: "24px 36px", cursor: "pointer", transition: "all 0.15s", minWidth: 200 }}>
+              <div style={{ fontSize: 32, marginBottom: 8 }}>🔵</div>
+              <div style={{ fontWeight: 800, fontSize: 18, color: "#fff", marginBottom: 4 }}>UNH</div>
+              <div style={{ fontSize: 13, opacity: 0.75, color: "#fff" }}>University of New Hampshire</div>
+              <div style={{ marginTop: 16, display: "inline-block", padding: "8px 20px", background: "#F5A800", color: "#003C71", borderRadius: 8, fontWeight: 700, fontSize: 14 }}>
+                Build My Schedule →
+              </div>
+            </div>
+          </a>
+        </div>
       </section>
 
       {/* Wave divider */}
@@ -114,9 +133,12 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <div style={{ textAlign: "center", marginTop: 28 }}>
-          <a href="/scheduler" style={{ display: "inline-block", padding: "14px 32px", background: "#f8b400", color: "#1e3a5f", borderRadius: 10, fontWeight: 800, fontSize: 15, textDecoration: "none" }}>
-            Build My Schedule →
+        <div style={{ textAlign: "center", marginTop: 28, display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+          <a href="/scheduler" style={{ display: "inline-block", padding: "12px 28px", background: "#f8b400", color: "#1e3a5f", borderRadius: 10, fontWeight: 800, fontSize: 15, textDecoration: "none" }}>
+            UVM →
+          </a>
+          <a href="/unh" style={{ display: "inline-block", padding: "12px 28px", background: "#003C71", color: "#fff", borderRadius: 10, fontWeight: 800, fontSize: 15, textDecoration: "none" }}>
+            UNH →
           </a>
         </div>
       </section>
@@ -173,12 +195,14 @@ export default function LandingPage() {
           Ready to build your schedule?
         </h2>
         <p style={{ margin: "0 0 28px", fontSize: 15, color: "#6b7280" }}>Takes about 60 seconds.</p>
-        <a
-          href="/scheduler"
-          style={{ display: "inline-block", padding: "14px 32px", background: "#1e3a5f", color: "#fff", borderRadius: 10, fontWeight: 700, fontSize: 15, textDecoration: "none" }}
-        >
-          Get Started →
-        </a>
+        <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+          <a href="/scheduler" style={{ display: "inline-block", padding: "14px 32px", background: "#1e3a5f", color: "#fff", borderRadius: 10, fontWeight: 700, fontSize: 15, textDecoration: "none" }}>
+            UVM →
+          </a>
+          <a href="/unh" style={{ display: "inline-block", padding: "14px 32px", background: "#003C71", color: "#fff", borderRadius: 10, fontWeight: 700, fontSize: 15, textDecoration: "none" }}>
+            UNH →
+          </a>
+        </div>
       </section>
 
       {/* Footer */}
