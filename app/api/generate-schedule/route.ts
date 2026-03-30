@@ -343,7 +343,11 @@ RULES:
    — always fill with major courses first. Only add General Education if credits remain after major courses.
 
 7. For GEN_ED requirements, include them as-is (subject: "GEN_ED", number: "AH1" etc.) — the algorithm picks the actual course
-8. STUDENT NOTES override everything — if the student says do not take a course, put it in excluded_courses and NEVER include it in prioritized_courses
+8. STUDENT NOTES override everything:
+   - If the student says "do not take X" or "avoid X" → put X in excluded_courses, NEVER in prioritized_courses
+   - If the student says "I must take X" or "I need X" or "I want X" → put X FIRST in prioritized_courses regardless of other rules
+   - If the student mentions a course as a TA or instructor, treat it as already in_progress (do NOT schedule it)
+9. If a student has no remaining major courses with available sections, say so clearly in the notes field
 ${yearContext ? `\nSTUDENT YEAR: ${yearContext}` : ""}${major ? `\nSTUDENT MAJOR: ${major}` : ""}
 ${includeGradCourses ? `\nGRAD COURSES ENABLED: This student is eligible to take graduate-level (5000+) courses. You may include them if they are relevant to the student's major or degree progress.` : ""}
 ${customNotes ? `\nSTUDENT NOTES (follow carefully — these override all other rules): ${customNotes}` : ""}
@@ -562,8 +566,9 @@ export async function POST(req: NextRequest) {
     // Hard prereq filter: deterministically remove courses whose prereqs aren't met.
     // Uses the prereq string from the CSV — not the AI — so it can't be hallucinated away.
     // Normalize gen-ed entries: the audit parser can output gen-ed requirements in several forms:
-    //   - subject="N1" number="N1"  (subject is the code)
-    //   - subject="NATURAL SCIENCES" number="N1"  (subject is descriptive, number is the code)
+    //   - subject="N1" number="N1"             (subject is the code)
+    //   - subject="NATURAL SCIENCES" number="N1" (subject is descriptive, number is the code)
+    //   - subject="NATURAL SCIENCES" number="N1 Natural Sciences" (number has extra text)
     // Fix all of these to subject="GEN_ED" number=<code>.
     // Also fix known subject name mismatches between audit output and CSV subject codes.
     const GEN_ED_CODES = new Set([
@@ -574,11 +579,29 @@ export async function POST(req: NextRequest) {
     const SUBJECT_ALIASES: Record<string, string> = {
       "THEATRE": "THE",
     };
+
+    // Extract a GEN_ED code from a string — handles "N1", "N1 Natural Sciences", "N1-Sciences" etc.
+    function extractGenEdCode(s: string): string | null {
+      const upper = s.trim().toUpperCase();
+      // Exact match first
+      if (GEN_ED_CODES.has(upper)) return upper;
+      // Try matching code at start of string (e.g. "N1 Natural Sciences" → "N1")
+      for (const code of GEN_ED_CODES) {
+        if (upper === code || upper.startsWith(code + " ") || upper.startsWith(code + "-") || upper.startsWith(code + "_")) {
+          return code;
+        }
+      }
+      return null;
+    }
+
     const normalizedRemaining = remaining_courses.map((c) => {
-      if (GEN_ED_CODES.has(c.subject.toUpperCase()))
-        return { ...c, subject: "GEN_ED", number: c.subject.toUpperCase() };
-      if (GEN_ED_CODES.has(c.number.toUpperCase()))
-        return { ...c, subject: "GEN_ED", number: c.number.toUpperCase() };
+      // Subject is the code itself
+      const subjectCode = extractGenEdCode(c.subject);
+      if (subjectCode) return { ...c, subject: "GEN_ED", number: subjectCode };
+      // Number contains the code (possibly with extra text)
+      const numberCode = extractGenEdCode(c.number);
+      if (numberCode) return { ...c, subject: "GEN_ED", number: numberCode };
+      // Subject alias (e.g. THEATRE → THE)
       const aliasedSubject = SUBJECT_ALIASES[c.subject.toUpperCase()];
       if (aliasedSubject) return { ...c, subject: aliasedSubject };
       return c;
@@ -696,12 +719,16 @@ export async function POST(req: NextRequest) {
         : 1000
         : 1000;
 
+      // Courses that are first-year orientation/experience only — never filler for upper-year students
+      const FIRST_YEAR_ONLY = new Set(["CEMS 1500", "CALS 1000", "HCOL 1000", "UVM 1000"]);
+
       const fillerCandidates = allSections.filter((s) => {
         if (s.type !== "LEC" && s.type !== "SEM") return false;
         if (!s.startTime || s.startTime === "TBA") return false;
         const sKey = `${s.subject.toUpperCase()} ${s.number}`;
         if (scheduledSectionKeys.has(sKey)) return false;
         if (satisfiedKeys.has(sKey)) return false;
+        if (FIRST_YEAR_ONLY.has(sKey)) return false; // never recommend orientation courses as filler
         const courseNum = parseInt(s.number);
         if (!include_grad_courses && courseNum >= 5000) return false; // no grad courses unless opted in
         if (courseNum < fillerMinLevel) return false; // skip intro courses for upper-year students
