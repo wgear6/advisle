@@ -607,9 +607,17 @@ export async function POST(req: NextRequest) {
       return c;
     });
 
+    // Courses that are first-year orientation/experience only — never appropriate for upper-year students.
+    // Defined here so it applies to all passes (AI, leftover, and filler).
+    const FIRST_YEAR_ONLY = new Set(["CEMS 1500", "CALS 1000", "HCOL 1000", "UVM 1000"]);
+
     const eligibleCourses = normalizedRemaining.filter((c) => {
-      const prereqStr = prereqMap.get(`${c.subject.toUpperCase()} ${c.number}`) ?? "";
-      return prereqsSatisfied(prereqStr, satisfiedKeys);
+      const key = `${c.subject.toUpperCase()} ${c.number}`;
+      const prereqStr = prereqMap.get(key) ?? "";
+      if (!prereqsSatisfied(prereqStr, satisfiedKeys)) return false;
+      // Never schedule first-year orientation courses for juniors/seniors
+      if (credits_completed !== null && credits_completed >= 60 && FIRST_YEAR_ONLY.has(key)) return false;
+      return true;
     });
 
     // Determine which courses actually have real sections available
@@ -718,9 +726,6 @@ export async function POST(req: NextRequest) {
         : credits_completed >= 30 ? 1500
         : 1000
         : 1000;
-
-      // Courses that are first-year orientation/experience only — never filler for upper-year students
-      const FIRST_YEAR_ONLY = new Set(["CEMS 1500", "CALS 1000", "HCOL 1000", "UVM 1000"]);
 
       const fillerCandidates = allSections.filter((s) => {
         if (s.type !== "LEC" && s.type !== "SEM") return false;
