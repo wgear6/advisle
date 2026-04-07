@@ -101,6 +101,15 @@ function parseAttributes(html) {
     .join("|");
 }
 
+function parseSeats(html) {
+  if (!html) return { maxEnroll: 0, seatsAvail: 0 };
+  const maxMatch = html.match(/seats_max">(\d+)</);
+  const availMatch = html.match(/seats_avail">(\d+)</);
+  const max = maxMatch ? parseInt(maxMatch[1]) : 0;
+  const avail = availMatch ? parseInt(availMatch[1]) : 0;
+  return { maxEnroll: max, seatsAvail: avail };
+}
+
 function parsePrereqs(desc) {
   if (!desc) return "";
   const text = desc.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
@@ -124,68 +133,78 @@ async function scrapeSubject(subject) {
   );
   if (!search?.results?.length) return [];
 
-  // Step 2: group sections by course code
+  // Step 2: group sections by course code (to share one attrs/prereqs fetch)
   const byCourse = {};
   for (const sec of search.results) {
-    const code = sec.code; // e.g. "MATH 1248"
+    const code = sec.code;
     if (!byCourse[code]) byCourse[code] = [];
     byCourse[code].push(sec);
   }
 
   const rows = [];
 
-  // Step 3: for each course, make ONE detail call with all CRNs in matched
+  // Step 3: for each course, fetch attrs/prereqs once, then per-section enrollment
   for (const [code, sections] of Object.entries(byCourse)) {
     await sleep(150);
+
+    // One call to get attributes + prereqs for the course
+    let attributes = "";
+    let prereqs = "";
+    let hoursHtml = "";
     try {
       const firstCrn = sections[0].crn;
       const allCrns = sections.map(s => s.crn).join(",");
-
-      const detail = await post(
+      const courseDetail = await post(
         `/api/?page=fose&route=details`,
-        {
-          group: `code:${code}`,
-          key: `crn:${firstCrn}`,
-          srcdb: TERM,
-          matched: allCrns,
-        }
+        { group: `code:${code}`, key: `crn:${firstCrn}`, srcdb: TERM, matched: allCrns }
       );
+      attributes = parseAttributes(courseDetail?.class_attributes_descr || "");
+      prereqs = parsePrereqs(courseDetail?.description || "");
+      hoursHtml = courseDetail?.hours_html || "";
 
-      const attributes = parseAttributes(detail?.class_attributes_descr || "");
-      const prereqs = parsePrereqs(detail?.description || "");
-
-      // allinGroup has all sections with full data
-      const allSections = detail?.allinGroup || sections;
-
-      for (const sec of allSections) {
-        const { days, startTime, endTime } = parseMeetingTimes(sec.meetingTimes);
-        const [subj, num] = (sec.code || code).split(" ");
-
-        const maxEnroll = parseInt(sec.cap || sec.seats || "0") || 0;
-        const curEnroll = parseInt(sec.enrol || sec.act || "0") || 0;
-
-        rows.push([
-          csv(subj || subject),
-          csv(num || ""),
-          csv(sec.title || ""),
-          csv(sec.crn || ""),
-          csv(sec.no || "A"),
-          csv(SCHD_MAP[sec.schd] || sec.schd || "LEC"),
-          csv(startTime),
-          csv(endTime),
-          csv(days),
-          csv(detail?.hours_html || sec.total || "3"),
-          csv(""), // building (not in API)
-          csv(""), // room
-          csv(sec.instr || ""),
-          csv(maxEnroll),
-          csv(curEnroll),
-          csv(attributes),
-          csv(prereqs),
-        ].join(","));
+      // Use allInGroup sections if available (more complete meeting data)
+      if (courseDetail?.allInGroup?.length) {
+        sections.splice(0, sections.length, ...courseDetail.allInGroup);
       }
-    } catch (e) {
-      // skip failed courses
+    } catch (e) { /* use search data as fallback */ }
+
+    // Per-section detail call to get accurate enrollment
+    for (const sec of sections) {
+      await sleep(100);
+      let maxEnroll = 0, curEnroll = 0;
+      try {
+        const secDetail = await post(
+          `/api/?page=fose&route=details`,
+          { group: `code:${code}`, key: `crn:${sec.crn}`, srcdb: TERM, matched: sec.crn }
+        );
+        const { maxEnroll: max, seatsAvail } = parseSeats(secDetail?.seats || "");
+        maxEnroll = max;
+        curEnroll = max - seatsAvail;
+        if (!hoursHtml) hoursHtml = secDetail?.hours_html || "";
+      } catch (e) { /* leave as 0 */ }
+
+      const { days, startTime, endTime } = parseMeetingTimes(sec.meetingTimes);
+      const [subj, num] = (sec.code || code).split(" ");
+
+      rows.push([
+        csv(subj || subject),
+        csv(num || ""),
+        csv(sec.title || ""),
+        csv(sec.crn || ""),
+        csv(sec.no || "A"),
+        csv(SCHD_MAP[sec.schd] || sec.schd || "LEC"),
+        csv(startTime),
+        csv(endTime),
+        csv(days),
+        csv(hoursHtml || sec.total || "3"),
+        csv(""), // building (not in API)
+        csv(""), // room
+        csv(sec.instr || ""),
+        csv(maxEnroll),
+        csv(curEnroll),
+        csv(attributes),
+        csv(prereqs),
+      ].join(","));
     }
   }
 
