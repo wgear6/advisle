@@ -408,7 +408,7 @@ function buildSchedule(
   targetCredits: number,
   crnEnrollmentMap: Map<string, { maxEnrollment: number; currentEnrollment: number; seatsAvailable: number; isFull: boolean }>,
   alreadyScheduled: CourseSection[] = []
-): { schedule: (CourseSection & { requirement_category: string })[]; totalCredits: number; satisfiedRequirementKeys: Set<string> } {
+): { schedule: (CourseSection & { requirement_category: string; companionLab?: boolean })[]; totalCredits: number; satisfiedRequirementKeys: Set<string> } {
 
   // Map remaining courses for metadata lookup
   const courseMetaMap = new Map<string, RemainingCourse>();
@@ -416,7 +416,7 @@ function buildSchedule(
     courseMetaMap.set(`${c.subject.toUpperCase()} ${c.number}`, c);
   }
 
-  const scheduled: (CourseSection & { requirement_category: string })[] = [];
+  const scheduled: (CourseSection & { requirement_category: string; companionLab?: boolean })[] = [];
   // Seed conflict tracker with any courses already on the schedule (e.g. from first pass)
   const scheduledSectionsForConflict: CourseSection[] = [...alreadyScheduled];
   const scheduledKeys = new Set<string>();
@@ -478,6 +478,36 @@ function buildSchedule(
     scheduledKeys.add(key);
     satisfiedRequirementKeys.add(key);
     totalCredits += best.credits;
+
+    // Co-schedule a companion LAB when the picked section is a LEC and a lab section
+    // exists for the same course. Labs at UVM are often co-listed under the same subject+number
+    // with no additional credits (the lecture's credit count already includes the lab).
+    if (best.type === "LEC") {
+      const labPool = allSections.filter((s) => {
+        if (s.type !== "LAB") return false;
+        if (s.subject !== best.subject || s.number !== best.number) return false;
+        if (!s.startTime || s.startTime === "TBA") return false;
+        if (hasTimeConflict(s, blockedTimes)) return false;
+        if (hasScheduleConflict(s, scheduledSectionsForConflict)) return false;
+        return true;
+      }).sort((a, b) => {
+        if (!a.isFull && b.isFull) return -1;
+        if (a.isFull && !b.isFull) return 1;
+        return b.seatsAvailable - a.seatsAvailable;
+      });
+      if (labPool.length > 0) {
+        const bestLab = labPool[0];
+        const labEnrollment = crnEnrollmentMap.get(bestLab.crn);
+        scheduled.push({
+          ...bestLab,
+          credits: 0,
+          requirement_category: pick.requirement_category,
+          companionLab: true,
+          ...(labEnrollment ?? {}),
+        });
+        scheduledSectionsForConflict.push(bestLab);
+      }
+    }
   }
 
   return { schedule: scheduled, totalCredits, satisfiedRequirementKeys };
@@ -727,6 +757,14 @@ export async function POST(req: NextRequest) {
         : 1000
         : 1000;
 
+      // Prefer filler in the same subject areas as the student's required courses.
+      // This avoids picking wildly unrelated courses (e.g. ANTH for an ME student).
+      const majorSubjects = new Set(
+        normalizedRemaining
+          .filter((c) => c.subject !== "GEN_ED")
+          .map((c) => c.subject.toUpperCase())
+      );
+
       const fillerCandidates = allSections.filter((s) => {
         if (s.type !== "LEC" && s.type !== "SEM") return false;
         if (!s.startTime || s.startTime === "TBA") return false;
@@ -745,6 +783,11 @@ export async function POST(req: NextRequest) {
       }).sort((a, b) => {
         if (!a.isFull && b.isFull) return -1;
         if (a.isFull && !b.isFull) return 1;
+        // Prefer courses in the student's major subject areas
+        const aInMajor = majorSubjects.has(a.subject.toUpperCase());
+        const bInMajor = majorSubjects.has(b.subject.toUpperCase());
+        if (aInMajor && !bInMajor) return -1;
+        if (bInMajor && !aInMajor) return 1;
         const aNum = parseInt(a.number);
         const bNum = parseInt(b.number);
         // Prefer courses at the student's expected level

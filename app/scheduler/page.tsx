@@ -47,6 +47,7 @@ interface ScheduledCourse {
   currentEnrollment?: number;
   seatsAvailable?: number;
   isFull?: boolean;
+  companionLab?: boolean;
 }
 
 interface RMPRating {
@@ -175,8 +176,8 @@ function generateICS(schedule: GeneratedSchedule): string {
       `Instructor: ${course.instructor || "TBA"}`,
       `CRN: ${course.crn}`,
       `Section: ${course.section}`,
-      `Category: ${course.requirement_category}`,
-      `Credits: ${course.credits}`,
+      course.companionLab ? `Category: Lab (included in lecture credits)` : `Category: ${course.requirement_category}`,
+      course.companionLab ? `Credits: Included with lecture` : `Credits: ${course.credits}`,
     ].join("\\n");
 
     lines.push("BEGIN:VEVENT");
@@ -1119,23 +1120,24 @@ export default function Home() {
                 {schedule.recommended_schedule.map((c, i) => (
                   <div key={i} style={{ borderRadius: 10, border: `1px solid ${CATEGORY_COLORS[c.requirement_category] ?? "#e5e7eb"}30`, overflow: "hidden" }}>
                     <div style={{ display: "flex", alignItems: "stretch" }}>
-                      <div style={{ width: 4, background: CATEGORY_COLORS[c.requirement_category] ?? "#6b7280", flexShrink: 0 }} />
+                      <div style={{ width: 4, background: c.companionLab ? "#6b7280" : (CATEGORY_COLORS[c.requirement_category] ?? "#6b7280"), flexShrink: 0 }} />
                       <div style={{ padding: "14px 16px", flex: 1 }}>
                         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 6 }}>
                           <div>
                             <span style={{ fontWeight: 700, color: "#1e3a5f", fontSize: 15 }}>{c.subject} {c.number}</span>
                             <span style={{ fontSize: 15, marginLeft: 8, color: "#1f2937" }}>{c.title}</span>
+                            {c.companionLab && <span style={{ marginLeft: 8, fontSize: 12, padding: "1px 7px", borderRadius: 99, background: "#f3f4f6", color: "#6b7280", fontWeight: 600 }}>Lab Section</span>}
                           </div>
                           <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, marginLeft: 12 }}>
-                            <span style={{ fontSize: 13, color: "#6b7280" }}>{c.credits} credits</span>
-                            <button
+                            {!c.companionLab && <span style={{ fontSize: 13, color: "#6b7280" }}>{c.credits} credits</span>}
+                            {!c.companionLab && <button
                               onClick={() => removeCourseFromSchedule(i)}
                               disabled={replacingCourse}
                               title="Remove and find replacement"
                               style={{ background: "none", border: "none", cursor: replacingCourse ? "not-allowed" : "pointer", color: "#d1d5db", fontSize: 18, lineHeight: 1, padding: "0 2px" }}
                               onMouseEnter={e => { if (!replacingCourse) e.currentTarget.style.color = "#dc2626"; }}
                               onMouseLeave={e => { e.currentTarget.style.color = "#d1d5db"; }}
-                            >×</button>
+                            >×</button>}
                           </div>
                         </div>
                         <div style={{ display: "flex", gap: 16, flexWrap: "wrap", fontSize: 13, color: "#4b5563" }}>
@@ -1160,14 +1162,14 @@ export default function Home() {
                           {(() => { const b = seatsBadge(c.maxEnrollment, c.currentEnrollment, c.seatsAvailable); return b ? <span style={{ padding: "1px 8px", borderRadius: 99, fontSize: 12, fontWeight: 600, background: b.bg, color: b.color }}>{b.label}</span> : null; })()}
                         </div>
                         <div style={{ marginTop: 8, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                          <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 99, background: (CATEGORY_COLORS[c.requirement_category] ?? "#6b7280") + "15", color: CATEGORY_COLORS[c.requirement_category] ?? "#6b7280", fontWeight: 600 }}>
-                            {c.requirement_category}
+                          <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 99, background: (c.companionLab ? "#6b7280" : (CATEGORY_COLORS[c.requirement_category] ?? "#6b7280")) + "15", color: c.companionLab ? "#6b7280" : (CATEGORY_COLORS[c.requirement_category] ?? "#6b7280"), fontWeight: 600 }}>
+                            {c.companionLab ? "Lab (included in lecture credits)" : c.requirement_category}
                           </span>
-                          <button
+                          {!c.companionLab && <button
                             onClick={() => openSectionSwitcher(c, i)}
                             style={{ fontSize: 12, padding: "3px 10px", borderRadius: 6, border: "1px solid #d1d5db", background: switchingCrn === c.crn ? "#eff6ff" : "#fff", color: switchingCrn === c.crn ? "#2563eb" : "#6b7280", cursor: "pointer", fontWeight: 500 }}>
                             {switchingCrn === c.crn ? "▲ Close" : "⇄ Switch section"}
-                          </button>
+                          </button>}
                         </div>
                       </div>
                     </div>
