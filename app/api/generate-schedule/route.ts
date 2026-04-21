@@ -105,6 +105,7 @@ function parseCredits(s: string): number {
 
 let courseCache: CourseSection[] | null = null;
 let crnMapCache: Map<string, CourseSection> | null = null;
+let allCsvCourseKeysCache: Set<string> | null = null;
 
 function parseRawRecord(r: RawCourse): CourseSection {
   const credits = parseCredits(r.Credits ?? "");
@@ -164,6 +165,19 @@ export function loadCourses(): CourseSection[] {
     .map((r): CourseSection => parseRawRecord(r));
 
   return courseCache;
+}
+
+// All subject+number pairs that appear anywhere in the CSV (regardless of section type).
+// Used to distinguish "course exists but not schedulable" from "course not offered at all".
+export function loadAllCsvCourseKeys(): Set<string> {
+  if (allCsvCourseKeysCache) return allCsvCourseKeysCache;
+  allCsvCourseKeysCache = new Set();
+  for (const r of loadRawRecords()) {
+    const subj = r.Subj?.trim().toUpperCase();
+    const num = r["#"]?.trim();
+    if (subj && num) allCsvCourseKeysCache.add(`${subj} ${num}`);
+  }
+  return allCsvCourseKeysCache;
 }
 
 // ─── Time Helpers ─────────────────────────────────────────────────────────────
@@ -841,6 +855,7 @@ export async function POST(req: NextRequest) {
 
     const eligibleKeys = new Set(eligibleCourses.map((c) => `${c.subject.toUpperCase()} ${c.number}`));
     const finalSectionKeys = new Set(finalSchedule.map((c) => `${c.subject.toUpperCase()} ${c.number}`));
+    const allCsvKeys = loadAllCsvCourseKeys();
 
     const unscheduled = normalizedRemaining
       .filter((c) => {
@@ -850,7 +865,14 @@ export async function POST(req: NextRequest) {
       .map((c) => {
         const key = `${c.subject.toUpperCase()} ${c.number}`;
         if (!eligibleKeys.has(key)) return `${c.subject} ${c.number} (prereq not yet satisfied)`;
-        if (!availableCourseKeys.has(key)) return `${c.subject} ${c.number} (not offered Fall 2026)`;
+        if (!availableCourseKeys.has(key)) {
+          // Course exists in CSV but only as honors/research/variable-credit sections (H, TD, IND, etc.)
+          // — these require direct arrangement with an advisor and have no scheduled meeting times.
+          if (c.subject !== "GEN_ED" && allCsvKeys.has(key)) {
+            return `${c.subject} ${c.number} (variable credit / independent study — contact advisor)`;
+          }
+          return `${c.subject} ${c.number} (not offered Fall 2026)`;
+        }
         return `${c.subject} ${c.number} (could not fit in schedule)`;
       });
 
