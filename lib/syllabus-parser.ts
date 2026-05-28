@@ -1,5 +1,4 @@
 import OpenAI from "openai";
-import { PDFDocument } from "pdf-lib";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const MINI_MODEL = process.env.OPENAI_AUDIT_MINI_MODEL ?? "gpt-5.5";
@@ -126,20 +125,58 @@ export async function parseSyllabusText(text: string): Promise<SyllabusResult> {
   );
 }
 
-export async function parseSyllabusPDF(pdfBytes: Uint8Array): Promise<SyllabusResult> {
-  // Trim to first 10 pages to keep payload size reasonable
-  let bytes = pdfBytes;
-  try {
-    const doc = await PDFDocument.load(pdfBytes, { ignoreEncryption: true });
-    if (doc.getPageCount() > 10) {
-      const trimmed = await PDFDocument.create();
-      const pages = await trimmed.copyPages(doc, Array.from({ length: 10 }, (_, i) => i));
-      pages.forEach((p) => trimmed.addPage(p));
-      bytes = await trimmed.save();
+// For scanned PDFs each page is an embedded JPEG — extract them directly
+// from the binary in O(n) time, no canvas needed.
+function extractEmbeddedJPEGs(buf: Buffer, maxImages = 10): string[] {
+  const images: string[] = [];
+  let i = 0;
+  while (i < buf.length - 3 && images.length < maxImages) {
+    // JPEG SOI marker: FF D8 FF
+    if (buf[i] === 0xFF && buf[i + 1] === 0xD8 && buf[i + 2] === 0xFF) {
+      const start = i;
+      let j = i + 2;
+      let found = false;
+      while (j < buf.length - 1) {
+        // JPEG EOI marker: FF D9
+        if (buf[j] === 0xFF && buf[j + 1] === 0xD9) {
+          const size = j + 2 - start;
+          // Skip thumbnails / small images — full-page scans are typically > 100 KB
+          if (size > 100_000) {
+            images.push(`data:image/jpeg;base64,${buf.slice(start, j + 2).toString("base64")}`);
+          }
+          i = j + 2;
+          found = true;
+          break;
+        }
+        j++;
+      }
+      if (!found) break;
+    } else {
+      i++;
     }
-  } catch { /* use original bytes if pdf-lib fails */ }
+  }
+  return images;
+}
 
-  const base64 = Buffer.from(bytes).toString("base64");
+export async function parseSyllabusPDF(pdfBytes: Uint8Array): Promise<SyllabusResult> {
+  const buf = Buffer.from(pdfBytes);
+
+  // Fast path: extract embedded JPEGs directly from binary (< 100 ms)
+  const images = extractEmbeddedJPEGs(buf);
+
+  if (images.length >= 2) {
+    const content: OpenAI.ChatCompletionContentPart[] = [
+      { type: "text", text: EXTRACTION_PROMPT },
+      ...images.map((img): OpenAI.ChatCompletionContentPart => ({
+        type: "image_url",
+        image_url: { url: img, detail: "low" },
+      })),
+    ];
+    return callModel([{ role: "user", content }], VISION_MODEL);
+  }
+
+  // Fallback: send raw PDF bytes if no embedded JPEGs found
+  const base64 = buf.toString("base64");
   const content: OpenAI.ChatCompletionContentPart[] = [
     { type: "text", text: EXTRACTION_PROMPT },
     {
