@@ -82,7 +82,7 @@ async function callModel(
   const response = await openai.chat.completions.create({
     model,
     response_format: { type: "json_object" },
-    max_completion_tokens: 2000,
+    max_completion_tokens: 4000,
     messages,
   });
   const raw = response.choices[0].message.content ?? "{}";

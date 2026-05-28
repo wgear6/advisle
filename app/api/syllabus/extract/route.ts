@@ -15,12 +15,17 @@ export async function POST(req: NextRequest) {
     const { extractText } = await import("unpdf");
     const { text } = await extractText(new Uint8Array(buffer.slice(0)), { mergePages: true });
 
-    // Good text: fast + cheap text path
+    // Good text: try the fast text path first
     if (text.trim().length >= 300) {
-      return NextResponse.json(await parseSyllabusText(text));
+      const textResult = await parseSyllabusText(text);
+      // If AI found events, we're done
+      if (textResult.events.length > 0) {
+        return NextResponse.json(textResult);
+      }
+      // Text was there but had no dates (e.g. Brightspace wrapper) — fall through to PDF path
     }
 
-    // Sparse/scanned PDF: send raw bytes directly to the model as a file
+    // Scanned or date-free text: send raw PDF bytes directly to the model
     return NextResponse.json(await parseSyllabusPDF(new Uint8Array(buffer)));
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
