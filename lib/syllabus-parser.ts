@@ -106,6 +106,21 @@ export async function parseSyllabusText(text: string): Promise<SyllabusResult> {
   );
 }
 
+export async function parseSyllabusPDF(pdfBytes: Uint8Array): Promise<SyllabusResult> {
+  const base64 = Buffer.from(pdfBytes).toString("base64");
+  const content: OpenAI.ChatCompletionContentPart[] = [
+    { type: "text", text: EXTRACTION_PROMPT },
+    {
+      type: "file",
+      file: {
+        filename: "syllabus.pdf",
+        file_data: `data:application/pdf;base64,${base64}`,
+      },
+    } as OpenAI.ChatCompletionContentPart,
+  ];
+  return callModel([{ role: "user", content }], VISION_MODEL);
+}
+
 export async function parseSyllabusImages(images: string[]): Promise<SyllabusResult> {
   const content: OpenAI.ChatCompletionContentPart[] = [
     {

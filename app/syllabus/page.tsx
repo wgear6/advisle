@@ -122,29 +122,6 @@ function generateICS(events: ExpandedEvent[]): string {
   return lines.join("\r\n");
 }
 
-async function renderPDFAsImages(file: File): Promise<string[]> {
-  // Dynamically import to avoid SSR issues
-  const pdfjsLib = await import("pdfjs-dist");
-  pdfjsLib.GlobalWorkerOptions.workerSrc =
-    `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
-
-  const arrayBuffer = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
-  const images: string[] = [];
-
-  for (let i = 1; i <= Math.min(pdf.numPages, 10); i++) {
-    const page = await pdf.getPage(i);
-    const viewport = page.getViewport({ scale: 1.8 });
-    const canvas = document.createElement("canvas");
-    canvas.width = viewport.width;
-    canvas.height = viewport.height;
-    await page.render({ canvasContext: canvas.getContext("2d")!, viewport }).promise;
-    images.push(canvas.toDataURL("image/jpeg", 0.8));
-  }
-
-  return images;
-}
-
 // ─── Month Calendar ───────────────────────────────────────────────────────────
 
 function MonthCalendar({
@@ -300,7 +277,7 @@ export default function SyllabusCalendarPage() {
     }
 
     setError(null);
-    setLoadingPhase("Reading your syllabus...");
+    setLoadingPhase("Analyzing your syllabus...");
 
     try {
       const formData = new FormData();
@@ -310,28 +287,7 @@ export default function SyllabusCalendarPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Extraction failed");
 
-      if (data.needsVision) {
-        setLoadingPhase("Rendering pages for AI analysis...");
-        let images: string[];
-        try {
-          images = await renderPDFAsImages(file);
-        } catch {
-          throw new Error("Could not render PDF pages. Try a text-based PDF instead of a scanned image.");
-        }
-        if (images.length === 0) throw new Error("PDF appears to be empty.");
-
-        setLoadingPhase("Analyzing syllabus with AI...");
-        const vRes = await fetch("/api/syllabus/vision", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ images }),
-        });
-        const vData = await vRes.json();
-        if (!vRes.ok) throw new Error(vData.error ?? "Vision processing failed");
-        applyResult(vData, file.name);
-      } else {
-        applyResult(data, file.name);
-      }
+      applyResult(data, file.name);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     } finally {
