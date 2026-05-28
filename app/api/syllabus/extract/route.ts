@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { parseSyllabusText, parseSyllabusPDF } from "@/lib/syllabus-parser";
 
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
@@ -21,7 +23,8 @@ export async function POST(req: NextRequest) {
     // Sparse/scanned PDF: send raw bytes directly to the model as a file
     return NextResponse.json(await parseSyllabusPDF(new Uint8Array(buffer)));
   } catch (err) {
-    console.error("[syllabus/extract]", err);
-    return NextResponse.json({ error: "Failed to process syllabus" }, { status: 500 });
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("[syllabus/extract]", msg);
+    return NextResponse.json({ error: msg.slice(0, 300) }, { status: 500 });
   }
 }

@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { PDFDocument } from "pdf-lib";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const MINI_MODEL = process.env.OPENAI_AUDIT_MINI_MODEL ?? "gpt-5.5";
@@ -82,7 +83,7 @@ async function callModel(
     model,
     temperature: 0,
     response_format: { type: "json_object" },
-    max_completion_tokens: 4000,
+    max_completion_tokens: 2000,
     messages,
   });
   const raw = response.choices[0].message.content ?? "{}";
@@ -107,7 +108,21 @@ export async function parseSyllabusText(text: string): Promise<SyllabusResult> {
 }
 
 export async function parseSyllabusPDF(pdfBytes: Uint8Array): Promise<SyllabusResult> {
-  const base64 = Buffer.from(pdfBytes).toString("base64");
+  // Limit to first 10 pages to reduce payload size and processing time
+  let bytes = pdfBytes;
+  try {
+    const doc = await PDFDocument.load(pdfBytes, { ignoreEncryption: true });
+    if (doc.getPageCount() > 10) {
+      const trimmed = await PDFDocument.create();
+      const pages = await trimmed.copyPages(doc, Array.from({ length: 10 }, (_, i) => i));
+      pages.forEach((p) => trimmed.addPage(p));
+      bytes = await trimmed.save();
+    }
+  } catch {
+    // If pdf-lib can't parse it, use original bytes
+  }
+
+  const base64 = Buffer.from(bytes).toString("base64");
   const content: OpenAI.ChatCompletionContentPart[] = [
     { type: "text", text: EXTRACTION_PROMPT },
     {
