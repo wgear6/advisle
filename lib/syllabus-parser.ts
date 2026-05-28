@@ -81,7 +81,6 @@ async function callModel(
 ): Promise<SyllabusResult> {
   const response = await openai.chat.completions.create({
     model,
-    temperature: 0,
     response_format: { type: "json_object" },
     max_completion_tokens: 2000,
     messages,

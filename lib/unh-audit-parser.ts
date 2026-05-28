@@ -129,7 +129,6 @@ async function callModel(
 ): Promise<{ data: ParsedAudit; usage: OpenAI.CompletionUsage | null }> {
   const response = await openai.chat.completions.create({
     model,
-    temperature: 0,
     response_format: { type: "json_object" },
     max_completion_tokens: 3000,
     messages: [
