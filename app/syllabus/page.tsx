@@ -231,6 +231,7 @@ function MonthCalendar({
 export default function SyllabusCalendarPage() {
   const [allEvents, setAllEvents] = useState<ExpandedEvent[]>([]);
   const [courses, setCourses] = useState<CourseInfo[]>([]);
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [loadingPhase, setLoadingPhase] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [viewYear, setViewYear] = useState(() => new Date().getFullYear());
@@ -304,17 +305,29 @@ export default function SyllabusCalendarPage() {
     }
   }, [applyResult]);
 
+  const addToQueue = useCallback((incoming: File[]) => {
+    const pdfs = incoming.filter(f => f.name.toLowerCase().endsWith(".pdf"));
+    if (pdfs.length === 0) { setError("Please upload PDF files only."); return; }
+    setError(null);
+    setPendingFiles(prev => {
+      const existing = new Set(prev.map(f => f.name));
+      return [...prev, ...pdfs.filter(f => !existing.has(f.name))];
+    });
+  }, []);
+
+  const handleScanAll = useCallback(async () => {
+    const files = [...pendingFiles];
+    setPendingFiles([]);
+    for (let i = 0; i < files.length; i++) {
+      await handleFile(files[i], files.length > 1 ? `Analyzing ${i + 1} of ${files.length}…` : undefined);
+    }
+  }, [pendingFiles, handleFile]);
+
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
-    const files = Array.from(e.dataTransfer.files).filter(f => f.name.toLowerCase().endsWith(".pdf"));
-    const processAll = async () => {
-      for (let i = 0; i < files.length; i++) {
-        await handleFile(files[i], files.length > 1 ? `Analyzing ${i + 1} of ${files.length}…` : undefined);
-      }
-    };
-    processAll();
-  }, [handleFile]);
+    addToQueue(Array.from(e.dataTransfer.files));
+  }, [addToQueue]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -322,15 +335,9 @@ export default function SyllabusCalendarPage() {
   }, []);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files ?? []).filter(f => f.name.toLowerCase().endsWith(".pdf"));
+    addToQueue(Array.from(e.target.files ?? []));
     e.target.value = "";
-    const processAll = async () => {
-      for (let i = 0; i < files.length; i++) {
-        await handleFile(files[i], files.length > 1 ? `Analyzing ${i + 1} of ${files.length}…` : undefined);
-      }
-    };
-    processAll();
-  }, [handleFile]);
+  }, [addToQueue]);
 
   const exportICS = () => {
     const ics = generateICS(allEvents);
@@ -429,6 +436,37 @@ export default function SyllabusCalendarPage() {
             </div>
           )}
         </div>
+
+        {/* Pending queue + scan button */}
+        {pendingFiles.length > 0 && !loadingPhase && (
+          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 14, padding: "16px 20px", marginBottom: 24 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+              <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: "#1e3a5f" }}>
+                {pendingFiles.length} syllabus{pendingFiles.length !== 1 ? "es" : ""} queued
+              </p>
+              <button
+                onClick={handleScanAll}
+                style={{ background: "#1e3a5f", color: "#fff", border: "none", borderRadius: 8, padding: "8px 20px", fontWeight: 700, fontSize: 14, cursor: "pointer" }}
+              >
+                Scan {pendingFiles.length > 1 ? `all ${pendingFiles.length}` : ""} →
+              </button>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {pendingFiles.map((f, i) => (
+                <div key={f.name} style={{ display: "flex", alignItems: "center", gap: 10, background: "#f9fafb", borderRadius: 8, padding: "8px 12px" }}>
+                  <span style={{ fontSize: 14 }}>📄</span>
+                  <span style={{ fontSize: 13, color: "#374151", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{f.name}</span>
+                  <button
+                    onClick={() => setPendingFiles(prev => prev.filter((_, j) => j !== i))}
+                    style={{ background: "none", border: "none", color: "#9ca3af", cursor: "pointer", fontSize: 16, lineHeight: 1, padding: "0 2px" }}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Error */}
         {error && (
