@@ -58,6 +58,28 @@ export default function LandingPage() {
             </div>
           </a>
         </div>
+
+        {/* Syllabus Calendar tool */}
+        <div style={{ marginTop: 32 }}>
+          <p style={{ margin: "0 0 14px", fontSize: 12, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", textAlign: "center" }}>
+            Also from Advisle
+          </p>
+          <a href="/syllabus" style={{ textDecoration: "none", display: "block", maxWidth: 440, margin: "0 auto" }}>
+            <div style={{ background: "rgba(255,255,255,0.08)", border: "2px solid rgba(248,180,0,0.4)", borderRadius: 14, padding: "20px 28px", display: "flex", alignItems: "center", gap: 20 }}>
+              <div style={{ fontSize: 36, flexShrink: 0 }}>📅</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                  <span style={{ fontWeight: 800, fontSize: 16, color: "#fff" }}>Syllabus Calendar</span>
+                  <span style={{ background: "#f8b400", color: "#1e3a5f", fontSize: 10, fontWeight: 800, padding: "2px 7px", borderRadius: 99, letterSpacing: "0.05em" }}>NEW</span>
+                </div>
+                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", lineHeight: 1.5 }}>
+                  Drop any syllabus PDF — AI extracts every due date, exam, and quiz into an exportable calendar.
+                </div>
+              </div>
+              <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 20, flexShrink: 0 }}>→</div>
+            </div>
+          </a>
+        </div>
       </section>
 
       {/* Wave divider */}

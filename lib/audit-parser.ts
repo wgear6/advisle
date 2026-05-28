@@ -5,8 +5,8 @@ import type { ParsedAudit } from "./audit-schema";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-const MINI_MODEL = process.env.OPENAI_AUDIT_MINI_MODEL ?? "gpt-4o-mini";
-const FULL_MODEL = process.env.OPENAI_MODEL ?? "gpt-5.4";
+const MINI_MODEL = process.env.OPENAI_AUDIT_MINI_MODEL ?? "gpt-5.5";
+const FULL_MODEL = process.env.OPENAI_MODEL ?? "gpt-5.5";
 
 // ─── Prompt ───────────────────────────────────────────────────────────────────
 
