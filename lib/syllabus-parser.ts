@@ -24,41 +24,45 @@ export interface SyllabusResult {
 
 const TODAY = new Date().toISOString().split("T")[0];
 
-const EXTRACTION_PROMPT = `Extract all academic deadlines from this course syllabus. Today: ${TODAY}.
+const EXTRACTION_PROMPT = `Extract graded deadlines and performance dates from this course syllabus. Today: ${TODAY}.
 
-Capture every:
-- Homework / assignment due date
-- Exam (midterm, final, in-class test)
-- Quiz (scheduled or pop)
-- Project, paper, or presentation due date
-- Lab report due date
-- Any other graded deadline
+INCLUDE (things the student must submit, perform, or complete for a grade):
+- Speeches, presentations, performances
+- Exams and quizzes
+- Papers, projects, written assignments due
+- Readings or homework listed as assignments (in an "Assignment" or "Due" column)
+- Any item that appears in a graded category on the syllabus
 
-RECURRING events ("HW due every Sunday", "weekly quiz", "problem set each Friday"):
+DO NOT INCLUDE:
+- Lecture topics or class discussion content
+- Chapter readings listed only as "what we cover in class" (not graded separately)
+- Course policies, instructor info, or grading breakdowns
+- Anything that is not an action the student must complete by a date
+
+SCHEDULE TABLES: If there is a Week/Date/Topic/Assignment table, only extract items from the Assignment or Notes column — not the Topic column (unless the topic IS the graded event, like "Oral Interpretation Speech").
+
+RECURRING events ("HW due every Sunday", "weekly quiz", "readings each class"):
   recurrence.frequency = "weekly" | "biweekly"
-  recurrence.endDate = last day of class or last occurrence
+  recurrence.endDate = last day of class or last listed occurrence
   date = first occurrence only
 
-ONE-TIME events: omit the recurrence field entirely.
+ONE-TIME events: omit recurrence entirely.
 
 DATE RULES:
-- Use exact dates when given. Output YYYY-MM-DD always.
-- Week numbers (Week 3): count from the semester start date in the syllabus.
-- If the year is missing, infer it from the semester context and today (${TODAY}).
-- Skip any event where no date can be determined.
+- Use exact dates when shown. Output YYYY-MM-DD always.
+- Week numbers (Week 3, Tue): count from the semester start date in the syllabus.
+- If year is missing, infer from semester context and today (${TODAY}).
+- Skip anything with no determinable date.
 
-The syllabus may use tables, bullet lists, or paragraph form — read all of it.
-
-Respond with ONLY a JSON object, no markdown fences:
+Respond with ONLY a JSON object — no markdown, no extra text:
 {
   "courseName": "string",
   "courseCode": "string",
   "semesterStart": "YYYY-MM-DD or null",
   "semesterEnd": "YYYY-MM-DD or null",
   "events": [
-    { "id": "e1", "title": "Exam 1", "type": "exam", "date": "2026-02-20" },
-    { "id": "e2", "title": "Weekly HW Due", "type": "homework", "date": "2026-01-18",
-      "recurrence": { "frequency": "weekly", "endDate": "2026-04-26" } }
+    { "id": "e1", "title": "Introductory Speech", "type": "project", "date": "2026-01-15" },
+    { "id": "e2", "title": "Chapter Readings Due", "type": "reading", "date": "2026-01-22" }
   ]
 }
 
@@ -127,9 +131,9 @@ export async function parseSyllabusPDF(pdfBytes: Uint8Array): Promise<SyllabusRe
   let bytes = pdfBytes;
   try {
     const doc = await PDFDocument.load(pdfBytes, { ignoreEncryption: true });
-    if (doc.getPageCount() > 5) {
+    if (doc.getPageCount() > 10) {
       const trimmed = await PDFDocument.create();
-      const pages = await trimmed.copyPages(doc, Array.from({ length: 5 }, (_, i) => i));
+      const pages = await trimmed.copyPages(doc, Array.from({ length: 10 }, (_, i) => i));
       pages.forEach((p) => trimmed.addPage(p));
       bytes = await trimmed.save();
     }
