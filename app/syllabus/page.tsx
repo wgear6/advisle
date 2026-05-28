@@ -270,14 +270,14 @@ export default function SyllabusCalendarPage() {
     });
   }, []);
 
-  const handleFile = useCallback(async (file: File) => {
+  const handleFile = useCallback(async (file: File, label?: string) => {
     if (!file.name.toLowerCase().endsWith(".pdf")) {
-      setError("Please upload a PDF file.");
+      setError(`${file.name} is not a PDF — skipped.`);
       return;
     }
 
     setError(null);
-    setLoadingPhase("Analyzing your syllabus...");
+    setLoadingPhase(label ?? "Analyzing your syllabus...");
 
     try {
       const formData = new FormData();
@@ -307,8 +307,13 @@ export default function SyllabusCalendarPage() {
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
-    const file = e.dataTransfer.files[0];
-    if (file) handleFile(file);
+    const files = Array.from(e.dataTransfer.files).filter(f => f.name.toLowerCase().endsWith(".pdf"));
+    const processAll = async () => {
+      for (let i = 0; i < files.length; i++) {
+        await handleFile(files[i], files.length > 1 ? `Analyzing ${i + 1} of ${files.length}…` : undefined);
+      }
+    };
+    processAll();
   }, [handleFile]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -317,9 +322,14 @@ export default function SyllabusCalendarPage() {
   }, []);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) handleFile(file);
+    const files = Array.from(e.target.files ?? []).filter(f => f.name.toLowerCase().endsWith(".pdf"));
     e.target.value = "";
+    const processAll = async () => {
+      for (let i = 0; i < files.length; i++) {
+        await handleFile(files[i], files.length > 1 ? `Analyzing ${i + 1} of ${files.length}…` : undefined);
+      }
+    };
+    processAll();
   }, [handleFile]);
 
   const exportICS = () => {
@@ -400,7 +410,7 @@ export default function SyllabusCalendarPage() {
             marginBottom: 24,
           }}
         >
-          <input ref={inputRef} type="file" accept=".pdf" style={{ display: "none" }} onChange={handleChange} />
+          <input ref={inputRef} type="file" accept=".pdf" multiple style={{ display: "none" }} onChange={handleChange} />
 
           {loadingPhase ? (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 14 }}>
@@ -411,10 +421,10 @@ export default function SyllabusCalendarPage() {
             <div>
               <div style={{ fontSize: hasEvents ? 24 : 40, marginBottom: hasEvents ? 6 : 14 }}>📄</div>
               <p style={{ margin: "0 0 4px", fontWeight: 700, fontSize: hasEvents ? 14 : 16, color: "#1e3a5f" }}>
-                {hasEvents ? "Add another course" : "Drop your syllabus PDF here"}
+                {hasEvents ? "Add more courses" : "Drop your syllabus PDFs here"}
               </p>
               <p style={{ margin: 0, fontSize: 12, color: "#9ca3af" }}>
-                {hasEvents ? "or click to browse" : "or click to browse · PDF only · supports scanned pages"}
+                {hasEvents ? "or click to browse · multiple PDFs at once" : "or click to browse · multiple PDFs at once · supports scanned pages"}
               </p>
             </div>
           )}
