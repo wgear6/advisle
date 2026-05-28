@@ -24,56 +24,78 @@ export interface SyllabusResult {
 
 const TODAY = new Date().toISOString().split("T")[0];
 
-const EXTRACTION_PROMPT = `You extract academic calendar events from a course syllabus. Today: ${TODAY}.
+const EXTRACTION_PROMPT = `Extract all academic deadlines from this course syllabus. Today: ${TODAY}.
 
-Find ALL dates for:
-- Homework / assignment due dates
-- Exams (midterms, finals, in-class tests)
-- Quizzes (pop quizzes, scheduled quizzes)
-- Projects, papers, presentations due
-- Reading assignments due
-- Lab reports due
-- Any other academic deadline
+Capture every:
+- Homework / assignment due date
+- Exam (midterm, final, in-class test)
+- Quiz (scheduled or pop)
+- Project, paper, or presentation due date
+- Lab report due date
+- Any other graded deadline
 
-RECURRING events (e.g. "HW due every Sunday", "quiz every Friday", "weekly problem set"):
-- Set recurrence.frequency: "weekly" | "biweekly"
-- Set recurrence.endDate: last day of classes or last known occurrence
-- date = first occurrence
+RECURRING events ("HW due every Sunday", "weekly quiz", "problem set each Friday"):
+  recurrence.frequency = "weekly" | "biweekly"
+  recurrence.endDate = last day of class or last occurrence
+  date = first occurrence only
 
-ONE-TIME events: no recurrence field.
+ONE-TIME events: omit the recurrence field entirely.
 
-DATE RESOLUTION:
-- If exact dates are given, use them as-is
-- If only week numbers (Week 1, Week 3): calculate from the semester start date in the syllabus
-- If semester year is not specified, infer from today (${TODAY})
-- Always output YYYY-MM-DD
+DATE RULES:
+- Use exact dates when given. Output YYYY-MM-DD always.
+- Week numbers (Week 3): count from the semester start date in the syllabus.
+- If the year is missing, infer it from the semester context and today (${TODAY}).
+- Skip any event where no date can be determined.
 
-Return JSON only — no markdown, no explanation:
+The syllabus may use tables, bullet lists, or paragraph form — read all of it.
+
+Respond with ONLY a JSON object, no markdown fences:
 {
-  "courseName": "Medical Biostatistics & Epidemiology",
-  "courseCode": "STAT 3000",
-  "semesterStart": "2026-01-13",
-  "semesterEnd": "2026-05-08",
+  "courseName": "string",
+  "courseCode": "string",
+  "semesterStart": "YYYY-MM-DD or null",
+  "semesterEnd": "YYYY-MM-DD or null",
   "events": [
-    {
-      "id": "e1",
-      "title": "Homework 1 Due",
-      "type": "homework",
-      "date": "2026-01-27",
-      "description": "optional context"
-    },
-    {
-      "id": "e2",
-      "title": "Weekly Homework Due",
-      "type": "homework",
-      "date": "2026-01-19",
-      "recurrence": { "frequency": "weekly", "endDate": "2026-04-28" }
-    }
+    { "id": "e1", "title": "Exam 1", "type": "exam", "date": "2026-02-20" },
+    { "id": "e2", "title": "Weekly HW Due", "type": "homework", "date": "2026-01-18",
+      "recurrence": { "frequency": "weekly", "endDate": "2026-04-26" } }
   ]
 }
 
-type must be one of: homework, exam, quiz, project, reading, lab, other
-Only include events with a determinable date. Skip anything where the date is unknown.`;
+type must be one of: homework, exam, quiz, project, reading, lab, other`;
+
+const EMPTY: SyllabusResult = { courseName: "", courseCode: "", semesterStart: null, semesterEnd: null, events: [] };
+
+function parseJSON(raw: string): SyllabusResult {
+  const cleaned = raw.replace(/^```json\s*|^```\s*|```\s*$/gm, "").trim();
+  try {
+    const parsed = JSON.parse(cleaned);
+    return {
+      courseName: parsed.courseName ?? "",
+      courseCode: parsed.courseCode ?? "",
+      semesterStart: parsed.semesterStart ?? null,
+      semesterEnd: parsed.semesterEnd ?? null,
+      events: Array.isArray(parsed.events)
+        ? parsed.events.filter((e: SyllabusEvent) => e.id && e.title && e.date)
+        : [],
+    };
+  } catch {
+    // Attempt recovery: find the events array even if the outer JSON is truncated
+    const match = cleaned.match(/"events"\s*:\s*(\[[\s\S]*)/);
+    if (match) {
+      try {
+        // Close any open structures so JSON.parse has a chance
+        let partial = match[1];
+        // Find the last complete event object
+        const lastClose = partial.lastIndexOf("}");
+        if (lastClose !== -1) partial = partial.slice(0, lastClose + 1) + "]";
+        const events = JSON.parse(partial);
+        return { ...EMPTY, events: Array.isArray(events) ? events.filter((e: SyllabusEvent) => e.id && e.title && e.date) : [] };
+      } catch { /* ignore */ }
+    }
+    return EMPTY;
+  }
+}
 
 async function callModel(
   messages: OpenAI.ChatCompletionMessageParam[],
@@ -81,19 +103,11 @@ async function callModel(
 ): Promise<SyllabusResult> {
   const response = await openai.chat.completions.create({
     model,
-    response_format: { type: "json_object" },
     max_completion_tokens: 4000,
     messages,
   });
-  const raw = response.choices[0].message.content ?? "{}";
-  const parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
-  return {
-    courseName: parsed.courseName ?? "",
-    courseCode: parsed.courseCode ?? "",
-    semesterStart: parsed.semesterStart ?? null,
-    semesterEnd: parsed.semesterEnd ?? null,
-    events: Array.isArray(parsed.events) ? parsed.events : [],
-  };
+  const raw = response.choices[0].message.content ?? "";
+  return parseJSON(raw);
 }
 
 export async function parseSyllabusText(text: string): Promise<SyllabusResult> {
@@ -107,7 +121,7 @@ export async function parseSyllabusText(text: string): Promise<SyllabusResult> {
 }
 
 export async function parseSyllabusPDF(pdfBytes: Uint8Array): Promise<SyllabusResult> {
-  // Limit to first 10 pages to reduce payload size and processing time
+  // Trim to first 10 pages to keep payload size reasonable
   let bytes = pdfBytes;
   try {
     const doc = await PDFDocument.load(pdfBytes, { ignoreEncryption: true });
@@ -117,19 +131,14 @@ export async function parseSyllabusPDF(pdfBytes: Uint8Array): Promise<SyllabusRe
       pages.forEach((p) => trimmed.addPage(p));
       bytes = await trimmed.save();
     }
-  } catch {
-    // If pdf-lib can't parse it, use original bytes
-  }
+  } catch { /* use original bytes if pdf-lib fails */ }
 
   const base64 = Buffer.from(bytes).toString("base64");
   const content: OpenAI.ChatCompletionContentPart[] = [
     { type: "text", text: EXTRACTION_PROMPT },
     {
       type: "file",
-      file: {
-        filename: "syllabus.pdf",
-        file_data: `data:application/pdf;base64,${base64}`,
-      },
+      file: { filename: "syllabus.pdf", file_data: `data:application/pdf;base64,${base64}` },
     } as OpenAI.ChatCompletionContentPart,
   ];
   return callModel([{ role: "user", content }], VISION_MODEL);
@@ -137,10 +146,7 @@ export async function parseSyllabusPDF(pdfBytes: Uint8Array): Promise<SyllabusRe
 
 export async function parseSyllabusImages(images: string[]): Promise<SyllabusResult> {
   const content: OpenAI.ChatCompletionContentPart[] = [
-    {
-      type: "text",
-      text: "Extract all academic calendar events from these syllabus pages.\n\n" + EXTRACTION_PROMPT,
-    },
+    { type: "text", text: EXTRACTION_PROMPT },
     ...images.slice(0, 8).map((img): OpenAI.ChatCompletionContentPart => ({
       type: "image_url",
       image_url: { url: img, detail: "high" },
