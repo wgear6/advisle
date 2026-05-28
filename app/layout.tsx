@@ -13,9 +13,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Advisle",
   description: "AI-powered course scheduling for UVM students",
+  icons: { icon: "/icon.svg" },
 };
 
 export default function RootLayout({
