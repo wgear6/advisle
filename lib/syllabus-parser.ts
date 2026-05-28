@@ -67,7 +67,11 @@ type must be one of: homework, exam, quiz, project, reading, lab, other`;
 const EMPTY: SyllabusResult = { courseName: "", courseCode: "", semesterStart: null, semesterEnd: null, events: [] };
 
 function parseJSON(raw: string): SyllabusResult {
-  const cleaned = raw.replace(/^```json\s*|^```\s*|```\s*$/gm, "").trim();
+  // Strip markdown fences, then find the first { in case model adds prose before JSON
+  const stripped = raw.replace(/^```json\s*|^```\s*|```\s*$/gm, "").trim();
+  const start = stripped.indexOf("{");
+  const cleaned = start > 0 ? stripped.slice(start) : stripped;
+
   try {
     const parsed = JSON.parse(cleaned);
     return {
@@ -80,13 +84,11 @@ function parseJSON(raw: string): SyllabusResult {
         : [],
     };
   } catch {
-    // Attempt recovery: find the events array even if the outer JSON is truncated
+    // Truncated JSON: find the last complete event object and close the array
     const match = cleaned.match(/"events"\s*:\s*(\[[\s\S]*)/);
     if (match) {
       try {
-        // Close any open structures so JSON.parse has a chance
         let partial = match[1];
-        // Find the last complete event object
         const lastClose = partial.lastIndexOf("}");
         if (lastClose !== -1) partial = partial.slice(0, lastClose + 1) + "]";
         const events = JSON.parse(partial);
@@ -125,9 +127,9 @@ export async function parseSyllabusPDF(pdfBytes: Uint8Array): Promise<SyllabusRe
   let bytes = pdfBytes;
   try {
     const doc = await PDFDocument.load(pdfBytes, { ignoreEncryption: true });
-    if (doc.getPageCount() > 10) {
+    if (doc.getPageCount() > 5) {
       const trimmed = await PDFDocument.create();
-      const pages = await trimmed.copyPages(doc, Array.from({ length: 10 }, (_, i) => i));
+      const pages = await trimmed.copyPages(doc, Array.from({ length: 5 }, (_, i) => i));
       pages.forEach((p) => trimmed.addPage(p));
       bytes = await trimmed.save();
     }

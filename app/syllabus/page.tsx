@@ -284,6 +284,14 @@ export default function SyllabusCalendarPage() {
       formData.append("file", file);
 
       const res = await fetch("/api/syllabus/extract", { method: "POST", body: formData });
+
+      // Guard against HTML error pages (Vercel timeout / 413 body-too-large)
+      const contentType = res.headers.get("content-type") ?? "";
+      if (!contentType.includes("application/json")) {
+        if (res.status === 413) throw new Error("PDF is too large. Try a shorter version (under 4 MB).");
+        throw new Error("Request timed out. Try a smaller PDF or try again in a moment.");
+      }
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Extraction failed");
 
