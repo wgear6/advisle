@@ -285,17 +285,13 @@ export default function SyllabusCalendarPage() {
 
       const res = await fetch("/api/syllabus/extract", { method: "POST", body: formData });
 
-      // Guard against non-JSON responses (Vercel 504 timeout, 413 body-too-large, etc.)
-      const contentType = res.headers.get("content-type") ?? "";
-      if (!contentType.includes("application/json")) {
-        if (res.status === 413) throw new Error("PDF is too large. Try a version under 4 MB.");
-        throw new Error("Request timed out. Try again — it usually works on the second attempt once the server is warm.");
-      }
-
+      // Read as text first so we never get a raw browser JSON.parse error
+      const body = await res.text();
       let data: Record<string, unknown>;
       try {
-        data = await res.json();
+        data = JSON.parse(body);
       } catch {
+        if (res.status === 413) throw new Error("PDF is too large. Try a version under 4 MB.");
         throw new Error("Request timed out. Try again — it usually works on the second attempt once the server is warm.");
       }
       if (!res.ok) throw new Error((data.error as string) ?? "Extraction failed");
