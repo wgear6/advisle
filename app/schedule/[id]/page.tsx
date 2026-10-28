@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import redis from "@/lib/redis";
+import { colors, radius, shadow } from "@/lib/theme";
 
 const CATEGORY_COLORS: Record<string, string> = {
   "Major Core": "#2563eb",
@@ -65,37 +66,43 @@ export default async function SchedulePage({ params }: { params: Promise<{ id: s
   });
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f8fafc", fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: colors.bg }}>
       {/* Header */}
-      <header style={{ background: "#1e3a5f", color: "#fff", padding: "20px 32px", display: "flex", alignItems: "center", gap: 16 }}>
-        <a href="/scheduler" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 16 }}>
-          <div style={{ width: 36, height: 36, background: "#f8b400", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 18, color: "#1e3a5f" }}>
+      <header style={{
+        position: "sticky", top: 0, zIndex: 20,
+        background: "rgba(30,58,95,0.85)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)",
+        color: "#fff", padding: "16px 32px", display: "flex", alignItems: "center", gap: 16,
+        borderBottom: "1px solid rgba(255,255,255,0.08)",
+      }}>
+        <a href="/scheduler" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 14 }}>
+          <div style={{ width: 32, height: 32, background: colors.accent, borderRadius: radius.sm, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 16, color: colors.ink }}>
             A
           </div>
           <div>
-            <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: "#fff", letterSpacing: "-0.3px" }}>Advisle</h1>
-            <p style={{ margin: 0, fontSize: 12, opacity: 0.7, color: "#fff" }}>AI-powered course scheduling for University of Vermont students</p>
+            <h1 style={{ margin: 0, fontSize: 18, fontWeight: 650, color: "#fff", letterSpacing: "-0.3px" }}>Advisle</h1>
+            <p style={{ margin: 0, fontSize: 12, opacity: 0.65, color: "#fff" }}>AI-powered course scheduling for University of Vermont students</p>
           </div>
         </a>
       </header>
 
       <main style={{ maxWidth: 800, margin: "0 auto", padding: "32px 16px" }}>
         {/* Schedule header */}
-        <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24, marginBottom: 20 }}>
+        <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", boxShadow: shadow.sm, padding: 24, marginBottom: 20 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
             <div>
               <h2 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 700 }}>
                 {audit.student_name ? `${audit.student_name}'s Schedule` : "Shared Schedule"}
               </h2>
               <p style={{ margin: 0, fontSize: 14, color: "#6b7280" }}>
-                {schedule.total_credits} credits · Fall 2026
+                {schedule.total_credits} credits · Spring 2027
                 {audit.major && ` · ${audit.major}`}
                 {" · "} Generated {date}
               </p>
             </div>
             <a
               href="/scheduler"
-              style={{ padding: "8px 14px", borderRadius: 8, border: "none", background: "#2563eb", color: "#fff", fontWeight: 600, fontSize: 13, cursor: "pointer", textDecoration: "none" }}
+              className="adv-btn"
+              style={{ padding: "8px 16px", borderRadius: radius.pill, border: "none", background: "#2563eb", color: "#fff", fontWeight: 600, fontSize: 13, cursor: "pointer", textDecoration: "none" }}
             >
               Make My Own →
             </a>
@@ -139,7 +146,7 @@ export default async function SchedulePage({ params }: { params: Promise<{ id: s
         </div>
 
         {/* Summary */}
-        <div style={{ background: "#1e3a5f", color: "#fff", borderRadius: 12, padding: "16px 24px", display: "flex", gap: 32 }}>
+        <div style={{ background: colors.ink, color: "#fff", borderRadius: radius.sm + 2, padding: "16px 24px", display: "flex", gap: 32, boxShadow: shadow.glow }}>
           <div><div style={{ fontSize: 24, fontWeight: 800 }}>{schedule.total_credits}</div><div style={{ fontSize: 12, opacity: 0.7 }}>Total Credits</div></div>
           <div><div style={{ fontSize: 24, fontWeight: 800 }}>{schedule.recommended_schedule.length}</div><div style={{ fontSize: 12, opacity: 0.7 }}>Courses</div></div>
         </div>

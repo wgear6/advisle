@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { colors, radius, shadow } from "@/lib/theme";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -150,16 +151,16 @@ function icsDateLocal(date: Date, timeStr: string): string {
 }
 
 function generateICS(schedule: GeneratedSchedule): string {
-  // UVM Fall 2026: Aug 31 (Mon) – Dec 11
-  const semesterStart = new Date(2026, 7, 31);
-  const untilStr = "20261212T000000Z";
+  // UVM Spring 2027: Jan 18 (Mon, week of MLK Day) – May 7
+  const semesterStart = new Date(2027, 0, 18);
+  const untilStr = "20270508T000000Z";
 
   const lines: string[] = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     "PRODID:-//Advisle//Degree Scheduler//EN",
     "CALSCALE:GREGORIAN",
-    "X-WR-CALNAME:Advisle Fall 2026",
+    "X-WR-CALNAME:Advisle Spring 2027",
     "X-WR-TIMEZONE:America/New_York",
   ];
 
@@ -187,7 +188,7 @@ function generateICS(schedule: GeneratedSchedule): string {
     lines.push(`SUMMARY:${course.subject} ${course.number} - ${course.title}`);
     lines.push(`DESCRIPTION:${description}`);
     if (location) lines.push(`LOCATION:${location}`);
-    lines.push(`UID:advisle-${course.crn}-fall2026@advisle.com`);
+    lines.push(`UID:advisle-${course.crn}-spring2027@advisle.com`);
     lines.push("END:VEVENT");
   }
 
@@ -201,7 +202,7 @@ function downloadICS(schedule: GeneratedSchedule) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "advisle-fall2026.ics";
+  a.download = "advisle-spring2027.ics";
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -645,22 +646,25 @@ export default function Home() {
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f8fafc", fontFamily: "'Segoe UI', system-ui, sans-serif", color: "#111827" }}>
+    <div style={{ minHeight: "100vh", background: colors.bg, color: "#111827" }}>
 
       {/* Header */}
-      <header style={{ background: "#1e3a5f", color: "#fff", padding: "20px 32px", display: "flex", alignItems: "center", gap: 16 }}>
-        <a href="/" style={{ display: "flex", alignItems: "center", gap: 16, textDecoration: "none", color: "inherit" }}>
-          <div style={{ width: 36, height: 36, background: "#f8b400", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 18, color: "#1e3a5f" }}>
+      <header style={{
+        position: "sticky", top: 0, zIndex: 20,
+        background: "rgba(30,58,95,0.85)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)",
+        color: "#fff", padding: "16px 32px", display: "flex", alignItems: "center", gap: 16,
+        borderBottom: "1px solid rgba(255,255,255,0.08)",
+      }}>
+        <a href="/" style={{ display: "flex", alignItems: "center", gap: 14, textDecoration: "none", color: "inherit" }}>
+          <div style={{ width: 32, height: 32, background: colors.accent, borderRadius: radius.sm, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 16, color: colors.ink }}>
             A
           </div>
           <div>
-            <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, letterSpacing: "-0.3px" }}>Advisle</h1>
-            <p style={{ margin: 0, fontSize: 12, opacity: 0.7 }}>AI-powered course scheduling for University of Vermont students</p>
+            <h1 style={{ margin: 0, fontSize: 18, fontWeight: 650, letterSpacing: "-0.3px" }}>Advisle</h1>
+            <p style={{ margin: 0, fontSize: 12, opacity: 0.65 }}>AI-powered course scheduling for University of Vermont students</p>
           </div>
         </a>
-        <a href="https://www.instagram.com/advisle?igsh=MWZoc3Z1bTU0d2kydw==" target="_blank" rel="noopener noreferrer" style={{ marginLeft: "auto", color: "#fff", opacity: 0.85, display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 500, textDecoration: "none" }}
-          onMouseEnter={e => (e.currentTarget.style.opacity = "1")}
-          onMouseLeave={e => (e.currentTarget.style.opacity = "0.85")}>
+        <a href="https://www.instagram.com/advisle?igsh=MWZoc3Z1bTU0d2kydw==" target="_blank" rel="noopener noreferrer" className="adv-fade" style={{ marginLeft: "auto", color: "#fff", opacity: 0.7, display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 500, textDecoration: "none", transition: "opacity 0.2s" }}>
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
             <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
@@ -679,7 +683,7 @@ export default function Home() {
         
 
         {/* Steps */}
-        <div style={{ display: "flex", gap: 24, marginBottom: 32, padding: "16px 24px", background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb" }}>
+        <div style={{ display: "flex", gap: 24, marginBottom: 32, padding: "16px 24px", background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", boxShadow: shadow.sm }}>
           <Step n={1} label="Upload Audit" active={step === 1} done={step > 1} />
           <div style={{ width: 40, height: 1, background: "#e5e7eb", alignSelf: "center" }} />
           <Step n={2} label="Block Times" active={step === 2} done={step > 2} />
@@ -703,7 +707,7 @@ export default function Home() {
 
         {/* ── STEP 1: Upload ── */}
         {step === 1 && (
-          <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 32 }}>
+          <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", boxShadow: shadow.sm, padding: 32 }}>
             <h2 style={{ margin: "0 0 8px", fontSize: 18, fontWeight: 700, color: "#111827" }}>Upload Your Degree Audit</h2>
             <p style={{ margin: "0 0 12px", color: "#6b7280", fontSize: 14 }}>
               On the audit page, click the <strong>🖨️ print icon</strong> in the top right corner → Save as PDF. Then upload that file here.
@@ -785,7 +789,7 @@ export default function Home() {
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
             {/* Audit summary */}
-            <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+            <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", boxShadow: shadow.sm, padding: 24 }}>
               <h2 style={{ margin: "0 0 16px", fontSize: 18, fontWeight: 700 }}>
                 {audit.student_name ? `${audit.student_name}'s` : "Your"} Remaining Courses
               </h2>
@@ -818,7 +822,7 @@ export default function Home() {
 
             {/* Minor Explorer */}
             {minorSuggestions.length > 0 && (
-              <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+              <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", boxShadow: shadow.sm, padding: 24 }}>
                 <h2 style={{ margin: "0 0 4px", fontSize: 18, fontWeight: 700 }}>Minor Explorer</h2>
                 <p style={{ margin: "0 0 16px", fontSize: 14, color: "#6b7280" }}>
                   Based on your completed courses, here are minors sorted by how close you are. Click "Add to plan" to include those courses in your schedule.
@@ -885,7 +889,7 @@ export default function Home() {
             )}
 
             {/* Block times */}
-            <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+            <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", boxShadow: shadow.sm, padding: 24 }}>
               <h2 style={{ margin: "0 0 4px", fontSize: 18, fontWeight: 700 }}>Block Off Unavailable Times</h2>
               <p style={{ margin: "0 0 20px", fontSize: 14, color: "#6b7280" }}>
                 Add times when you can't take classes (work, commute, appointments, etc.)
@@ -931,7 +935,7 @@ export default function Home() {
             </div>
 
             {/* Pinned CRNs */}
-            <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+            <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", boxShadow: shadow.sm, padding: 24 }}>
               <h2 style={{ margin: "0 0 4px", fontSize: 18, fontWeight: 700 }}>Pin Specific Sections <span style={{ fontSize: 13, fontWeight: 400, color: "#9ca3af" }}>— optional</span></h2>
               <p style={{ margin: "0 0 20px", fontSize: 14, color: "#6b7280" }}>
                 Have a section you absolutely need? Enter its CRN and the schedule will be built around it.
@@ -969,7 +973,7 @@ export default function Home() {
               )}
             </div>
 
-            <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+            <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", boxShadow: shadow.sm, padding: 24 }}>
             <h2 style={{ margin: "0 0 4px", fontSize: 18, fontWeight: 700 }}>Target Credit Load</h2>
             <p style={{ margin: "0 0 16px", fontSize: 14, color: "#6b7280" }}>
               How many credits do you want to take this semester?
@@ -984,7 +988,7 @@ export default function Home() {
             </div>
           </div>
             
-            <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+            <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", boxShadow: shadow.sm, padding: 24 }}>
               <h2 style={{ margin: "0 0 4px", fontSize: 18, fontWeight: 700 }}>Graduate Courses</h2>
               <p style={{ margin: "0 0 16px", fontSize: 14, color: "#6b7280" }}>
                 Enable this if you are in grad school or have permission to take 5000-level courses as an undergrad (e.g. seniors with 90+ credits in some programs).
@@ -1009,7 +1013,7 @@ export default function Home() {
               </label>
             </div>
 
-            <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+            <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", boxShadow: shadow.sm, padding: 24 }}>
               <h2 style={{ margin: "0 0 4px", fontSize: 18, fontWeight: 700 }}>Anything else to know?</h2>
               <p style={{ margin: "0 0 12px", fontSize: 14, color: "#6b7280" }}>
                 Tell the AI about special circumstances — e.g. "I'm currently taking CALC II so CALC III prereq is satisfied", "I transferred in CS 101", "I want to avoid early morning classes", etc.
@@ -1026,11 +1030,13 @@ export default function Home() {
             <button
               onClick={generateSchedule}
               disabled={loading}
+              className={loading ? "" : "adv-btn"}
               style={{
-                padding: "14px", borderRadius: 8, border: "none",
-                background: loading ? "#e5e7eb" : "#1e3a5f",
+                padding: "15px", borderRadius: radius.pill, border: "none",
+                background: loading ? "#e5e7eb" : colors.ink,
                 color: loading ? "#9ca3af" : "#fff",
-                fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer",
+                fontWeight: 650, fontSize: 15, cursor: loading ? "not-allowed" : "pointer",
+                boxShadow: loading ? "none" : shadow.glow,
               }}
             >
               {loading ? "Building your schedule…" : "Generate My Schedule →"}
@@ -1041,27 +1047,30 @@ export default function Home() {
         {/* ── STEP 3: Schedule ── */}
         {step === 3 && schedule && (
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-            <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+            <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", boxShadow: shadow.sm, padding: 24 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
                 <div>
                   <h2 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 700 }}>Your Recommended Schedule</h2>
-                  <p style={{ margin: 0, fontSize: 14, color: "#6b7280" }}>{schedule.total_credits} credits · Fall 2026</p>
+                  <p style={{ margin: 0, fontSize: 14, color: "#6b7280" }}>{schedule.total_credits} credits · Spring 2027</p>
                 </div>
                 <div style={{ display: "flex", gap: 8 }}>
                   <button
                     onClick={() => downloadICS(schedule)}
-                    style={{ padding: "8px 14px", borderRadius: 8, border: "none", background: "#059669", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                    className="adv-btn"
+                    style={{ padding: "8px 16px", borderRadius: radius.pill, border: "none", background: "#059669", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                     Export to Calendar
                   </button>
                   <button
                     onClick={() => { setReportSubmitted(false); setShowReportForm(false); generateSchedule(); }}
                     disabled={loading}
-                    style={{ padding: "8px 14px", borderRadius: 8, border: "none", background: "#2563eb", color: "#fff", fontSize: 13, fontWeight: 600, cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1 }}>
+                    className="adv-btn"
+                    style={{ padding: "8px 16px", borderRadius: radius.pill, border: "none", background: "#2563eb", color: "#fff", fontSize: 13, fontWeight: 600, cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1 }}>
                     ↺ Regenerate
                   </button>
                   <button
                     onClick={() => { setStep(2); setSchedule(null); setScheduleId(null); }}
-                    style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #d1d5db", background: "#fff", fontSize: 13, cursor: "pointer" }}>
+                    className="adv-btn"
+                    style={{ padding: "8px 16px", borderRadius: radius.pill, border: "1px solid #d1d5db", background: "#fff", fontSize: 13, cursor: "pointer" }}>
                     ← Adjust
                   </button>
                 </div>
@@ -1234,14 +1243,14 @@ export default function Home() {
 
               {schedule.unscheduled_courses?.length > 0 && (
                 <div style={{ marginTop: 12, padding: "12px 16px", background: "#fff7ed", borderRadius: 8, border: "1px solid #fed7aa", fontSize: 14, color: "#9a3412" }}>
-                  <strong>⚠️ Not offered Fall 2026:</strong> {schedule.unscheduled_courses.join(", ")}
-                  <p style={{ margin: "4px 0 0", fontSize: 13 }}>These courses have no sections in the Fall 2026 schedule. Check back closer to registration or ask your advisor about alternatives.</p>
+                  <strong>⚠️ Not offered Spring 2027:</strong> {schedule.unscheduled_courses.join(", ")}
+                  <p style={{ margin: "4px 0 0", fontSize: 13 }}>These courses have no sections in the Spring 2027 schedule. Check back closer to registration or ask your advisor about alternatives.</p>
                 </div>
               )}
             </div>
 
             {/* Summary bar */}
-            <div style={{ background: "#1e3a5f", color: "#fff", borderRadius: 12, padding: "16px 24px", display: "flex", gap: 32 }}>
+            <div style={{ background: colors.ink, color: "#fff", borderRadius: radius.sm + 2, padding: "16px 24px", display: "flex", gap: 32, boxShadow: shadow.glow }}>
               <div><div style={{ fontSize: 24, fontWeight: 800 }}>{schedule.total_credits}</div><div style={{ fontSize: 12, opacity: 0.7 }}>Total Credits</div></div>
               <div><div style={{ fontSize: 24, fontWeight: 800 }}>{schedule.recommended_schedule.length}</div><div style={{ fontSize: 12, opacity: 0.7 }}>Courses</div></div>
               {blockedTimes.length > 0 && <div><div style={{ fontSize: 24, fontWeight: 800 }}>{blockedTimes.length}</div><div style={{ fontSize: 12, opacity: 0.7 }}>Time Blocks Applied</div></div>}
@@ -1253,7 +1262,7 @@ export default function Home() {
                 Report submitted — thanks for the feedback!
               </div>
             ) : showReportForm ? (
-              <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 20, display: "flex", flexDirection: "column", gap: 12 }}>
+              <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", boxShadow: shadow.sm, padding: 20, display: "flex", flexDirection: "column", gap: 12 }}>
                 <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: "#111827" }}>What went wrong with this schedule?</p>
                 <textarea
                   value={reportFeedback}

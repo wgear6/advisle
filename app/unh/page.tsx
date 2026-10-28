@@ -1,6 +1,7 @@
 "use client";
 import { useState, useCallback } from "react";
 import type { ParsedAudit } from "@/lib/audit-schema";
+import { colors as theme, radius, shadow } from "@/lib/theme";
 
 // ─── UNH brand colors ─────────────────────────────────────────────────────────
 const UNH_BLUE = "#003C71";
@@ -392,17 +393,22 @@ export default function UnhScheduler() {
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f8fafc", fontFamily: "'Segoe UI', system-ui, sans-serif", color: "#111827" }}>
+    <div style={{ minHeight: "100vh", background: theme.bg, color: "#111827" }}>
 
       {/* Header */}
-      <header style={{ background: UNH_BLUE, color: "#fff", padding: "20px 32px", display: "flex", alignItems: "center", gap: 16 }}>
-        <a href="/" style={{ display: "flex", alignItems: "center", gap: 16, textDecoration: "none", color: "inherit" }}>
-          <div style={{ width: 36, height: 36, background: UNH_GOLD, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 18, color: UNH_BLUE }}>
+      <header style={{
+        position: "sticky", top: 0, zIndex: 20,
+        background: "rgba(0,60,113,0.85)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)",
+        color: "#fff", padding: "16px 32px", display: "flex", alignItems: "center", gap: 16,
+        borderBottom: "1px solid rgba(255,255,255,0.08)",
+      }}>
+        <a href="/" style={{ display: "flex", alignItems: "center", gap: 14, textDecoration: "none", color: "inherit" }}>
+          <div style={{ width: 32, height: 32, background: UNH_GOLD, borderRadius: radius.sm, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 16, color: UNH_BLUE }}>
             A
           </div>
           <div>
-            <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, letterSpacing: "-0.3px" }}>Advisle</h1>
-            <p style={{ margin: 0, fontSize: 12, opacity: 0.7 }}>AI-powered course scheduling for UNH students</p>
+            <h1 style={{ margin: 0, fontSize: 18, fontWeight: 650, letterSpacing: "-0.3px" }}>Advisle</h1>
+            <p style={{ margin: 0, fontSize: 12, opacity: 0.65 }}>AI-powered course scheduling for UNH students</p>
           </div>
         </a>
       </header>
@@ -415,7 +421,7 @@ export default function UnhScheduler() {
         </div>
 
         {/* Step indicator */}
-        <div style={{ display: "flex", gap: 24, marginBottom: 32, padding: "16px 24px", background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb" }}>
+        <div style={{ display: "flex", gap: 24, marginBottom: 32, padding: "16px 24px", background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", boxShadow: shadow.sm }}>
           <Step n={1} label="Upload Audit" active={step === 1} done={step > 1} />
           <div style={{ width: 40, height: 1, background: "#e5e7eb", alignSelf: "center" }} />
           <Step n={2} label="Preferences" active={step === 2} done={step > 2} />
@@ -443,7 +449,7 @@ export default function UnhScheduler() {
 
         {/* ── STEP 1: Upload ── */}
         {step === 1 && !loading && (
-          <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 32 }}>
+          <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", boxShadow: shadow.sm, padding: 32 }}>
             <h2 style={{ margin: "0 0 8px", fontSize: 18, fontWeight: 700, color: "#111827" }}>Upload Your Degree Audit</h2>
             <p style={{ margin: "0 0 12px", color: "#6b7280", fontSize: 14 }}>
               In Degree Works, click the <strong>🖨️ print icon</strong> in the top right → Save as PDF. Then upload that file here.
@@ -516,7 +522,7 @@ export default function UnhScheduler() {
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
             {/* Remaining courses */}
-            <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+            <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", boxShadow: shadow.sm, padding: 24 }}>
               <h2 style={{ margin: "0 0 16px", fontSize: 18, fontWeight: 700 }}>
                 {audit.student_name ? `${audit.student_name}'s` : "Your"} Remaining Courses
               </h2>
@@ -549,7 +555,7 @@ export default function UnhScheduler() {
             </div>
 
             {/* Target credits */}
-            <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+            <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", boxShadow: shadow.sm, padding: 24 }}>
               <h2 style={{ margin: "0 0 4px", fontSize: 18, fontWeight: 700 }}>Target Credit Load</h2>
               <p style={{ margin: "0 0 16px", fontSize: 14, color: "#6b7280" }}>How many credits do you want this semester?</p>
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
@@ -563,7 +569,7 @@ export default function UnhScheduler() {
             </div>
 
             {/* Blocked times */}
-            <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+            <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", boxShadow: shadow.sm, padding: 24 }}>
               <h2 style={{ margin: "0 0 4px", fontSize: 18, fontWeight: 700 }}>Block Off Times <span style={{ fontSize: 13, fontWeight: 400, color: "#9ca3af" }}>— optional</span></h2>
               <p style={{ margin: "0 0 16px", fontSize: 14, color: "#6b7280" }}>Times you can&apos;t have class (work, sports, commuting, etc.)</p>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
@@ -595,7 +601,7 @@ export default function UnhScheduler() {
             </div>
 
             {/* Pinned CRNs */}
-            <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+            <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", boxShadow: shadow.sm, padding: 24 }}>
               <h2 style={{ margin: "0 0 4px", fontSize: 18, fontWeight: 700 }}>Pin Specific Sections <span style={{ fontSize: 13, fontWeight: 400, color: "#9ca3af" }}>— optional</span></h2>
               <p style={{ margin: "0 0 20px", fontSize: 14, color: "#6b7280" }}>
                 Have a section you absolutely need? Enter its CRN and the schedule will be built around it.
@@ -620,7 +626,7 @@ export default function UnhScheduler() {
             </div>
 
             {/* Notes */}
-            <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+            <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", boxShadow: shadow.sm, padding: 24 }}>
               <h2 style={{ margin: "0 0 4px", fontSize: 18, fontWeight: 700 }}>Anything else to know?</h2>
               <p style={{ margin: "0 0 12px", fontSize: 14, color: "#6b7280" }}>
                 E.g. &quot;I&apos;m taking MATH 425 so the prereq is satisfied&quot;, &quot;avoid 8am classes&quot;, &quot;I need a light semester&quot;.
@@ -638,11 +644,13 @@ export default function UnhScheduler() {
             )}
 
             <button onClick={() => generateSchedule()} disabled={loading}
+              className={loading ? "" : "adv-btn"}
               style={{
-                padding: 14, borderRadius: 8, border: "none",
+                padding: 15, borderRadius: radius.pill, border: "none",
                 background: loading ? "#e5e7eb" : UNH_BLUE,
                 color: loading ? "#9ca3af" : "#fff",
-                fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer",
+                fontWeight: 650, fontSize: 15, cursor: loading ? "not-allowed" : "pointer",
+                boxShadow: loading ? "none" : "0 12px 32px rgba(0,60,113,0.2)",
               }}>
               Generate My Schedule →
             </button>
@@ -653,7 +661,7 @@ export default function UnhScheduler() {
         {step === 3 && schedule && !loading && (
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
-            <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+            <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", boxShadow: shadow.sm, padding: 24 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
                 <div>
                   <h2 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 700 }}>Your Recommended Schedule</h2>
@@ -780,7 +788,7 @@ export default function UnhScheduler() {
             </div>
 
             {/* Summary bar */}
-            <div style={{ background: UNH_BLUE, color: "#fff", borderRadius: 12, padding: "16px 24px", display: "flex", gap: 32 }}>
+            <div style={{ background: UNH_BLUE, color: "#fff", borderRadius: radius.sm + 2, padding: "16px 24px", display: "flex", gap: 32, boxShadow: "0 12px 32px rgba(0,60,113,0.2)" }}>
               <div><div style={{ fontSize: 24, fontWeight: 800 }}>{schedule.total_credits}</div><div style={{ fontSize: 12, opacity: 0.7 }}>Total Credits</div></div>
               <div><div style={{ fontSize: 24, fontWeight: 800 }}>{schedule.recommended_schedule.length}</div><div style={{ fontSize: 12, opacity: 0.7 }}>Courses</div></div>
               {blockedTimes.length > 0 && <div><div style={{ fontSize: 24, fontWeight: 800 }}>{blockedTimes.length}</div><div style={{ fontSize: 12, opacity: 0.7 }}>Time Blocks Applied</div></div>}
@@ -792,7 +800,7 @@ export default function UnhScheduler() {
                 Report submitted — thanks for the feedback!
               </div>
             ) : showReportForm ? (
-              <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: 20, display: "flex", flexDirection: "column", gap: 12 }}>
+              <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", boxShadow: shadow.sm, padding: 20, display: "flex", flexDirection: "column", gap: 12 }}>
                 <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: "#111827" }}>What went wrong with this schedule?</p>
                 <textarea
                   value={reportFeedback}

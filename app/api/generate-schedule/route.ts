@@ -341,7 +341,7 @@ async function selectCoursesWithAI(
     messages: [
       {
         role: "system",
-        content: `You are a UVM academic advisor selecting courses for a student's Fall 2026 semester.
+        content: `You are a UVM academic advisor selecting courses for a student's Spring 2027 semester.
 
 Your ONLY job is to return a PRIORITIZED LIST of courses the student should take — do NOT pick sections, times, or CRNs. A separate algorithm will find real conflict-free sections automatically.
 
@@ -871,7 +871,7 @@ export async function POST(req: NextRequest) {
           if (c.subject !== "GEN_ED" && allCsvKeys.has(key)) {
             return `${c.subject} ${c.number} (variable credit / independent study — contact advisor)`;
           }
-          return `${c.subject} ${c.number} (not offered Fall 2026)`;
+          return `${c.subject} ${c.number} (not offered Spring 2027)`;
         }
         return `${c.subject} ${c.number} (could not fit in schedule)`;
       });

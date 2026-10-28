@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
+import { colors, radius, shadow } from "@/lib/theme";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -367,20 +368,25 @@ export default function SyllabusCalendarPage() {
   const upcoming = allEvents.filter((ev) => ev.date >= todayStr).slice(0, 6);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f8fafc", fontFamily: "'Segoe UI', system-ui, sans-serif", color: "#111827" }}>
+    <div style={{ minHeight: "100vh", background: colors.bg, color: "#111827" }}>
       {/* Spinner keyframes */}
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
 
       {/* Header */}
-      <header style={{ background: "#1e3a5f", color: "#fff", padding: "20px 32px", display: "flex", alignItems: "center", gap: 16 }}>
+      <header style={{
+        position: "sticky", top: 0, zIndex: 20,
+        background: "rgba(30,58,95,0.85)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)",
+        color: "#fff", padding: "16px 32px", display: "flex", alignItems: "center", gap: 16,
+        borderBottom: "1px solid rgba(255,255,255,0.08)",
+      }}>
         <a href="/" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none" }}>
-          <div style={{ width: 36, height: 36, background: "#f8b400", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 18, color: "#1e3a5f" }}>
+          <div style={{ width: 32, height: 32, background: colors.accent, borderRadius: radius.sm, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 16, color: colors.ink }}>
             A
           </div>
-          <span style={{ fontWeight: 700, fontSize: 18, letterSpacing: "-0.3px", color: "#fff" }}>Advisle</span>
+          <span style={{ fontWeight: 650, fontSize: 17, letterSpacing: "-0.3px", color: "#fff" }}>Advisle</span>
         </a>
         <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 20 }}>·</span>
-        <span style={{ fontSize: 15, color: "rgba(255,255,255,0.85)", fontWeight: 500 }}>Syllabus Calendar</span>
+        <span style={{ fontSize: 15, color: "rgba(255,255,255,0.8)", fontWeight: 500 }}>Syllabus Calendar</span>
       </header>
 
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "36px 24px 64px" }}>
@@ -478,7 +484,7 @@ export default function SyllabusCalendarPage() {
 
         {/* Calendar */}
         {hasEvents && (
-          <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", overflow: "hidden", marginBottom: 24 }}>
+          <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", overflow: "hidden", marginBottom: 24, boxShadow: shadow.sm }}>
 
             {/* Calendar toolbar */}
             <div style={{ background: "#1e3a5f", padding: "18px 24px" }}>
@@ -550,7 +556,7 @@ export default function SyllabusCalendarPage() {
 
         {/* Upcoming events */}
         {upcoming.length > 0 && (
-          <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", padding: "20px 24px" }}>
+          <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", padding: "20px 24px", boxShadow: shadow.sm }}>
             <h3 style={{ margin: "0 0 14px", fontSize: 15, fontWeight: 700, color: "#1e3a5f" }}>
               Upcoming
             </h3>
