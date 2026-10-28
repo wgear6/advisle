@@ -1,5 +1,5 @@
 #!/bin/bash
-# Weekly auto-rescrape of UVM Fall 2026 SOC
+# Weekly auto-rescrape of UVM Spring 2027 SOC
 # Runs the scraper, commits if anything changed, and pushes to trigger Vercel redeploy
 
 set -e
@@ -17,7 +17,7 @@ else
   git add data/curr_enroll_fall.csv
   git commit -m "auto-rescrape: $(date +%Y-%m-%d) — ${SECTIONS} LEC sections
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
   git push
   echo "[rescrape] Pushed updated SOC ($SECTIONS LEC sections)"
 fi

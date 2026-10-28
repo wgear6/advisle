@@ -1,15 +1,15 @@
 /**
- * UVM Fall 2026 Course Scraper
+ * UVM Spring 2027 Course Scraper
  * Uses soc.uvm.edu's internal FOSE API
  *
  * Usage:  node scrape-uvm-courses.mjs
- * Output: data/curr_enroll_202609.csv
+ * Output: data/curr_enroll_fall.csv
  */
 
 import fs from "fs";
 import https from "https";
 
-const TERM = "202609";
+const TERM = "202701";
 const OUTPUT_FILE = "data/curr_enroll_fall.csv";
 const DELAY_MS = 400;
 
