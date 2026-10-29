@@ -130,7 +130,8 @@ async function callModel(
   const response = await openai.chat.completions.create({
     model,
     response_format: { type: "json_object" },
-    max_completion_tokens: 3000,
+    max_completion_tokens: 8000,
+    reasoning_effort: "low",
     messages: [
       { role: "system", content: SYSTEM_PROMPT },
       { role: "user", content: pdfText },
