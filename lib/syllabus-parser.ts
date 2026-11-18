@@ -1,8 +1,8 @@
 import OpenAI from "openai";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const MINI_MODEL = process.env.OPENAI_AUDIT_MINI_MODEL ?? "gpt-5.5";
-const VISION_MODEL = process.env.OPENAI_MODEL ?? "gpt-5.5";
+const MINI_MODEL = process.env.OPENAI_AUDIT_MINI_MODEL ?? "gpt-6-luna";
+const VISION_MODEL = process.env.OPENAI_MODEL ?? "gpt-6.2-sol";
 
 export interface SyllabusEvent {
   id: string;

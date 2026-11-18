@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     console.log(file)
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-5.5",
+      model: "gpt-6-luna",
       messages: [
         {
           role: "user",
