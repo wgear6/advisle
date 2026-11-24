@@ -1,16 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import redis from "@/lib/redis";
 
-// Fixed-window per-IP rate limits, stored in the existing Upstash Redis.
+// Fixed-window rate limits, stored in the existing Upstash Redis.
+//
+// Counted per BROWSER (anonymous `advisle_cid` cookie set by proxy.ts), not per IP,
+// because everyone on campus Wi-Fi can share one public IP. A much higher per-IP
+// ceiling stays as a backstop against scripts that rotate/drop cookies, and a
+// site-wide daily cap bounds total AI spend no matter what.
+//
 // Fails OPEN: if Redis is unreachable the request is allowed, so an outage
 // never takes the site down. The OpenAI dashboard budget cap is the backstop.
 
+const HOUR = 60 * 60;
+
 export const LIMITS = {
-  audit:    { max: 20, windowSec: 60 * 60 }, // audit PDF parses (UVM + UNH share this)
-  schedule: { max: 40, windowSec: 60 * 60 }, // schedule generations
-  syllabus: { max: 30, windowSec: 60 * 60 }, // syllabus extract + vision
-  save:     { max: 60, windowSec: 60 * 60 }, // saved/shared schedules
-  report:   { max: 10, windowSec: 60 * 60 }, // "report bad schedule"
+  //          per browser   per IP (shared Wi-Fi safe)   cookieless clients, per IP
+  audit:    { browser: 20,  ip: 400,  noCookie: 30,  windowSec: HOUR }, // audit PDF parses (UVM + UNH)
+  schedule: { browser: 40,  ip: 800,  noCookie: 60,  windowSec: HOUR }, // schedule generations
+  syllabus: { browser: 30,  ip: 500,  noCookie: 40,  windowSec: HOUR }, // syllabus extract + vision
+  save:     { browser: 60,  ip: 1000, noCookie: 80,  windowSec: HOUR }, // saved/shared schedules
+  report:   { browser: 10,  ip: 150,  noCookie: 15,  windowSec: HOUR }, // "report bad schedule"
 } as const;
 
 export type LimitName = keyof typeof LIMITS;
@@ -32,31 +41,47 @@ async function hit(key: string, windowSec: number): Promise<number> {
   return count;
 }
 
+function clientId(req: NextRequest): string | null {
+  const cid = req.cookies.get("advisle_cid")?.value;
+  return cid && /^[A-Za-z0-9_-]{10,64}$/.test(cid) ? cid : null;
+}
+
+const limitedResponse = (message: string, retryAfter?: number) =>
+  NextResponse.json(
+    { error: "rate_limited", message },
+    { status: 429, headers: retryAfter ? { "Retry-After": String(retryAfter) } : undefined }
+  );
+
 /**
  * Returns a 429 response if the caller is over the limit, otherwise null.
  * Usage: `const limited = await rateLimit(req, "audit"); if (limited) return limited;`
  */
 export async function rateLimit(req: NextRequest, name: LimitName): Promise<NextResponse | null> {
-  const { max, windowSec } = LIMITS[name];
+  const { browser, ip: ipMax, noCookie, windowSec } = LIMITS[name];
   const ip = clientIp(req);
+  const cid = clientId(req);
   try {
     const window = Math.floor(Date.now() / 1000 / windowSec);
-    const count = await hit(`rl:${name}:${ip}:${window}`, windowSec);
-    if (count > max) {
-      return NextResponse.json(
-        { error: "rate_limited", message: "You're doing that a lot — please wait a bit and try again." },
-        { status: 429, headers: { "Retry-After": String(windowSec) } }
-      );
+    const tooMany = "You're doing that a lot — please wait a bit and try again.";
+
+    if (cid) {
+      const [perBrowser, perIp] = await Promise.all([
+        hit(`rl:${name}:c:${cid}:${window}`, windowSec),
+        hit(`rl:${name}:ip:${ip}:${window}`, windowSec),
+      ]);
+      if (perBrowser > browser || perIp > ipMax) return limitedResponse(tooMany, windowSec);
+    } else {
+      // No cookie (scripts, curl, cookies blocked): tighter per-IP bucket
+      const n = await hit(`rl:${name}:nc:${ip}:${window}`, windowSec);
+      if (n > noCookie) return limitedResponse(tooMany, windowSec);
     }
+
     if (AI_LIMITS.includes(name)) {
       const day = new Date().toISOString().slice(0, 10);
       const total = await hit(`rl:ai-daily:${day}`, 60 * 60 * 26);
       if (total > AI_DAILY_LIMIT) {
         console.error(`[rate-limit] site-wide AI daily cap hit (${AI_DAILY_LIMIT})`);
-        return NextResponse.json(
-          { error: "rate_limited", message: "Advisle is getting a lot of traffic right now — please try again later." },
-          { status: 429 }
-        );
+        return limitedResponse("Advisle is getting a lot of traffic right now — please try again later.");
       }
     }
   } catch (err) {
