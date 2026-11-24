@@ -31,6 +31,14 @@ export interface MinorSuggestion {
   total_credits_needed: number;
   missing_required: (MinorCourse & { requirement_category: string })[];
   elective_note: string;
+  requirements: MinorRequirementStatus[];
+}
+
+export interface MinorRequirementStatus {
+  label: string;
+  done: boolean;
+  satisfied_by: string | null;
+  options: string[];
 }
 
 interface SimpleCourse {
@@ -46,10 +54,12 @@ export async function POST(req: NextRequest) {
       completed_courses = [],
       in_progress_courses = [],
       major = null,
+      all = false,
     }: {
       completed_courses: SimpleCourse[];
       in_progress_courses: SimpleCourse[];
       major?: string | null;
+      all?: boolean;
     } = await req.json();
 
     const minorsPath = path.join(process.cwd(), "data", "minors.json");
@@ -64,10 +74,14 @@ export async function POST(req: NextRequest) {
       let satisfied = 0;
       let total = 0;
       const missing: (MinorCourse & { requirement_category: string })[] = [];
+      const requirements: MinorRequirementStatus[] = [];
 
       for (const course of minor.required) {
         total++;
-        if (doneKeys.has(`${course.subject.toUpperCase()} ${course.number}`)) {
+        const key = `${course.subject.toUpperCase()} ${course.number}`;
+        const done = doneKeys.has(key);
+        requirements.push({ label: `${key} — ${course.title}`, done, satisfied_by: done ? key : null, options: [key] });
+        if (done) {
           satisfied++;
         } else {
           missing.push({ ...course, requirement_category: "Minor" });
@@ -77,21 +91,32 @@ export async function POST(req: NextRequest) {
       // Track which options have already been used to satisfy a group
       // (so POLS 1200 doesn't satisfy two groups at once)
       const usedKeys = new Set<string>();
+      let unsuggestedCredits = 0;
       for (const group of minor.choose_one_groups ?? []) {
         total++;
         const satisfyingOption = group.options.find(
           (o) => doneKeys.has(`${o.subject.toUpperCase()} ${o.number}`) && !usedKeys.has(`${o.subject} ${o.number}`)
         );
+        requirements.push({
+          label: group.description,
+          done: !!satisfyingOption,
+          satisfied_by: satisfyingOption ? `${satisfyingOption.subject} ${satisfyingOption.number}` : null,
+          options: group.options.map((o) => `${o.subject} ${o.number}`),
+        });
         if (satisfyingOption) {
           satisfied++;
           usedKeys.add(`${satisfyingOption.subject} ${satisfyingOption.number}`);
         } else {
-          // Suggest the first option not already scheduled
-          const suggestion = group.options[0];
-          // Avoid duplicate suggestions
-          const sugKey = `${suggestion.subject} ${suggestion.number}`;
-          if (!missing.some((m) => `${m.subject} ${m.number}` === sugKey)) {
+          // Suggest the first option not already suggested/used, so groups that share an
+          // option list (e.g. "choose 1 different") each get their own course and credits.
+          const taken = (o: MinorCourse) =>
+            usedKeys.has(`${o.subject} ${o.number}`) ||
+            missing.some((m) => m.subject === o.subject && m.number === o.number);
+          const suggestion = group.options.find((o) => !taken(o));
+          if (suggestion) {
             missing.push({ ...suggestion, requirement_category: "Minor" });
+          } else {
+            unsuggestedCredits += group.options[0]?.credits ?? 3;
           }
         }
       }
@@ -102,7 +127,7 @@ export async function POST(req: NextRequest) {
       const electiveCredits = Math.max(0, (minor.total_credits ?? 0) - specificCredits);
 
       const totalCreditsNeeded =
-        missing.reduce((sum, c) => sum + (c.credits ?? 3), 0) + electiveCredits;
+        missing.reduce((sum, c) => sum + (c.credits ?? 3), 0) + unsuggestedCredits + electiveCredits;
 
       return {
         name: minor.name,
@@ -113,13 +138,14 @@ export async function POST(req: NextRequest) {
         total_credits_needed: totalCreditsNeeded,
         missing_required: missing,
         elective_note: minor.elective_note,
+        requirements,
       };
     });
 
     // Filter out the student's own major, then sort by total credits needed
     const majorLower = major?.toLowerCase() ?? "";
     const reachable = suggestions
-      .filter((s) => s.courses_needed <= 5)
+      .filter((s) => all || s.courses_needed <= 5)
       .filter((s) => !majorLower || !s.name.toLowerCase().includes(majorLower))
       .sort((a, b) => a.total_credits_needed - b.total_credits_needed);
 

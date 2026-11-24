@@ -31,6 +31,14 @@ function IconStar() {
     </svg>
   );
 }
+function IconCompass({ size = 15 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36 6.36-2.12z" />
+    </svg>
+  );
+}
 function IconInstagram() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -58,12 +66,16 @@ export default function LandingPage() {
           A
         </div>
         <span style={{ fontWeight: 650, fontSize: 17, letterSpacing: "-0.3px" }}>Advisle</span>
+        <nav style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 18 }}>
+          <a href="/pathfinder" className="adv-fade" style={{ color: "#fff", opacity: 0.75, fontSize: 13, fontWeight: 550, textDecoration: "none", transition: "opacity 0.2s" }}>Pathfinder</a>
+          <a href="/syllabus" className="adv-fade" style={{ color: "#fff", opacity: 0.75, fontSize: 13, fontWeight: 550, textDecoration: "none", transition: "opacity 0.2s" }}>Syllabus</a>
+        </nav>
         <a
           href="https://www.instagram.com/advisle?igsh=MWZoc3Z1bTU0d2kydw=="
           target="_blank"
           rel="noopener noreferrer"
           className="adv-fade"
-          style={{ marginLeft: "auto", color: "#fff", opacity: 0.7, display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 500, textDecoration: "none", transition: "opacity 0.2s" }}
+          style={{ color: "#fff", opacity: 0.7, display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 500, textDecoration: "none", transition: "opacity 0.2s" }}
         >
           <IconInstagram />
         </a>
@@ -122,28 +134,33 @@ export default function LandingPage() {
           </a>
         </div>
 
-        {/* Syllabus Calendar tool */}
-        <div className="fade-up" style={{ marginTop: 36, position: "relative", animationDelay: "0.2s" }}>
+        {/* More tools */}
+        <div className="fade-up" style={{ marginTop: 40, position: "relative", animationDelay: "0.2s" }}>
           <p style={{ margin: "0 0 14px", fontSize: 11, fontWeight: 650, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.45)", textAlign: "center" }}>
-            Also from Advisle
+            Useful all year
           </p>
-          <a href="/syllabus" style={{ textDecoration: "none", display: "block", maxWidth: 460, margin: "0 auto" }}>
-            <div className="adv-card" style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${colors.accent}3d`, borderRadius: radius.lg, padding: "20px 28px", display: "flex", alignItems: "center", gap: 18 }}>
-              <div style={{ width: 40, height: 40, borderRadius: radius.sm, background: "rgba(248,180,0,0.14)", display: "flex", alignItems: "center", justifyContent: "center", color: colors.accentSoft, flexShrink: 0 }}>
-                <IconCalendar />
-              </div>
-              <div style={{ flex: 1, textAlign: "left" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                  <span style={{ fontWeight: 650, fontSize: 15, color: "#fff" }}>Syllabus Calendar</span>
-                  <span style={{ background: colors.accent, color: colors.ink, fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: radius.pill, letterSpacing: "0.05em" }}>NEW</span>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 14, maxWidth: 820, margin: "0 auto" }}>
+            {[
+              { href: "/pathfinder", icon: <IconCompass />, name: "Pathfinder", badge: "NEW", desc: "See every UVM minor you're close to finishing — what counts and what's left." },
+              { href: "/syllabus", icon: <IconCalendar />, name: "Syllabus Calendar", badge: null, desc: "Drop any syllabus PDF — AI pulls every due date, exam, and quiz into a calendar." },
+            ].map((t) => (
+              <a key={t.href} href={t.href} style={{ textDecoration: "none" }}>
+                <div className="adv-card" style={{ height: "100%", boxSizing: "border-box", background: "rgba(255,255,255,0.05)", border: `1px solid ${colors.accent}3d`, borderRadius: radius.lg, padding: "20px 22px", display: "flex", alignItems: "center", gap: 16 }}>
+                  <div style={{ width: 40, height: 40, borderRadius: radius.sm, background: "rgba(248,180,0,0.14)", display: "flex", alignItems: "center", justifyContent: "center", color: colors.accentSoft, flexShrink: 0 }}>
+                    {t.icon}
+                  </div>
+                  <div style={{ flex: 1, textAlign: "left" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                      <span style={{ fontWeight: 650, fontSize: 15, color: "#fff" }}>{t.name}</span>
+                      {t.badge && <span style={{ background: colors.accent, color: colors.ink, fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: radius.pill, letterSpacing: "0.05em" }}>{t.badge}</span>}
+                    </div>
+                    <div style={{ fontSize: 13, color: "rgba(255,255,255,0.58)", lineHeight: 1.5 }}>{t.desc}</div>
+                  </div>
+                  <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 18, flexShrink: 0 }}>→</div>
                 </div>
-                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.58)", lineHeight: 1.5 }}>
-                  Drop any syllabus PDF — AI extracts every due date, exam, and quiz into an exportable calendar.
-                </div>
-              </div>
-              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 18, flexShrink: 0 }}>→</div>
-            </div>
-          </a>
+              </a>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -221,6 +238,45 @@ export default function LandingPage() {
           <a href="/unh" className="adv-btn" style={{ display: "inline-block", padding: "13px 30px", background: colors.unh, color: "#fff", borderRadius: radius.pill, fontWeight: 700, fontSize: 15, textDecoration: "none", boxShadow: shadow.md }}>
             UNH →
           </a>
+        </div>
+      </section>
+
+      {/* Pathfinder feature */}
+      <section style={{ background: colors.surface, borderTop: `1px solid ${colors.border}`, borderBottom: `1px solid ${colors.border}`, padding: "88px 16px" }}>
+        <div style={{ maxWidth: 940, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 48, alignItems: "center" }}>
+          <div>
+            <p style={{ margin: "0 0 10px", fontSize: 12, fontWeight: 650, letterSpacing: "0.12em", textTransform: "uppercase", color: colors.accent }}>
+              Pathfinder
+            </p>
+            <h2 style={{ margin: "0 0 16px", fontSize: 30, fontWeight: 650, color: colors.ink, letterSpacing: "-0.7px", lineHeight: 1.15 }}>
+              You might already be halfway to a minor.
+            </h2>
+            <p style={{ margin: "0 0 26px", fontSize: 16, color: colors.textMuted, lineHeight: 1.7 }}>
+              Gen eds and electives add up. Pathfinder checks your audit against every UVM minor and ranks them by how few credits you&rsquo;d need — then builds them straight into your next schedule.
+            </p>
+            <a href="/pathfinder" className="adv-btn" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "13px 28px", background: colors.ink, color: "#fff", borderRadius: radius.pill, fontWeight: 650, fontSize: 15, textDecoration: "none", boxShadow: shadow.glow }}>
+              <IconCompass /> Find my paths
+            </a>
+          </div>
+          <div style={{ background: colors.bg, borderRadius: radius.lg, border: `1px solid ${colors.border}`, padding: 22, boxShadow: shadow.lg }}>
+            {[
+              { name: "Statistics", pct: 80, cr: 3, color: colors.accent },
+              { name: "Computer Science", pct: 60, cr: 6, color: colors.accent },
+              { name: "Economics", pct: 40, cr: 9, color: colors.accent },
+              { name: "Philosophy", pct: 20, cr: 15, color: colors.ink },
+            ].map((m) => (
+              <div key={m.name} style={{ background: colors.surface, border: `1px solid ${colors.border}`, borderRadius: radius.md, padding: "14px 16px", marginBottom: 10 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, gap: 8 }}>
+                  <span style={{ fontWeight: 650, fontSize: 14, color: colors.ink }}>{m.name}</span>
+                  <span style={{ fontSize: 12, padding: "2px 8px", borderRadius: radius.pill, background: m.cr <= 9 ? "#fef3c7" : "#f1f5f9", color: m.cr <= 9 ? "#92400e" : "#4b5563", fontWeight: 600 }}>~{m.cr} cr to go</span>
+                </div>
+                <div style={{ height: 6, background: "#eef2f7", borderRadius: radius.pill, overflow: "hidden" }}>
+                  <div style={{ width: `${m.pct}%`, height: "100%", background: m.color, borderRadius: radius.pill }} />
+                </div>
+              </div>
+            ))}
+            <p style={{ margin: "6px 0 0", fontSize: 12, color: colors.textFaint, textAlign: "center" }}>Example results</p>
+          </div>
         </div>
       </section>
 

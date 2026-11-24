@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { colors, radius, shadow } from "@/lib/theme";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -265,6 +265,49 @@ export default function Home() {
   const [selectedMinors, setSelectedMinors] = useState<string[]>([]);
   const [minorMissingCourses, setMinorMissingCourses] = useState<Record<string, RemainingCourse[]>>({});
   const [showAllMinors, setShowAllMinors] = useState(false);
+
+  // Handoff from /pathfinder: reuse the already-parsed audit + chosen minors
+  useEffect(() => {
+    let raw: string | null = null;
+    try {
+      raw = sessionStorage.getItem("advisle:pathfinder-handoff");
+      sessionStorage.removeItem("advisle:pathfinder-handoff");
+    } catch {
+      return;
+    }
+    if (!raw) return;
+    try {
+      const { audit: a, minors } = JSON.parse(raw) as { audit: ParsedAudit; minors: MinorSuggestion[] };
+      if (!a || !Array.isArray(a.remaining_courses)) return;
+      setAudit(a);
+      setStep(2);
+      setMinorSuggestions(minors ?? []);
+      setSelectedMinors((minors ?? []).map((m) => m.name));
+      setMinorMissingCourses(
+        Object.fromEntries(
+          (minors ?? []).map((m) => [
+            m.name,
+            m.missing_required.map((c) => ({ subject: c.subject, number: c.number, title: c.title, credits: c.credits, requirement_category: "Minor" })),
+          ])
+        )
+      );
+      fetch("/api/minor-suggestions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ completed_courses: a.completed_courses ?? [], in_progress_courses: a.in_progress_courses ?? [], major: a.major ?? null }),
+      })
+        .then((r) => r.json())
+        .then((d) => {
+          const fresh: MinorSuggestion[] = d.suggestions ?? [];
+          const names = new Set(fresh.map((f) => f.name));
+          // keep selected minors visible even if they're outside the default "close" cutoff
+          setMinorSuggestions([...(minors ?? []).filter((m) => !names.has(m.name)), ...fresh]);
+        })
+        .catch(() => {});
+    } catch {
+      // bad payload — fall back to normal upload flow
+    }
+  }, []);
 
   // Report bad schedule
   const [showReportForm, setShowReportForm] = useState(false);
@@ -820,10 +863,13 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Minor Explorer */}
+            {/* Pathfinder (minor suggestions) */}
             {minorSuggestions.length > 0 && (
               <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e5e7eb", boxShadow: shadow.sm, padding: 24 }}>
-                <h2 style={{ margin: "0 0 4px", fontSize: 18, fontWeight: 700 }}>Minor Explorer</h2>
+                <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 4 }}>
+                  <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>Pathfinder: minors you&rsquo;re close to</h2>
+                  <a href="/pathfinder" target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#2563eb", fontWeight: 600, textDecoration: "none" }}>See all minors →</a>
+                </div>
                 <p style={{ margin: "0 0 16px", fontSize: 14, color: "#6b7280" }}>
                   Based on your completed courses, here are minors sorted by how close you are. Click "Add to plan" to include those courses in your schedule.
                 </p>
