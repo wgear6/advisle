@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { colors, radius, shadow } from "@/lib/theme";
+import PrivacyNote from "@/components/PrivacyNote";
 
 const RATE_LIMIT_MSG = "You've hit the hourly limit — please wait a bit and try again.";
 
@@ -241,6 +242,9 @@ export default function Home() {
   const [blockedTimes, setBlockedTimes] = useState<BlockedTime[]>([]);
   const [schedule, setSchedule] = useState<GeneratedSchedule | null>(null);
   const [scheduleId, setScheduleId] = useState<string | null>(null);
+  const [shareName, setShareName] = useState("");
+  const [shareNameSaved, setShareNameSaved] = useState(false);
+  const [shareNameSaving, setShareNameSaving] = useState(false);
   const [rmpRatings, setRmpRatings] = useState<Record<string, RMPRating | null>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -486,6 +490,25 @@ export default function Home() {
     }
   };
 
+  // Optional: put the student's own name on their shared schedule link
+  const addNameToShare = async () => {
+    if (!schedule || !shareName.trim()) return;
+    setShareNameSaving(true);
+    try {
+      const r = await fetch("/api/save-schedule", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ schedule, major: audit?.major ?? null, display_name: shareName.trim() }),
+      });
+      const d = await r.json();
+      if (d.id) { setScheduleId(d.id); setShareNameSaved(true); }
+    } catch {
+      // keep the unnamed link
+    } finally {
+      setShareNameSaving(false);
+    }
+  };
+
   // ── Step 3: Generate Schedule ──
 
   const generateSchedule = async () => {
@@ -533,10 +556,10 @@ export default function Home() {
       fetch("/api/save-schedule", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ schedule: data, audit }),
+        body: JSON.stringify({ schedule: data, major: audit?.major ?? null }),
       })
         .then((r) => r.json())
-        .then((d) => { if (d.id) setScheduleId(d.id); })
+        .then((d) => { if (d.id) { setScheduleId(d.id); setShareNameSaved(false); } })
         .catch(() => {});
 
       // Fetch RMP ratings for all instructors in background
@@ -676,7 +699,6 @@ export default function Home() {
             unscheduled_courses: schedule.unscheduled_courses,
           },
           audit_info: {
-            student_name: audit.student_name,
             major: audit.major,
           },
         }),
@@ -828,6 +850,7 @@ export default function Home() {
             >
               {loading ? "Analyzing your degree audit…" : "Analyze Degree Audit →"}
             </button>
+            <PrivacyNote />
           </div>
         )}
 
@@ -1118,7 +1141,7 @@ export default function Home() {
                     ↺ Regenerate
                   </button>
                   <button
-                    onClick={() => { setStep(2); setSchedule(null); setScheduleId(null); }}
+                    onClick={() => { setStep(2); setSchedule(null); setScheduleId(null); setShareNameSaved(false); }}
                     className="adv-btn"
                     style={{ padding: "8px 16px", borderRadius: radius.pill, border: "1px solid #d1d5db", background: "#fff", fontSize: 13, cursor: "pointer" }}>
                     ← Adjust
@@ -1172,6 +1195,30 @@ export default function Home() {
                       Copy
                     </button>
                   </div>
+                </div>
+              )}
+              {scheduleId && (
+                <div style={{ marginTop: -8, marginBottom: 16, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", fontSize: 12, color: "#6b7280" }}>
+                  {shareNameSaved ? (
+                    <span>✓ Your link now shows &ldquo;{shareName.trim()}&rsquo;s Schedule&rdquo;.</span>
+                  ) : (
+                    <>
+                      <span>Your link doesn&rsquo;t show your name. Want it to?</span>
+                      <input
+                        value={shareName}
+                        onChange={(e) => setShareName(e.target.value)}
+                        maxLength={40}
+                        placeholder="First name (optional)"
+                        style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #d1d5db", fontSize: 12, width: 150 }}
+                      />
+                      <button
+                        onClick={addNameToShare}
+                        disabled={!shareName.trim() || shareNameSaving}
+                        style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #d1d5db", background: "#fff", fontSize: 12, cursor: shareName.trim() ? "pointer" : "default", color: "#374151" }}>
+                        {shareNameSaving ? "Saving…" : "Add name"}
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
 

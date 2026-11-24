@@ -15,7 +15,13 @@ export async function POST(req: NextRequest) {
   if (limited) return limited;
   try {
     const body = await req.json();
-    const { schedule, audit } = body;
+    const { schedule, audit, major, display_name } = body;
+
+    // Name is opt-in only: the student types it themselves on the share card.
+    // We never take it from the audit (audits are stripped of names before parsing).
+    const displayName =
+      typeof display_name === "string" ? display_name.replace(/[\u0000-\u001f<>]/g, "").trim().slice(0, 40) || null : null;
+    const majorValue = typeof major === "string" ? major : typeof audit?.major === "string" ? audit.major : null;
 
     if (!schedule) {
       return NextResponse.json({ error: "No schedule provided" }, { status: 400 });
@@ -32,8 +38,8 @@ export async function POST(req: NextRequest) {
       client_id: clientId,
       schedule,
       audit: {
-        student_name: audit?.student_name ?? null,
-        major: audit?.major ?? null,
+        student_name: displayName,
+        major: majorValue ? majorValue.slice(0, 120) : null,
       },
       created_at: new Date().toISOString(),
     };

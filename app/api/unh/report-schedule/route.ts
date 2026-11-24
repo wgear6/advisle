@@ -38,7 +38,6 @@ export async function POST(req: NextRequest) {
         unscheduled: outputs?.unscheduled_courses ?? [],
       },
       audit_info: {
-        student_name: audit_info?.student_name ?? null,
         major: audit_info?.major ?? null,
       },
     };

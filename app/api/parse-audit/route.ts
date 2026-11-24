@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimit, tooLarge, MAX_AUDIT_CHARS } from "@/lib/rate-limit";
+import { redactAudit } from "@/lib/audit-redact";
 import { parseAudit } from "@/lib/audit-parser";
 
 export async function POST(req: NextRequest) {
@@ -21,7 +22,8 @@ export async function POST(req: NextRequest) {
       const bytes = await file.arrayBuffer();
       const { extractText } = await import("unpdf");
       const { text } = await extractText(new Uint8Array(bytes), { mergePages: true });
-      pdfText = text.slice(0, MAX_AUDIT_CHARS);
+      // Strip name, student ID, NetID, GPA, advisor names before the text leaves our server
+      pdfText = redactAudit(text).slice(0, MAX_AUDIT_CHARS);
     } catch (err) {
       console.error("[parse-audit] PDF extraction failed:", err);
       return NextResponse.json({ error: "Could not read PDF." }, { status: 500 });
@@ -37,7 +39,8 @@ export async function POST(req: NextRequest) {
       "X-Audit-Latency-Ms": String(result.latencyMs),
     });
 
-    return NextResponse.json(result.data, { headers });
+    // Never return or keep a student name, even if the model guessed one
+    return NextResponse.json({ ...result.data, student_name: null }, { headers });
   } catch (err) {
     console.error("[parse-audit] error:", err);
     return NextResponse.json({ error: "Failed to parse degree audit" }, { status: 500 });

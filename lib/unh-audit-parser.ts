@@ -97,7 +97,7 @@ Return ONLY valid JSON:
       "credits": 4
     }
   ],
-  "student_name": "string or null",
+  "student_name": null,
   "major": "string or null",
   "credits_completed": number or null,
   "credits_remaining": number or null

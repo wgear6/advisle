@@ -2,6 +2,7 @@
 import { useState, useCallback } from "react";
 import type { ParsedAudit } from "@/lib/audit-schema";
 import { colors as theme, radius, shadow } from "@/lib/theme";
+import PrivacyNote from "@/components/PrivacyNote";
 
 // ─── UNH brand colors ─────────────────────────────────────────────────────────
 const UNH_BLUE = "#003C71";
@@ -379,7 +380,6 @@ export default function UnhScheduler() {
             unscheduled_courses: schedule.unscheduled_courses,
           },
           audit_info: {
-            student_name: audit.student_name,
             major: audit.major,
           },
         }),
@@ -517,6 +517,7 @@ export default function UnhScheduler() {
             >
               Analyze Degree Audit →
             </button>
+            <PrivacyNote login="UNH username" />
           </div>
         )}
 

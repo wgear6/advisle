@@ -3,6 +3,7 @@
 import { useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { colors, radius, shadow } from "@/lib/theme";
+import PrivacyNote from "@/components/PrivacyNote";
 
 const RATE_LIMIT_MSG = "You've hit the hourly limit — please wait a bit and try again.";
 
@@ -260,8 +261,10 @@ export default function PathfinderPage() {
                 {loading ? "Reading your audit…" : "Find my paths →"}
               </button>
 
+              <PrivacyNote />
+
               <p style={{ margin: "14px 0 0", fontSize: 12, color: colors.textFaint, textAlign: "center", lineHeight: 1.6 }}>
-                In myUVM: Degree Audit → run your audit → Save as PDF. Your audit is only used to compute results and isn&rsquo;t stored.
+                In myUVM: Degree Audit → run your audit → Save as PDF. Your audit file isn&rsquo;t stored.
               </p>
             </div>
           </>
