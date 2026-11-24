@@ -268,7 +268,10 @@ export default function LandingPage() {
               <div key={m.name} style={{ background: colors.surface, border: `1px solid ${colors.border}`, borderRadius: radius.md, padding: "14px 16px", marginBottom: 10 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, gap: 8 }}>
                   <span style={{ fontWeight: 650, fontSize: 14, color: colors.ink }}>{m.name}</span>
-                  <span style={{ fontSize: 12, padding: "2px 8px", borderRadius: radius.pill, background: m.cr <= 9 ? "#fef3c7" : "#f1f5f9", color: m.cr <= 9 ? "#92400e" : "#4b5563", fontWeight: 600 }}>~{m.cr} cr to go</span>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 12, padding: "2px 8px", borderRadius: radius.pill, background: m.cr <= 9 ? "#fef3c7" : "#f1f5f9", color: m.cr <= 9 ? "#92400e" : "#4b5563", fontWeight: 600 }}>~{m.cr} cr to go</span>
+                    <span style={{ fontSize: 12, fontWeight: 650, color: m.cr <= 9 ? "#92400e" : colors.textMuted }}>{m.pct}% done</span>
+                  </span>
                 </div>
                 <div style={{ height: 6, background: "#eef2f7", borderRadius: radius.pill, overflow: "hidden" }}>
                   <div style={{ width: `${m.pct}%`, height: "100%", background: m.color, borderRadius: radius.pill }} />

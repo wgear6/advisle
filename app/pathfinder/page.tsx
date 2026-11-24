@@ -37,6 +37,7 @@ interface MinorSuggestion {
   total_specific_courses: number;
   elective_credits: number;
   total_credits_needed: number;
+  total_credits: number;
   missing_required: { subject: string; number: string; title: string; credits: number; requirement_category: string }[];
   elective_note: string;
   requirements: RequirementStatus[];
@@ -57,8 +58,10 @@ function isClose(s: MinorSuggestion) {
   return !isComplete(s) && s.total_credits_needed <= 9;
 }
 function progressPct(s: MinorSuggestion) {
-  if (s.total_specific_courses === 0) return 0;
-  return Math.round((s.courses_satisfied / s.total_specific_courses) * 100);
+  if (isComplete(s)) return 100;
+  if (!s.total_credits) return 0;
+  const pct = Math.round(((s.total_credits - s.total_credits_needed) / s.total_credits) * 100);
+  return Math.max(0, Math.min(99, pct));
 }
 
 function IconCompass() {
@@ -324,7 +327,7 @@ export default function PathfinderPage() {
               {visible.map((s) => {
                 const done = isComplete(s);
                 const close = isClose(s);
-                const pct = done ? 100 : progressPct(s);
+                const pct = progressPct(s);
                 const open = expanded === s.name;
                 const isSel = selected.includes(s.name);
                 return (
@@ -344,6 +347,11 @@ export default function PathfinderPage() {
                           ) : (
                             <span style={{ fontSize: 12, padding: "2px 8px", borderRadius: radius.pill, background: close ? "#fef3c7" : "#f1f5f9", color: close ? "#92400e" : "#4b5563", fontWeight: 600 }}>
                               ~{s.total_credits_needed} cr to go
+                            </span>
+                          )}
+                          {!done && (
+                            <span style={{ fontSize: 12, fontWeight: 650, color: close ? "#92400e" : colors.textMuted }}>
+                              {pct}% done
                             </span>
                           )}
                         </div>

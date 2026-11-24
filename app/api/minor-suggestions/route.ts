@@ -29,6 +29,7 @@ export interface MinorSuggestion {
   total_specific_courses: number;
   elective_credits: number;
   total_credits_needed: number;
+  total_credits: number;
   missing_required: (MinorCourse & { requirement_category: string })[];
   elective_note: string;
   requirements: MinorRequirementStatus[];
@@ -136,6 +137,7 @@ export async function POST(req: NextRequest) {
         total_specific_courses: total,
         elective_credits: electiveCredits,
         total_credits_needed: totalCreditsNeeded,
+        total_credits: minor.total_credits ?? 0,
         missing_required: missing,
         elective_note: minor.elective_note,
         requirements,
