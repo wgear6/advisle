@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { rateLimit, tooLarge, MAX_AUDIT_CHARS } from "@/lib/rate-limit";
 import { parseAudit } from "@/lib/audit-parser";
 
 export async function POST(req: NextRequest) {
+  const big = tooLarge(req, 5242880);
+  if (big) return big;
+  const limited = await rateLimit(req, "audit");
+  if (limited) return limited;
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File;
@@ -16,7 +21,7 @@ export async function POST(req: NextRequest) {
       const bytes = await file.arrayBuffer();
       const { extractText } = await import("unpdf");
       const { text } = await extractText(new Uint8Array(bytes), { mergePages: true });
-      pdfText = text;
+      pdfText = text.slice(0, MAX_AUDIT_CHARS);
     } catch (err) {
       console.error("[parse-audit] PDF extraction failed:", err);
       return NextResponse.json({ error: "Could not read PDF." }, { status: 500 });
@@ -35,10 +40,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(result.data, { headers });
   } catch (err) {
     console.error("[parse-audit] error:", err);
-    const message = err instanceof Error ? err.message : "Unknown error";
-    return NextResponse.json(
-      { error: "Failed to parse degree audit", detail: message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to parse degree audit" }, { status: 500 });
   }
 }

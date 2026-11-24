@@ -296,7 +296,7 @@ export default function SyllabusCalendarPage() {
         if (res.status === 413) throw new Error("PDF is too large. Try a version under 4 MB.");
         throw new Error("Request timed out. Try again — it usually works on the second attempt once the server is warm.");
       }
-      if (!res.ok) throw new Error((data.error as string) ?? "Extraction failed");
+      if (!res.ok) throw new Error((data.message as string) ?? (data.error as string) ?? "Extraction failed");
 
       applyResult(data, file.name);
     } catch (err) {

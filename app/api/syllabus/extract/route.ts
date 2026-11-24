@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
+import { rateLimit, tooLarge } from "@/lib/rate-limit";
 import { parseSyllabusText, parseSyllabusPDF } from "@/lib/syllabus-parser";
 
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
+  const big = tooLarge(req, 5242880);
+  if (big) return big;
+  const limited = await rateLimit(req, "syllabus");
+  if (limited) return limited;
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File;
@@ -30,6 +35,6 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error("[syllabus/extract]", msg);
-    return NextResponse.json({ error: msg.slice(0, 300) }, { status: 500 });
+    return NextResponse.json({ error: "Couldn't read that syllabus. Please try again or try a different PDF." }, { status: 500 });
   }
 }

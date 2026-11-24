@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { rateLimit, tooLarge } from "@/lib/rate-limit";
 import OpenAI from "openai";
 import fs from "fs";
 import path from "path";
@@ -484,6 +485,10 @@ function buildSchedule(
 // ─── Main Route ───────────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
+  const big = tooLarge(req, 1048576);
+  if (big) return big;
+  const limited = await rateLimit(req, "schedule");
+  if (limited) return limited;
   // Check data availability
   if (!fs.existsSync(UNH_DATA_PATH) || fs.statSync(UNH_DATA_PATH).size < 100) {
     return NextResponse.json(

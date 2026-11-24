@@ -3,6 +3,8 @@
 import { useState, useCallback, useEffect } from "react";
 import { colors, radius, shadow } from "@/lib/theme";
 
+const RATE_LIMIT_MSG = "You've hit the hourly limit — please wait a bit and try again.";
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface RemainingCourse {
@@ -350,6 +352,7 @@ export default function Home() {
       const fd = new FormData();
       fd.append("file", file);
       const res = await fetch("/api/parse-audit", { method: "POST", body: fd });
+      if (res.status === 429) throw new Error(RATE_LIMIT_MSG);
       if (!res.ok) throw new Error("Failed to parse PDF");
       const data: ParsedAudit = await res.json();
       setAudit(data);
@@ -369,7 +372,7 @@ export default function Home() {
         .then((d) => setMinorSuggestions(d.suggestions ?? []))
         .catch(() => {});
     } catch (e) {
-      setError("Could not parse your degree audit. Make sure it's a UVM audit PDF.");
+      setError(e instanceof Error && e.message === RATE_LIMIT_MSG ? RATE_LIMIT_MSG : "Could not parse your degree audit. Make sure it's a UVM audit PDF.");
     } finally {
       setLoading(false);
     }
@@ -520,6 +523,7 @@ export default function Home() {
           ].filter(Boolean).join(" "),
         }),
       });
+      if (res.status === 429) throw new Error(RATE_LIMIT_MSG);
       if (!res.ok) throw new Error("Failed to generate schedule");
       const data: GeneratedSchedule = await res.json();
       setSchedule(data);
@@ -552,7 +556,7 @@ export default function Home() {
           .catch(() => {});
       }
     } catch (e) {
-      setError("Could not generate schedule. Please try again.");
+      setError(e instanceof Error && e.message === RATE_LIMIT_MSG ? RATE_LIMIT_MSG : "Could not generate schedule. Please try again.");
     } finally {
       setLoading(false);
     }

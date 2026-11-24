@@ -242,13 +242,16 @@ export default function UnhScheduler() {
       const fd = new FormData();
       fd.append("file", file);
       const res = await fetch("/api/unh/parse-audit", { method: "POST", body: fd });
+      if (res.status === 429) throw new Error("rate_limited");
       if (!res.ok) throw new Error("Failed to parse PDF");
       const data: ParsedAudit = await res.json();
       setAudit(data);
       setRemainingCourses(data.remaining_courses as RemainingCourse[]);
       setStep(2);
-    } catch {
-      setError("Could not parse your degree audit. Make sure it's a UNH Degree Works PDF.");
+    } catch (e) {
+      setError(e instanceof Error && e.message === "rate_limited"
+        ? "You've hit the hourly limit — please wait a bit and try again."
+        : "Could not parse your degree audit. Make sure it's a UNH Degree Works PDF.");
     } finally {
       setLoading(false);
     }

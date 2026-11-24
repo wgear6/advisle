@@ -4,6 +4,8 @@ import { useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { colors, radius, shadow } from "@/lib/theme";
 
+const RATE_LIMIT_MSG = "You've hit the hourly limit — please wait a bit and try again.";
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface AuditCourse {
@@ -111,6 +113,7 @@ export default function PathfinderPage() {
       const fd = new FormData();
       fd.append("file", file);
       const res = await fetch("/api/parse-audit", { method: "POST", body: fd });
+      if (res.status === 429) throw new Error(RATE_LIMIT_MSG);
       if (!res.ok) throw new Error("parse failed");
       const data: ParsedAudit = await res.json();
 
@@ -128,8 +131,8 @@ export default function PathfinderPage() {
       const m = await mres.json();
       setAudit(data);
       setResults(m.suggestions ?? []);
-    } catch {
-      setError("Could not read your degree audit. Make sure it's a UVM degree audit PDF.");
+    } catch (e) {
+      setError(e instanceof Error && e.message === RATE_LIMIT_MSG ? RATE_LIMIT_MSG : "Could not read your degree audit. Make sure it's a UVM degree audit PDF.");
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { rateLimit, tooLarge } from "@/lib/rate-limit";
 import redis from "@/lib/redis";
 import { nanoid } from "nanoid";
 
@@ -8,10 +9,11 @@ const CLIENT_ID_COOKIE = "advisle_cid";
 const CLIENT_ID_TTL_DAYS = 365;
 
 export async function POST(req: NextRequest) {
+  const big = tooLarge(req, 204800);
+  if (big) return big;
+  const limited = await rateLimit(req, "save");
+  if (limited) return limited;
   try {
-    const ip = req.headers.get("x-forwarded-for") ?? "unknown";
-    const rateLimitKey = `ratelimit:${ip}`;
-
     const body = await req.json();
     const { schedule, audit } = body;
 

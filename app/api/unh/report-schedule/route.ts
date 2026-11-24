@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import { rateLimit, tooLarge } from "@/lib/rate-limit";
 import redis from "@/lib/redis";
 import { nanoid } from "nanoid";
 
 const REPORT_TTL = 60 * 60 * 24 * 180; // 180 days
 
 export async function POST(req: NextRequest) {
+  const big = tooLarge(req, 307200);
+  if (big) return big;
+  const limited = await rateLimit(req, "report");
+  if (limited) return limited;
   try {
     const body = await req.json();
     const { feedback, inputs, outputs, audit_info } = body;
